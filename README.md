@@ -1,14 +1,26 @@
-# Business Plan IA — Lots 1, 2 & 3
+# Business Plan IA — Lots 1, 2, 3 & 4
 
 ## Ce qui existe a ce stade
 
 - `model/Business_Plan_Template.xlsx` : gabarit de reference restructure (12 produits / 20 charges fixes / 15 investissements provisionnes). Produit par `scripts/restructure_template.py` a partir du classeur original `Business_Plan_Boissons_Naturelles_CI_avec_Guide_1.xlsx`. Ne jamais editer ce fichier a la main — rejouer le script si le gabarit doit evoluer.
-- `engine/` : moteur Python isole, sans interface, testable en ligne de commande (Lot 1). `engine/preview.py` convertit une feuille recalculee en tableau HTML (Lot 3).
+- `engine/` : moteur Python isole, sans interface, testable en ligne de commande (Lot 1). `engine/preview.py` convertit une feuille recalculee en tableau HTML (Lot 3). `engine/ai_text.py` appelle l'API Anthropic pour generer les textes narratifs (Lot 4) ; `engine/generator.py::attach_ai_comments` les attache en commentaires de cellule.
 - `data/*.json` : 3 jeux de donnees de test (mono-produit, multi-produits + saisonnalite, investissement lourd).
 - `tests/test_engine.py` : suite de non-regression (structure, zero erreur de formule, formules non modifiees, plausibilite financiere).
 - `tests/test_preview.py` : verifie l'apercu HTML (11 feuilles, aucune formule brute affichee, valeurs recalculees presentes, format FCFA preserve).
-- `backend/app.py` : API FastAPI. `POST /api/generate` (Lot 2, telechargement direct, conserve pour compatibilite) ; `POST /api/preview` (Lot 3, valide + genere + recalcule + retourne le HTML des 11 feuilles, garde le fichier recalcule en cache serveur par `job_id`) ; `GET /api/download/{job_id}` (sert ce meme fichier deja recalcule, sans second recalcul).
-- `web/index.html` : formulaire web fidele a la maquette. La soumission appelle `/api/preview`, affiche les 11 feuilles sous forme d'onglets, puis revele le bouton de telechargement final (`/api/download/{job_id}`) une fois l'apercu genere sans erreur.
+- `tests/test_ai_text.py` : verifie la gestion d'absence de cle API, le parsing de la reponse IA, et l'attache des commentaires sans alteration des valeurs/formules (aucun appel reseau reel dans les tests).
+- `backend/app.py` : API FastAPI. `POST /api/generate` (Lot 2, telechargement direct, conserve pour compatibilite) ; `POST /api/preview` (Lot 3, valide + genere + recalcule + appelle l'IA (Lot 4, best-effort) + retourne le HTML des 11 feuilles et les textes IA, garde le fichier recalcule en cache serveur par `job_id`) ; `GET /api/download/{job_id}` (sert ce meme fichier deja recalcule, sans second recalcul).
+- `web/index.html` : formulaire web fidele a la maquette. La soumission appelle `/api/preview`, affiche un encart "Genere par l'IA" (ou un avertissement si l'IA est indisponible) puis les 11 feuilles sous forme d'onglets, et revele le bouton de telechargement final (`/api/download/{job_id}`) une fois l'apercu genere sans erreur.
+- `.env` (non versionne) : porte `ANTHROPIC_API_KEY`, requis pour la generation des textes IA. Sans cle, le Business Plan se genere quand meme (juste sans les textes narratifs, avec un avertissement affiche).
+
+## Configuration IA (Lot 4)
+
+Creer un fichier `.env` a la racine avec :
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+```
+
+Le backend le charge automatiquement au demarrage (`python-dotenv`). Modele par defaut : `claude-opus-5` (surchargeable via `ANTHROPIC_MODEL`).
 
 ## Installation
 

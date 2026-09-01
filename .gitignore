@@ -11,3 +11,4 @@ out_test.xlsx
 payload*.json
 headers*.txt
 dash_full.txt
+.env

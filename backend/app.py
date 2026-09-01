@@ -1,13 +1,11 @@
 """
-Backend applicatif (Lot 2).
+Backend applicatif.
 
 Recoit les reponses du formulaire, appelle le moteur de generation Excel
-(engine/), declenche le recalcul LibreOffice, et sert le fichier .xlsx final
-au telechargement.
-
-Pas encore d'apercu par feuille (Lot 3) ni d'appel IA reel (Lot 4) - les
-textes narratifs sont pour l'instant de simples chaines transmises telles
-quelles si fournies par le client.
+(engine/), declenche le recalcul LibreOffice, appelle l'IA pour les textes
+narratifs (Lot 4, attaches en commentaires de cellule - jamais bloquant si
+indisponible), convertit les feuilles en HTML pour l'apercu (Lot 3), et
+sert le fichier .xlsx final au telechargement.
 
 Lancer avec:
     uvicorn backend.app:app --reload --port 8000
@@ -16,6 +14,7 @@ import os
 import tempfile
 import uuid
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -23,12 +22,15 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from engine.generator import generate_workbook
+from engine.ai_text import AiTextError, generate_narrative_texts
+from engine.generator import attach_ai_comments, generate_workbook
 from engine.models import ChargeFixe, Investissement, ProjetInput, ProjetInputError, Produit
 from engine.preview import workbook_to_preview
 from engine.recalc import RecalcError, recalculate_and_check
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
 WEB_DIR = os.path.join(BASE_DIR, "web")
 TMP_DIR = os.path.join(tempfile.gettempdir(), "business_plan_ia")
 os.makedirs(TMP_DIR, exist_ok=True)
@@ -133,8 +135,13 @@ def _to_projet_input(payload: ProjetIn) -> ProjetInput:
     )
 
 
-@app.post("/api/generate")
-def generate(payload: ProjetIn):
+def _generate_and_recalc(payload: ProjetIn) -> tuple:
+    """Valide, genere, recalcule le classeur, puis genere les textes narratifs IA
+    (Lot 4) et les attache en commentaires de cellule (jamais bloquant : si l'IA
+    est indisponible, la generation du Business Plan continue sans les textes).
+
+    Retourne (job_id, out_path, projet, ai_texts, ai_warning).
+    """
     projet = _to_projet_input(payload)
 
     try:
@@ -154,6 +161,35 @@ def generate(payload: ProjetIn):
         recalculate_and_check(out_path)
     except RecalcError as e:
         raise HTTPException(status_code=500, detail=f"Erreur de recalcul: {e}")
+
+    ai_texts = None
+    ai_warning = None
+    try:
+        ai_texts = generate_narrative_texts(projet)
+        attach_ai_comments(out_path, ai_texts["description_activite"], ai_texts["justification_croissance"])
+    except AiTextError as e:
+        ai_warning = str(e)
+
+    return job_id, out_path, projet, ai_texts, ai_warning
+
+
+@app.post("/api/preview")
+def preview(payload: ProjetIn):
+    job_id, out_path, projet, ai_texts, ai_warning = _generate_and_recalc(payload)
+
+    filename_base = projet.nom_projet.strip() or projet.secteur_activite.strip() or "business_plan"
+    safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in filename_base).strip() or "business_plan"
+    _JOBS[job_id] = {"path": out_path, "filename": f"{safe_name}.xlsx"}
+
+    sheets = workbook_to_preview(out_path)
+    return {"job_id": job_id, "sheets": sheets, "ai_texts": ai_texts, "ai_warning": ai_warning}
+
+
+@app.post("/api/generate")
+def generate(payload: ProjetIn):
+    """Conserve pour compatibilite (Lot 2) : genere et telecharge directement,
+    sans passer par l'apercu. Inclut aussi les textes IA (Lot 4) en commentaires."""
+    job_id, out_path, projet, _ai_texts, _ai_warning = _generate_and_recalc(payload)
 
     filename_base = projet.nom_projet.strip() or projet.secteur_activite.strip() or "business_plan"
     safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in filename_base).strip() or "business_plan"
@@ -163,43 +199,6 @@ def generate(payload: ProjetIn):
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename=f"{safe_name}.xlsx",
     )
-
-
-def _generate_and_recalc(payload: ProjetIn) -> tuple:
-    """Valide, genere et recalcule le classeur. Retourne (job_id, out_path, projet)."""
-    projet = _to_projet_input(payload)
-
-    try:
-        projet.validate()
-    except ProjetInputError as e:
-        raise HTTPException(status_code=422, detail=str(e))
-
-    job_id = uuid.uuid4().hex
-    out_path = os.path.join(TMP_DIR, f"{job_id}.xlsx")
-
-    try:
-        generate_workbook(projet, out_path)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur de generation: {e}")
-
-    try:
-        recalculate_and_check(out_path)
-    except RecalcError as e:
-        raise HTTPException(status_code=500, detail=f"Erreur de recalcul: {e}")
-
-    return job_id, out_path, projet
-
-
-@app.post("/api/preview")
-def preview(payload: ProjetIn):
-    job_id, out_path, projet = _generate_and_recalc(payload)
-
-    filename_base = projet.nom_projet.strip() or projet.secteur_activite.strip() or "business_plan"
-    safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in filename_base).strip() or "business_plan"
-    _JOBS[job_id] = {"path": out_path, "filename": f"{safe_name}.xlsx"}
-
-    sheets = workbook_to_preview(out_path)
-    return {"job_id": job_id, "sheets": sheets}
 
 
 @app.get("/api/download/{job_id}")

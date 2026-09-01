@@ -135,6 +135,13 @@
   .preview-sheet table.bp-sheet td{border:1px solid #e9edec; padding:3px 6px; white-space:nowrap;}
   .download-block{display:none; text-align:center; margin-top:20px;}
   .download-block.show{display:block;}
+
+  .ai-note{ background:var(--pale-green); border:1px solid #bfe3c4; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:12.5px; }
+  .ai-note .badge{margin-bottom:8px;}
+  .ai-note p{margin:4px 0 10px;}
+  .ai-note p:last-child{margin-bottom:0;}
+  .ai-note .lbl{font-weight:700; color:var(--dark-green); display:block; margin-bottom:2px;}
+  .ai-note.warn{background:var(--amber-bg); border-color:var(--amber-line); color:var(--amber-text);}
 </style>
 </head>
 <body>
@@ -403,6 +410,7 @@
   </div>
 
   <div class="preview-panel" id="previewPanel">
+    <div id="aiNote"></div>
     <div class="preview-tabs" id="previewTabs"></div>
     <div id="previewSheets"></div>
   </div>
@@ -652,7 +660,34 @@ function hidePreview(){
   document.getElementById('downloadBlock').classList.remove('show');
   document.getElementById('previewTabs').innerHTML = '';
   document.getElementById('previewSheets').innerHTML = '';
+  document.getElementById('aiNote').innerHTML = '';
   currentJobId = null;
+}
+
+function escapeHtml(s){
+  var div = document.createElement('div');
+  div.textContent = s == null ? '' : s;
+  return div.innerHTML;
+}
+
+function renderAiNote(aiTexts, aiWarning){
+  var box = document.getElementById('aiNote');
+  if(aiTexts){
+    box.innerHTML = `
+      <div class="ai-note">
+        <span class="badge gen">● Généré par l'IA</span>
+        <p><span class="lbl">Description de l'activité</span>${escapeHtml(aiTexts.description_activite)}</p>
+        <p><span class="lbl">Justification du profil de croissance</span>${escapeHtml(aiTexts.justification_croissance)}</p>
+      </div>`;
+  } else if(aiWarning){
+    box.innerHTML = `
+      <div class="ai-note warn">
+        <span class="badge fill">● IA indisponible</span>
+        <p>${escapeHtml(aiWarning)} Le Business Plan a tout de même été généré, sans les textes narratifs.</p>
+      </div>`;
+  } else {
+    box.innerHTML = '';
+  }
 }
 
 function renderPreview(sheets){
@@ -719,6 +754,7 @@ async function submitForm(){
     }
     var data = await resp.json();
     currentJobId = data.job_id;
+    renderAiNote(data.ai_texts, data.ai_warning);
     renderPreview(data.sheets);
     document.getElementById('downloadBlock').classList.add('show');
     status.textContent = "Aperçu généré sans erreur — vérifiez les feuilles ci-dessous avant de télécharger.";

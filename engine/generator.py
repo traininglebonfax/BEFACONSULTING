@@ -28,11 +28,14 @@ import shutil
 from typing import Optional
 
 import openpyxl
+from openpyxl.comments import Comment
 
 from .models import ProjetInput, MAX_PRODUITS, MAX_CHARGES, MAX_INVESTISSEMENTS
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_PATH = os.path.join(BASE_DIR, "model", "Business_Plan_Template.xlsx")
+
+AI_COMMENT_AUTHOR = "IA Business Plan"
 
 
 def _hide_unused_rows(ws, start_row: int, used_count: int, total_capacity: int) -> None:
@@ -153,6 +156,34 @@ def generate_workbook(projet: ProjetInput, out_path: str, template_path: Optiona
 
     wb.save(out_path)
     return out_path
+
+
+def attach_ai_comments(xlsx_path: str, description_activite: str, justification_croissance: str) -> None:
+    """Attache les textes narratifs generes par l'IA (Lot 4) en COMMENTAIRES
+    de cellule, sur des cellules d'en-tete deja existantes de 1_HYPOTHESES.
+
+    Ne touche a AUCUNE valeur de cellule ni formule (regle d'or) - un
+    commentaire est une metadonnee separee de la valeur. Appele apres le
+    recalcul LibreOffice (le recalcul ne connait pas les commentaires).
+    """
+    if not description_activite and not justification_croissance:
+        return
+
+    wb = openpyxl.load_workbook(xlsx_path)
+    ws1 = wb["1_HYPOTHESES"]
+
+    if description_activite:
+        ws1["A1"].comment = Comment(
+            f"Description de l'activite (generee par IA) :\n\n{description_activite}",
+            AI_COMMENT_AUTHOR,
+        )
+    if justification_croissance:
+        ws1["A30"].comment = Comment(
+            f"Justification du profil de croissance (generee par IA) :\n\n{justification_croissance}",
+            AI_COMMENT_AUTHOR,
+        )
+
+    wb.save(xlsx_path)
 
 
 def _snapshot_formulas(wb) -> dict:
