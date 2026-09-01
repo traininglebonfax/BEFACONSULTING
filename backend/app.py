@@ -25,12 +25,18 @@ from typing import List, Optional
 
 from engine.generator import generate_workbook
 from engine.models import ChargeFixe, Investissement, ProjetInput, ProjetInputError, Produit
+from engine.preview import workbook_to_preview
 from engine.recalc import RecalcError, recalculate_and_check
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB_DIR = os.path.join(BASE_DIR, "web")
 TMP_DIR = os.path.join(tempfile.gettempdir(), "business_plan_ia")
 os.makedirs(TMP_DIR, exist_ok=True)
+
+# Jobs deja generes + recalcules, prets a etre telecharges sans recalcul
+# supplementaire (cf. cahier des charges §5 : apercu puis telechargement du
+# meme fichier, jamais deux recalculs distincts).
+_JOBS: dict = {}
 
 app = FastAPI(title="Business Plan IA - API")
 app.add_middleware(
@@ -156,6 +162,56 @@ def generate(payload: ProjetIn):
         out_path,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         filename=f"{safe_name}.xlsx",
+    )
+
+
+def _generate_and_recalc(payload: ProjetIn) -> tuple:
+    """Valide, genere et recalcule le classeur. Retourne (job_id, out_path, projet)."""
+    projet = _to_projet_input(payload)
+
+    try:
+        projet.validate()
+    except ProjetInputError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    job_id = uuid.uuid4().hex
+    out_path = os.path.join(TMP_DIR, f"{job_id}.xlsx")
+
+    try:
+        generate_workbook(projet, out_path)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de generation: {e}")
+
+    try:
+        recalculate_and_check(out_path)
+    except RecalcError as e:
+        raise HTTPException(status_code=500, detail=f"Erreur de recalcul: {e}")
+
+    return job_id, out_path, projet
+
+
+@app.post("/api/preview")
+def preview(payload: ProjetIn):
+    job_id, out_path, projet = _generate_and_recalc(payload)
+
+    filename_base = projet.nom_projet.strip() or projet.secteur_activite.strip() or "business_plan"
+    safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in filename_base).strip() or "business_plan"
+    _JOBS[job_id] = {"path": out_path, "filename": f"{safe_name}.xlsx"}
+
+    sheets = workbook_to_preview(out_path)
+    return {"job_id": job_id, "sheets": sheets}
+
+
+@app.get("/api/download/{job_id}")
+def download(job_id: str):
+    job = _JOBS.get(job_id)
+    if not job or not os.path.exists(job["path"]):
+        raise HTTPException(status_code=404, detail="Apercu introuvable ou expire. Regenerez l'apercu.")
+
+    return FileResponse(
+        job["path"],
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=job["filename"],
     )
 
 

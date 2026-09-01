@@ -1,13 +1,14 @@
-# Business Plan IA — Lots 1 & 2
+# Business Plan IA — Lots 1, 2 & 3
 
 ## Ce qui existe a ce stade
 
 - `model/Business_Plan_Template.xlsx` : gabarit de reference restructure (12 produits / 20 charges fixes / 15 investissements provisionnes). Produit par `scripts/restructure_template.py` a partir du classeur original `Business_Plan_Boissons_Naturelles_CI_avec_Guide_1.xlsx`. Ne jamais editer ce fichier a la main — rejouer le script si le gabarit doit evoluer.
-- `engine/` : moteur Python isole, sans interface, testable en ligne de commande (Lot 1).
+- `engine/` : moteur Python isole, sans interface, testable en ligne de commande (Lot 1). `engine/preview.py` convertit une feuille recalculee en tableau HTML (Lot 3).
 - `data/*.json` : 3 jeux de donnees de test (mono-produit, multi-produits + saisonnalite, investissement lourd).
 - `tests/test_engine.py` : suite de non-regression (structure, zero erreur de formule, formules non modifiees, plausibilite financiere).
-- `backend/app.py` : API FastAPI qui recoit le JSON du formulaire, appelle le moteur, recalcule, et sert le `.xlsx` en telechargement (Lot 2).
-- `web/index.html` : formulaire web fidele a la maquette (listes dynamiques produits/charges/investissements, mode avance, soumission reelle avec telechargement). Pas encore d'apercu par feuille — prevu au Lot 3.
+- `tests/test_preview.py` : verifie l'apercu HTML (11 feuilles, aucune formule brute affichee, valeurs recalculees presentes, format FCFA preserve).
+- `backend/app.py` : API FastAPI. `POST /api/generate` (Lot 2, telechargement direct, conserve pour compatibilite) ; `POST /api/preview` (Lot 3, valide + genere + recalcule + retourne le HTML des 11 feuilles, garde le fichier recalcule en cache serveur par `job_id`) ; `GET /api/download/{job_id}` (sert ce meme fichier deja recalcule, sans second recalcul).
+- `web/index.html` : formulaire web fidele a la maquette. La soumission appelle `/api/preview`, affiche les 11 feuilles sous forme d'onglets, puis revele le bouton de telechargement final (`/api/download/{job_id}`) une fois l'apercu genere sans erreur.
 
 ## Installation
 

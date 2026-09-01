@@ -123,6 +123,18 @@
 
   .error-box{ background:#fdecec; border:1px solid #f3b4b4; color:var(--red); border-radius:8px; padding:10px 14px; font-size:12.5px; margin:0 0 16px; white-space:pre-line; display:none; }
   .error-box.show{display:block;}
+
+  .preview-panel{display:none; margin-top:22px;}
+  .preview-panel.show{display:block;}
+  .preview-tabs{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .preview-tab{ padding:7px 12px; border-radius:7px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; }
+  .preview-tab.active{background:var(--dark-green); color:#fff; border-color:var(--dark-green);}
+  .preview-sheet{ display:none; overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .preview-sheet.active{display:block;}
+  .preview-sheet table.bp-sheet{border-collapse:collapse; font-size:12px;}
+  .preview-sheet table.bp-sheet td{border:1px solid #e9edec; padding:3px 6px; white-space:nowrap;}
+  .download-block{display:none; text-align:center; margin-top:20px;}
+  .download-block.show{display:block;}
 </style>
 </head>
 <body>
@@ -387,7 +399,16 @@
 
   <div class="footer-cta">
     <button type="button" id="submitBtn" class="btn primary" onclick="submitForm()">Générer mon Business Plan →</button>
-    <p id="statusMsg">Le fichier Excel complet (11 feuilles, formules vivantes) sera téléchargé directement — l'aperçu par feuille arrive au Lot 3.</p>
+    <p id="statusMsg">Un aperçu de chaque feuille s'affichera ici avant tout téléchargement.</p>
+  </div>
+
+  <div class="preview-panel" id="previewPanel">
+    <div class="preview-tabs" id="previewTabs"></div>
+    <div id="previewSheets"></div>
+  </div>
+
+  <div class="download-block" id="downloadBlock">
+    <button type="button" class="btn primary" onclick="downloadFinal()">Télécharger le fichier Excel complet →</button>
   </div>
 
 </div>
@@ -624,8 +645,49 @@ function clearError(){
   box.textContent = '';
 }
 
+var currentJobId = null;
+
+function hidePreview(){
+  document.getElementById('previewPanel').classList.remove('show');
+  document.getElementById('downloadBlock').classList.remove('show');
+  document.getElementById('previewTabs').innerHTML = '';
+  document.getElementById('previewSheets').innerHTML = '';
+  currentJobId = null;
+}
+
+function renderPreview(sheets){
+  var tabs = document.getElementById('previewTabs');
+  var container = document.getElementById('previewSheets');
+  tabs.innerHTML = '';
+  container.innerHTML = '';
+
+  sheets.forEach(function(sheet, i){
+    var tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'preview-tab' + (i === 0 ? ' active' : '');
+    tab.textContent = sheet.name;
+    tab.onclick = function(){
+      document.querySelectorAll('.preview-tab').forEach(function(t){ t.classList.remove('active'); });
+      document.querySelectorAll('.preview-sheet').forEach(function(s){ s.classList.remove('active'); });
+      tab.classList.add('active');
+      document.getElementById('sheet_' + i).classList.add('active');
+    };
+    tabs.appendChild(tab);
+
+    var panel = document.createElement('div');
+    panel.className = 'preview-sheet' + (i === 0 ? ' active' : '');
+    panel.id = 'sheet_' + i;
+    panel.innerHTML = sheet.html;
+    container.appendChild(panel);
+  });
+
+  document.getElementById('previewPanel').classList.add('show');
+  document.getElementById('previewPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 async function submitForm(){
   clearError();
+  hidePreview();
   var payload = collectPayload();
 
   if(payload.produits.length === 0){
@@ -643,7 +705,7 @@ async function submitForm(){
   status.textContent = "Génération en cours (calcul + recalcul du classeur)…";
 
   try{
-    var resp = await fetch(API_BASE + '/api/generate', {
+    var resp = await fetch(API_BASE + '/api/preview', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -655,27 +717,25 @@ async function submitForm(){
       status.textContent = "La génération a échoué — voir le message ci-dessus.";
       return;
     }
-    var blob = await resp.blob();
-    var disposition = resp.headers.get('Content-Disposition') || '';
-    var filename = 'business_plan.xlsx';
-    var starMatch = disposition.match(/filename\*=utf-8''([^;]+)/i);
-    var plainMatch = disposition.match(/filename="?([^";]+)"?/i);
-    if(starMatch) filename = decodeURIComponent(starMatch[1]);
-    else if(plainMatch) filename = plainMatch[1];
-
-    var url = window.URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click(); a.remove();
-    window.URL.revokeObjectURL(url);
-
-    status.textContent = "Fichier généré et téléchargé : " + filename;
+    var data = await resp.json();
+    currentJobId = data.job_id;
+    renderPreview(data.sheets);
+    document.getElementById('downloadBlock').classList.add('show');
+    status.textContent = "Aperçu généré sans erreur — vérifiez les feuilles ci-dessous avant de télécharger.";
   } catch(e){
     showError("Impossible de contacter le serveur (" + e.message + "). Verifiez que le backend est lance.");
     status.textContent = "";
   } finally {
     btn.disabled = false;
   }
+}
+
+async function downloadFinal(){
+  if(!currentJobId) return;
+  var url = API_BASE + '/api/download/' + currentJobId;
+  var a = document.createElement('a');
+  a.href = url; a.download = '';
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
 // --- Initialisation ---

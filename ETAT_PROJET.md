@@ -1,17 +1,19 @@
 # Etat du projet — a reprendre ici
 
-Derniere session : Lot 1, Lot 2 termines et testes. Lot 3 (apercu par feuille) EN COURS.
+Derniere session : Lot 1, Lot 2, Lot 3 termines et testes (via API, verification navigateur reel non faite faute d'extension Chrome connectee dans cette session).
 
 ## Fait et valide
-- **Lot 1** : gabarit restructure (`model/Business_Plan_Template.xlsx`), moteur `engine/`, 16 tests verts (`tests/test_engine.py`), README a jour. Un bug de format de nombre (cellules % affichees en FCFA) trouve et corrige en cours de Lot 3 — le gabarit a ete regenere, tests revalidés apres correction.
-- **Lot 2** : backend FastAPI (`backend/app.py`, endpoint `/api/generate`), frontend fonctionnel (`web/index.html`) fidele a la maquette, teste de bout en bout dans un vrai navigateur (formulaire -> generation -> telechargement).
+- **Lot 1** : gabarit restructure (`model/Business_Plan_Template.xlsx`), moteur `engine/`, tests verts.
+- **Lot 2** : backend FastAPI, frontend fidele a la maquette, teste de bout en bout dans un vrai navigateur.
+- **Lot 3** : apercu par feuille avant telechargement.
+  - `engine/preview.py` : conversion feuille -> HTML, teste par `tests/test_preview.py` (11 feuilles, aucune formule brute, valeurs recalculees presentes, format FCFA preserve).
+  - `backend/app.py` : `POST /api/preview` (valide + genere + recalcule + convertit en HTML, garde le fichier recalcule en cache serveur par `job_id` dans `_JOBS`) et `GET /api/download/{job_id}` (sert le fichier deja recalcule, aucun second recalcul). `POST /api/generate` (Lot 2) conserve pour compatibilite.
+  - `web/index.html` : le bouton "Générer" appelle desormais `/api/preview`, affiche des onglets pour les 11 feuilles (`.preview-tab` / `.preview-sheet`), et le bouton de telechargement final (`downloadFinal()` -> `/api/download/{job_id}`) n'apparait qu'apres un apercu reussi.
+  - 24 tests verts (`pytest tests/`), y compris chaine complete `/api/preview` -> `/api/download/{job_id}` verifiee via requetes HTTP directes (11 feuilles retournees, telechargement .xlsx valide, 86 Ko).
 
-## Lot 3 — ce qui reste a faire
-1. `engine/preview.py` est cree (conversion feuille -> HTML, lecture des valeurs recalculees, couleurs/gras/formats FCFA preserves) mais **pas encore teste**.
-2. Backend : ajouter un endpoint `POST /api/preview` (valide + genere + recalcule + convertit en HTML, garde le fichier en cache serveur par `job_id`) et `GET /api/download/{job_id}` (sert le fichier deja recalcule, pas de double recalcul). Le `/api/generate` actuel du Lot 2 peut rester pour compatibilite.
-3. Frontend : apres soumission, appeler `/api/preview` au lieu de telecharger directement ; afficher des onglets pour naviguer entre les 11 feuilles (contenu HTML retourne) ; le bouton de telechargement final n'apparait qu'apres apercu reussi (zero erreur de formule) — cf. cahier des charges §5.
-4. Tester `engine/preview.py` unitairement (au moins verifier que le HTML produit contient les bonnes valeurs et pas de formule brute).
-5. Verifier visuellement dans un navigateur reel (comme pour le Lot 2).
+## A faire au prochain lot
+- **Verification visuelle navigateur reel** : non effectuee cette session (extension Chrome non connectee). A refaire au demarrage de la prochaine session : lancer `uvicorn backend.app:app --reload --port 8000`, ouvrir `http://127.0.0.1:8000/`, remplir le formulaire, verifier que les onglets s'affichent correctement (mise en forme, pas de debordement horizontal) et que le telechargement final fonctionne.
+- **Lot 4** : integration IA pour les textes narratifs (`description_activite`, `justification_croissance`) et, si retenu, suggestions de valeurs par defaut sectorielles (cf. cahier des charges §2 et §4).
 
 ## Pour reprendre
-Dire "continue le Lot 3" suffit — ce fichier et le code déjà commité donnent tout le contexte necessaire.
+Dire "continue" ou "verifie le Lot 3 dans un navigateur puis passe au Lot 4" suffit — ce fichier et le code deja commite donnent tout le contexte necessaire.
