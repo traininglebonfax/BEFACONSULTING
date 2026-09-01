@@ -17,6 +17,28 @@ from openpyxl.utils import get_column_letter
 CHAR_TO_PX = 7  # approximation largeur colonne Excel -> pixels CSS
 CHART_BAR_COLOR = "#2E7D32"  # vert de marque (identique au frontend, --mid-green)
 
+# Les emoji "pastille" (statut/tendance de 9_DASHBOARD, alerte de 5_TRESORERIE)
+# n'ont pas de glyphe couleur fiable une fois passes par la police du navigateur
+# (rendu noir sur blanc constate). On les remplace par un glyphe texte simple
+# dont la couleur est imposee en CSS - fiable sur tout navigateur/OS, contrairement
+# a un glyphe emoji "couleur" que `color:` en CSS ne peut pas teinter.
+_STATUS_EMOJI_REPLACEMENTS = {
+    "\U0001F7E2": ("●", "#1E4D2B"),   # cercle vert - favorable
+    "\U0001F7E1": ("●", "#8a5a00"),   # cercle jaune - a surveiller
+    "\U0001F534": ("●", "#b91c1c"),   # cercle rouge - defavorable
+    "✅️": ("✓", "#1E4D2B"), # coche verte
+    "✅": ("✓", "#1E4D2B"),
+    "⚠️": ("⚠", "#b91c1c"), # triangle d'alerte
+    "⚠": ("⚠", "#b91c1c"),
+}
+
+
+def _colorize_status_emoji(text: str) -> str:
+    for emoji, (glyph, color) in _STATUS_EMOJI_REPLACEMENTS.items():
+        if emoji in text:
+            text = text.replace(emoji, f'<span style="color:{color};font-weight:700">{glyph}</span>')
+    return text
+
 
 def _rgb_to_css(argb: Optional[str]) -> Optional[str]:
     if not argb or len(argb) < 6:
@@ -115,7 +137,7 @@ def sheet_to_html(ws) -> str:
                 style_parts.append("text-align:right")
 
             style_attr = f' style="{";".join(style_parts)}"' if style_parts else ""
-            text = _format_value(cell.value, cell.number_format)
+            text = _colorize_status_emoji(_format_value(cell.value, cell.number_format))
             cells_html.append(f"<td{span_attr}{style_attr}>{text}</td>")
 
         rows_html.append(f"<tr>{''.join(cells_html)}</tr>")

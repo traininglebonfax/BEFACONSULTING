@@ -60,3 +60,20 @@ def test_html_contient_les_valeurs_recalculees(recalculated_preview):
 def test_format_fcfa_preserve(recalculated_preview):
     compte_resultat = next(s for s in recalculated_preview if s["name"] == "3_COMPTE_RESULTAT")
     assert "FCFA" in compte_resultat["html"]
+
+
+def test_graphique_ca_rendu_en_svg(recalculated_preview):
+    ca_sheet = next(s for s in recalculated_preview if s["name"] == "2_PREVISION_CA")
+    assert 'class="bp-chart"' in ca_sheet["html"]
+    assert ca_sheet["html"].count("<rect") == 3  # 3 barres : Annee 1/2/3
+
+
+def test_statuts_dashboard_colores_sans_emoji_brut(recalculated_preview):
+    """Regression : les pastilles de statut (Statut/Tendance de 9_DASHBOARD)
+    ne s'affichaient pas en couleur dans le navigateur (rendu emoji non fiable
+    selon la police du systeme) - elles doivent etre remplacees par un glyphe
+    texte simple dont la couleur est fixee en CSS."""
+    dashboard = next(s for s in recalculated_preview if s["name"] == "9_DASHBOARD")
+    assert 'style="color:#1E4D2B;font-weight:700">●</span>' in dashboard["html"]
+    for emoji in ("\U0001F7E2", "\U0001F7E1", "\U0001F534"):
+        assert emoji not in dashboard["html"]
