@@ -15,6 +15,7 @@ import openpyxl
 from openpyxl.utils import get_column_letter
 
 CHAR_TO_PX = 7  # approximation largeur colonne Excel -> pixels CSS
+CHART_BAR_COLOR = "#2E7D32"  # vert de marque (identique au frontend, --mid-green)
 
 
 def _rgb_to_css(argb: Optional[str]) -> Optional[str]:
@@ -122,11 +123,97 @@ def sheet_to_html(ws) -> str:
     return f'<table class="bp-sheet"><colgroup>{colgroup}</colgroup><tbody>{"".join(rows_html)}</tbody></table>'
 
 
+def _resolve_ref_values(wb, ref: Optional[str]) -> list:
+    """Resout une reference de graphique ("'Feuille'!$A$50:$A$52") en valeurs
+    de cellules deja recalculees (wb charge avec data_only=True)."""
+    if not ref:
+        return []
+    sheet_part, _, rng = ref.partition("!")
+    ws = wb[sheet_part.strip("'")]
+    values = []
+    for row in ws[rng.replace("$", "")]:
+        for cell in row:
+            values.append(cell.value)
+    return values
+
+
+def _extract_bar_charts(wb, ws) -> List[dict]:
+    """Extrait les graphiques a barres d'une feuille sous forme de donnees
+    simples (titre, categories, valeurs) - jamais les formules, seulement
+    les valeurs deja recalculees pointees par le graphique."""
+    charts = []
+    for chart in getattr(ws, "_charts", []):
+        title = None
+        try:
+            title = chart.title.tx.rich.p[0].r[0].t
+        except Exception:
+            pass
+        for series in chart.series:
+            val_ref = series.val.numRef.f if series.val and series.val.numRef else None
+            if not val_ref:
+                continue
+            cat_ref = series.cat.strRef.f if series.cat and series.cat.strRef else None
+            charts.append({
+                "title": title,
+                "categories": _resolve_ref_values(wb, cat_ref),
+                "values": _resolve_ref_values(wb, val_ref),
+            })
+    return charts
+
+
+def _bar_chart_svg(chart: dict) -> str:
+    values = [v or 0 for v in chart["values"]]
+    categories = chart["categories"]
+    if not values:
+        return ""
+
+    n = len(values)
+    max_val = max(values) or 1
+    width, height = 480, 220
+    margin_x, margin_top, margin_bottom = 16, 30, 30
+    plot_w = width - margin_x * 2
+    plot_h = height - margin_top - margin_bottom
+    bar_gap = 28
+    bar_w = (plot_w - bar_gap * (n - 1)) / n if n else 0
+    baseline_y = margin_top + plot_h
+
+    bars = []
+    for i, v in enumerate(values):
+        bar_h = (v / max_val) * plot_h if max_val else 0
+        x = margin_x + i * (bar_w + bar_gap)
+        y = baseline_y - bar_h
+        label = _html.escape(str(categories[i]) if i < len(categories) else "")
+        value_label = _html.escape(f"{v:,.0f}".replace(",", " ") + " FCFA")
+        bars.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w:.1f}" height="{max(bar_h, 0):.1f}" '
+            f'rx="4" fill="{CHART_BAR_COLOR}"><title>{label} : {value_label}</title></rect>'
+            f'<text x="{x + bar_w / 2:.1f}" y="{y - 8:.1f}" text-anchor="middle" '
+            f'font-size="12" font-weight="700" fill="#1f2937">{value_label}</text>'
+            f'<text x="{x + bar_w / 2:.1f}" y="{height - 10:.1f}" text-anchor="middle" '
+            f'font-size="12" fill="#64748b">{label}</text>'
+        )
+
+    title_html = ""
+    if chart.get("title"):
+        title_html = f'<div class="bp-chart-title">{_html.escape(chart["title"])}</div>'
+
+    return (
+        f'<div class="bp-chart">{title_html}'
+        f'<svg viewBox="0 0 {width} {height}" role="img" '
+        f'aria-label="{_html.escape(chart.get("title") or "")}">'
+        f'<line x1="{margin_x}" y1="{baseline_y}" x2="{width - margin_x}" y2="{baseline_y}" '
+        f'stroke="#e2e8f0" stroke-width="1"/>'
+        + "".join(bars) +
+        "</svg></div>"
+    )
+
+
 def workbook_to_preview(xlsx_path: str) -> List[dict]:
     """Retourne [{name, html}, ...] dans l'ordre des feuilles du classeur recalcule."""
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
     result = []
     for name in wb.sheetnames:
         ws = wb[name]
-        result.append({"name": name, "html": sheet_to_html(ws)})
+        charts_html = "".join(_bar_chart_svg(c) for c in _extract_bar_charts(wb, ws))
+        result.append({"name": name, "html": charts_html + sheet_to_html(ws)})
     return result

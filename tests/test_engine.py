@@ -162,6 +162,22 @@ def test_metadonnees_non_ecrites_dans_le_classeur(tmp_path):
     assert found == [], f"Des metadonnees ont ete ecrites dans le classeur: {found}"
 
 
+def test_graphique_ca_reference_le_bon_bloc_ca_global():
+    """Regression : le graphique 'Evolution du CA sur 3 Ans' de 2_PREVISION_CA
+    doit pointer sur le bloc CA Global (lignes 50-52), pas sur un bloc deplace
+    lors d'une restructuration anterieure du gabarit (cf. cahier des charges :
+    reference codee en dur qui ne suit pas un decalage de lignes)."""
+    wb = openpyxl.load_workbook(TEMPLATE_PATH)
+    ws = wb["2_PREVISION_CA"]
+    assert ws["A50"].value == "Annee 1" and ws["A52"].value == "Annee 3"
+
+    charts = ws._charts
+    assert len(charts) == 1, "Le gabarit doit conserver exactement 1 graphique sur 2_PREVISION_CA"
+    series = charts[0].series[0]
+    assert series.val.numRef.f == "2_PREVISION_CA!$B$50:$B$52"
+    assert series.cat.strRef.f == "2_PREVISION_CA!$A$50:$A$52"
+
+
 def test_validation_rejette_trop_de_produits():
     from engine.models import ProjetInput as PI, ProjetInputError
     data = {

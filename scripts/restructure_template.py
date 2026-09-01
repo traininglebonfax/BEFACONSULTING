@@ -410,6 +410,18 @@ ws2["B51"] = "=F18"
 ws2["A52"] = "Annee 3"
 ws2["B52"] = "=H18"
 
+# Le graphique "Evolution du Chiffre d'Affaires sur 3 Ans" pointait encore vers
+# A22:A24/B22:B24 (position du bloc CA Global AVANT restructuration). Ce bloc a
+# ete deplace en 50-52 ci-dessus mais la reference du graphique n'avait jamais
+# ete mise a jour - exactement la classe de bug (reference codee en dur qui ne
+# suit pas un decalage de lignes) que ce script doit precisement eviter.
+for chart in ws2._charts:
+    for series in chart.series:
+        if series.val and series.val.numRef:
+            series.val.numRef.f = "2_PREVISION_CA!$B$50:$B$52"
+        if series.cat and series.cat.strRef:
+            series.cat.strRef.f = "2_PREVISION_CA!$A$50:$A$52"
+
 print("2_PREVISION_CA reconstruite.")
 
 # =====================================================================
