@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Maquette — Formulaire Business Plan PME</title>
+<style>
+  :root{
+    --dark-green:#1E4D2B;
+    --mid-green:#2E7D32;
+    --pale-green:#E8F5E9;
+    --pale-blue:#D9E1F2;
+    --ink:#1f2937;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --bg:#f4f6f5;
+    --card:#ffffff;
+    --amber-bg:#FFF4E0;
+    --amber-line:#F0B429;
+    --amber-text:#8a5a00;
+    --grey-bg:#eef1f0;
+    --grey-text:#516066;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.45;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px;}
+
+  header.top{
+    background:var(--dark-green); color:#fff; padding:26px 20px 22px;
+  }
+  header.top .inner{max-width:900px;margin:0 auto;}
+  header.top h1{margin:0 0 6px;font-size:22px;}
+  header.top p{margin:0;color:#cfe3d4;font-size:13.5px;max-width:640px;}
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:12px 16px; margin:20px 0 24px; font-size:12.5px; color:var(--muted);
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700;
+    padding:3px 9px; border-radius:999px; letter-spacing:.2px;
+  }
+  .badge.default{background:var(--grey-bg);color:var(--grey-text); border:1px solid #d6dcda;}
+  .badge.fill{background:var(--amber-bg); color:var(--amber-text); border:1px solid var(--amber-line);}
+  .badge.gen{background:var(--pale-green); color:var(--dark-green); border:1px solid #bfe3c4;}
+
+  .advtoggle{
+    margin-left:auto; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); font-weight:600;
+  }
+  .switch{position:relative; width:38px; height:21px; flex:none;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider-el{position:absolute;inset:0;background:#cbd5c9;border-radius:999px;cursor:pointer;transition:.15s;}
+  .slider-el:before{content:"";position:absolute;height:15px;width:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
+  input:checked + .slider-el{background:var(--mid-green);}
+  input:checked + .slider-el:before{transform:translateX(17px);}
+
+  .step{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    margin-bottom:18px; overflow:hidden;
+  }
+  .step-head{
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(180deg,#fff,#fbfcfb);
+    border-bottom:1px solid var(--line); padding:14px 18px;
+  }
+  .step-num{
+    width:26px;height:26px;border-radius:50%;background:var(--dark-green);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex:none;
+  }
+  .step-head h2{margin:0;font-size:15.5px;}
+  .step-head .hint{margin-left:auto;font-size:11.5px;color:var(--muted);}
+  .step-body{padding:16px 18px 18px;}
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .flabel{
+    display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; margin-bottom:6px;
+  }
+  .fdesc{font-size:11.5px;color:var(--muted);margin:2px 0 6px;}
+
+  select, input[type=text], input[type=number], input[type=date]{
+    width:100%; padding:8px 10px; border:1px solid #cbd5d1; border-radius:7px;
+    font-size:13.5px; background:#fff; color:var(--ink);
+  }
+  select:focus, input:focus{outline:2px solid var(--mid-green); outline-offset:1px;}
+  .fill-input{background:#fffdf6; border-color:var(--amber-line);}
+
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .row3{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:12px;}
+  .row4{display:grid; grid-template-columns:1.4fr .9fr 1fr 1fr auto; gap:10px; align-items:end;}
+  @media (max-width:620px){ .row2,.row3,.row4{grid-template-columns:1fr;} }
+
+  .card-line{
+    border:1px solid var(--line); border-radius:9px; padding:12px 14px; margin-bottom:10px; background:#fafbfa;
+    position:relative;
+  }
+  .card-line .rm{
+    position:absolute; top:8px; right:8px; background:none; border:none; color:#b91c1c;
+    font-size:12px; cursor:pointer; font-weight:600;
+  }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600;
+    padding:8px 14px; border-radius:8px; border:1px solid var(--mid-green); cursor:pointer;
+    background:#fff; color:var(--mid-green);
+  }
+  .btn:hover{background:var(--pale-green);}
+  .btn.ghost{border-color:var(--line); color:var(--ink);}
+  .btn.primary{
+    background:var(--dark-green); color:#fff; border-color:var(--dark-green); font-size:15px; padding:13px 22px;
+  }
+  .btn.primary:hover{background:#163a20;}
+  .btn.small{font-size:12px;padding:5px 10px;}
+
+  .toggle-yn{display:flex; gap:8px;}
+  .toggle-yn button{
+    flex:1; padding:8px; border-radius:7px; border:1px solid #cbd5d1; background:#fff; font-size:13px; cursor:pointer; font-weight:600;color:var(--ink);
+  }
+  .toggle-yn button.active{background:var(--dark-green); color:#fff; border-color:var(--dark-green);}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{
+    padding:8px 12px; border-radius:8px; border:1.5px solid #cbd5d1; font-size:12.5px; cursor:pointer;
+    background:#fff; font-weight:600; color:var(--ink);
+  }
+  .chip.active{border-color:var(--mid-green); background:var(--pale-green); color:var(--dark-green);}
+
+  .slider-pair{display:flex; align-items:center; gap:12px;}
+  .slider-pair input[type=range]{flex:1; accent-color:var(--mid-green);}
+  .slider-vals{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:4px;}
+
+  .month-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:8px;}
+  .month-grid .m{text-align:center;}
+  .month-grid label{display:block; font-size:11px; color:var(--muted); margin-bottom:3px;}
+  .month-grid select{padding:5px 4px; font-size:11.5px;}
+  #seasonBlock{display:none; margin-top:10px; border-top:1px dashed var(--line); padding-top:12px;}
+
+  .advanced-section{display:none;}
+  .advanced-section.show{display:block;}
+  .adv-flag{
+    display:inline-block; font-size:10.5px; font-weight:700; color:#8a5a00; background:#FFF4E0;
+    border:1px solid var(--amber-line); border-radius:5px; padding:1px 6px; margin-left:6px;
+  }
+
+  .detail-toggle{
+    background:none;border:none;color:var(--mid-green);font-size:12px;font-weight:700;cursor:pointer;
+    padding:0; margin-top:6px;
+  }
+  .detail-fields{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
+  .detail-fields.show{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+
+  .footer-cta{
+    text-align:center; padding:26px 10px 10px;
+  }
+  .footer-cta p{font-size:12.5px; color:var(--muted); max-width:520px; margin:12px auto 0;}
+
+  .sector-note{
+    background:var(--pale-green); border:1px solid #bfe3c4; color:var(--dark-green);
+    border-radius:8px; padding:8px 12px; font-size:12px; margin-top:8px;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <h1>Créer mon Business Plan</h1>
+    <p>Ne remplissez que ce qui concerne VOTRE projet. Tout le reste est déjà pré-rempli avec une valeur usuelle — modifiez-la seulement si nécessaire.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="legend">
+    <span class="badge default">● Pré-rempli</span>
+    <span style="font-size:12px;">valeur par défaut déjà en place, à ajuster seulement si besoin</span>
+    <span class="badge fill">● À compléter</span>
+    <span style="font-size:12px;">propre à votre projet, personne d'autre ne peut la deviner</span>
+    <span class="badge gen">● Généré par l'IA</span>
+    <span style="font-size:12px;">rédigé automatiquement, rien à taper</span>
+    <div class="advtoggle">
+      Mode avancé
+      <label class="switch">
+        <input type="checkbox" id="advToggle" onchange="toggleAdvanced()">
+        <span class="slider-el"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- STEP 1 : SECTEUR & OFFRE -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <h2>Votre activité</h2>
+      <span class="hint">2 champs à décider, le reste s'ajuste tout seul</span>
+    </div>
+    <div class="step-body">
+
+      <div class="field">
+        <div class="flabel">Secteur d'activité <span class="badge fill">À compléter</span></div>
+        <div class="fdesc">Choisit automatiquement le vocabulaire et les valeurs usuelles du reste du formulaire.</div>
+        <select class="fill-input">
+          <option>— Sélectionner —</option>
+          <option selected>Agroalimentaire / transformation</option>
+          <option>Commerce / distribution</option>
+          <option>Services</option>
+          <option>Artisanat / production manuelle</option>
+          <option>BTP / construction</option>
+          <option>Technologie / digital</option>
+          <option>Agriculture / élevage</option>
+          <option>Autre</option>
+        </select>
+        <div class="sector-note">Secteur choisi : vocabulaire "matière première / packaging", délais et charges usuelles pré-remplis en conséquence.</div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Nom du projet <span class="badge default">Pré-rempli</span></div>
+        <input type="text" value="Mon Projet" />
+        <div class="fdesc">Facultatif à ce stade — vous pourrez le renommer dans le fichier Excel final.</div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Vos produits / services <span class="badge fill">À compléter</span></div>
+        <div class="fdesc">Ajoutez une ligne par produit ou service. Les coûts détaillés (emballage, prestation) sont repliés par défaut — cliquez sur "Détailler" seulement si vous voulez les séparer.</div>
+
+        <div class="card-line">
+          <button class="rm">✕ retirer</button>
+          <div class="row3">
+            <div><label style="font-size:11px;color:var(--muted);">Nom du produit/service</label><input type="text" class="fill-input" placeholder="Ex. Jus Ananas / Passion 33cl"></div>
+            <div><label style="font-size:11px;color:var(--muted);">Unité de vente</label>
+              <select><option selected>Bouteille</option><option>Kg</option><option>Heure</option><option>Prestation</option><option>Abonnement/mois</option><option>Pièce</option></select>
+            </div>
+            <div><label style="font-size:11px;color:var(--muted);">Prix de vente unitaire (FCFA)</label><input type="number" class="fill-input" placeholder="0"></div>
+          </div>
+          <div class="row2" style="margin-top:10px;">
+            <div><label style="font-size:11px;color:var(--muted);">Volume de vente initial / mois</label><input type="number" class="fill-input" placeholder="0"></div>
+            <div><label style="font-size:11px;color:var(--muted);">Coût variable total par unité (FCFA)</label><input type="number" class="fill-input" placeholder="0"></div>
+          </div>
+          <button class="detail-toggle" onclick="toggleDetail(this)">+ Détailler ce coût (matière première / emballage / production)</button>
+          <div class="detail-fields">
+            <div><label style="font-size:11px;color:var(--muted);">Matière première / marchandise</label><input type="number" placeholder="0"></div>
+            <div><label style="font-size:11px;color:var(--muted);">Emballage / conditionnement</label><input type="number" placeholder="0"></div>
+            <div><label style="font-size:11px;color:var(--muted);">Production / prestation directe</label><input type="number" placeholder="0"></div>
+          </div>
+        </div>
+
+        <button class="btn small">+ Ajouter un produit / service</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2 : CROISSANCE -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <h2>Croissance attendue</h2>
+      <span class="hint">1 choix, tout le reste en découle</span>
+    </div>
+    <div class="step-body">
+
+      <div class="field">
+        <div class="flabel">Rythme de croissance visé <span class="badge fill">À compléter</span></div>
+        <div class="fdesc">Un profil suffit — pas besoin de connaître un pourcentage exact.</div>
+        <div class="chips">
+          <div class="chip">Prudente (+10%/an)</div>
+          <div class="chip active">Modérée (+20%/an)</div>
+          <div class="chip">Soutenue (+30%/an)</div>
+          <div class="chip">Personnalisé…</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Justification de la croissance <span class="badge gen">Généré par l'IA</span></div>
+        <div class="fdesc">Rédigé automatiquement à partir de votre secteur et du profil choisi ci-dessus (modifiable dans le fichier final).</div>
+        <div style="background:var(--pale-green);border:1px dashed #bfe3c4;border-radius:7px;padding:9px 12px;font-size:12.5px;color:#2f4a35;">
+          "Expansion progressive portée par l'ouverture de nouveaux points de vente et le développement de la notoriété locale."
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Votre activité est-elle saisonnière ? <span class="badge fill">À compléter</span></div>
+        <div class="toggle-yn" style="max-width:220px;">
+          <button class="active" onclick="setSeason(false,this)">Non</button>
+          <button onclick="setSeason(true,this)">Oui</button>
+        </div>
+        <div id="seasonBlock">
+          <div class="fdesc">Pour chaque mois, indiquez juste le niveau — pas de coefficient à calculer.</div>
+          <div class="month-grid">
+            <div class="m"><label>Jan</label><select><option>Normal</option><option>Faible</option><option>Fort</option></select></div>
+            <div class="m"><label>Fév</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Mar</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Avr</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Mai</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Juin</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Juil</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Août</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Sept</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Oct</label><select><option>Normal</option></select></div>
+            <div class="m"><label>Nov</label><select><option>Fort</option></select></div>
+            <div class="m"><label>Déc</label><select><option selected>Pic</option></select></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 3 : CHARGES FIXES -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <h2>Charges fixes mensuelles</h2>
+      <span class="hint">Les postes sont déjà listés — remplissez juste les montants qui vous concernent</span>
+    </div>
+    <div class="step-body">
+      <div class="row4" style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">
+        <div>POSTE</div><div></div><div>MONTANT / MOIS (FCFA)</div><div class="adv-only">ÉVOLUTION AN 2/3</div><div></div>
+      </div>
+
+      <div class="row4">
+        <div style="padding-top:8px;">Salaires & charges sociales</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Loyer</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Transport / logistique</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Marketing / communication</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Énergie / eau</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Maintenance</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Frais administratifs</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+      <div class="row4" style="margin-top:8px;">
+        <div style="padding-top:8px;">Assurances</div><div></div>
+        <input type="number" class="fill-input" placeholder="0">
+        <select class="advanced-section"><option>+5%/an (défaut)</option></select>
+        <button class="rm" style="position:static;">✕</button>
+      </div>
+
+      <div style="margin-top:14px;"><button class="btn small">+ Ajouter un autre poste de charge</button></div>
+      <div class="fdesc" style="margin-top:8px;">Évolution annuelle des charges : <b>+5%/an appliqué automatiquement</b> à tous les postes. <span class="adv-flag">Réglable poste par poste en mode avancé</span></div>
+    </div>
+  </div>
+
+  <!-- STEP 4 : INVESTISSEMENT -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <h2>Investissement de départ</h2>
+      <span class="hint">Passez cette étape si vous n'investissez rien au démarrage</span>
+    </div>
+    <div class="step-body">
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;">
+          <input type="checkbox" style="width:16px;height:16px;"> Je n'ai aucun investissement de départ à financer
+        </label>
+      </div>
+
+      <div class="card-line">
+        <button class="rm">✕ retirer</button>
+        <div class="row4">
+          <div><label style="font-size:11px;color:var(--muted);">Poste d'investissement</label>
+            <select><option selected>Équipement de production</option><option>Véhicule</option><option>Aménagement / local</option><option>Informatique</option><option>Frais d'établissement</option><option>Autre</option></select>
+          </div>
+          <div><label style="font-size:11px;color:var(--muted);">Montant HT (FCFA)</label><input type="number" class="fill-input" placeholder="0"></div>
+          <div><label style="font-size:11px;color:var(--muted);">Durée d'amortissement</label>
+            <select><option selected>5 ans (suggéré)</option><option>3 ans</option><option>4 ans</option><option>7 ans</option><option>10 ans</option></select>
+          </div>
+          <div></div><div></div>
+        </div>
+      </div>
+      <button class="btn small">+ Ajouter un investissement</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 : FINANCEMENT & BFR -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <h2>Financement & délais de paiement</h2>
+      <span class="hint">Tout est pré-réglé sur des valeurs courantes — ajustez au curseur si besoin</span>
+    </div>
+    <div class="step-body">
+
+      <div class="field">
+        <div class="flabel">Répartition du financement <span class="badge default">Pré-rempli</span></div>
+        <div class="slider-pair">
+          <input type="range" min="0" max="100" value="30">
+        </div>
+        <div class="slider-vals"><span>Fonds propres : 30%</span><span>Emprunt bancaire : 70%</span></div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Taux d'intérêt annuel <span class="badge default">Pré-rempli</span></div>
+          <select><option selected>9% (moyenne PME régionale)</option><option>6%</option><option>7,5%</option><option>10%</option><option>12%</option></select>
+        </div>
+        <div class="field">
+          <div class="flabel">Durée de remboursement <span class="badge default">Pré-rempli</span></div>
+          <select><option>24 mois</option><option selected>48 mois</option><option>36 mois</option><option>60 mois</option></select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Délai de paiement clients <span class="badge default">Pré-rempli</span></div>
+          <select><option>15 jours</option><option selected>30 jours</option><option>45 jours</option><option>60 jours</option></select>
+        </div>
+        <div class="field">
+          <div class="flabel">Délai de paiement fournisseurs <span class="badge default">Pré-rempli</span></div>
+          <select><option>30 jours</option><option selected>45 jours</option><option>60 jours</option><option>90 jours</option></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Gérez-vous un stock (matière première ou produits finis) ? <span class="badge fill">À compléter</span></div>
+        <div class="toggle-yn" style="max-width:220px;">
+          <button class="active">Oui</button>
+          <button>Non — activité de service</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADVANCED SECTION -->
+  <div class="step advanced-section" id="advBlock">
+    <div class="step-head" style="background:#fbf7ee;">
+      <div class="step-num" style="background:#8a5a00;">✦</div>
+      <h2>Mode avancé <span class="adv-flag">optionnel</span></h2>
+      <span class="hint">Rarement utile — tout a déjà une valeur raisonnable</span>
+    </div>
+    <div class="step-body">
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Pays / devise <span class="badge default">Pré-rempli</span></div>
+          <select><option selected>Côte d'Ivoire — FCFA</option><option>Sénégal — FCFA</option><option>Cameroun — FCFA</option><option>France — EUR</option><option>Autre…</option></select>
+        </div>
+        <div class="field">
+          <div class="flabel">Forme juridique <span class="badge default">Pré-rempli</span></div>
+          <select><option selected>SARL</option><option>Entreprise individuelle</option><option>SA</option><option>Coopérative</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Durée du Business Plan <span class="badge default">Pré-rempli</span></div>
+          <select><option selected>3 ans (standard)</option><option>1 an</option><option>5 ans</option></select>
+        </div>
+        <div class="field">
+          <div class="flabel">Date de démarrage <span class="badge default">Pré-rempli</span></div>
+          <input type="date" value="2026-10-01">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Taux d'Impôt sur les Sociétés <span class="badge default">Pré-rempli</span></div>
+          <input type="text" value="25% (déduit du pays choisi)" disabled style="background:#f1f3f2;color:var(--muted);">
+        </div>
+        <div class="field">
+          <div class="flabel">Différé de remboursement de l'emprunt <span class="badge default">Pré-rempli</span></div>
+          <select><option selected>Aucun</option><option>3 mois</option><option>6 mois</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="flabel">Scénarios pessimiste / ambitieux <span class="badge default">Pré-rempli</span></div>
+        <div class="row2">
+          <div style="font-size:12.5px;">Pessimiste : <b>ventes −20%</b>, coûts +15%</div>
+          <div style="font-size:12.5px;">Ambitieux : <b>ventes +30%</b>, coûts −5%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-cta">
+    <button class="btn primary">Générer mon Business Plan →</button>
+    <p>Vous pourrez prévisualiser chacune des 10 feuilles (Guide, Hypothèses, Prévision de CA, Compte de Résultat, Investissements, Trésorerie, BFR, Rentabilité, Scénarios, Dashboard) avant de télécharger le fichier Excel final.</p>
+  </div>
+
+</div>
+
+<script>
+function toggleAdvanced(){
+  var on = document.getElementById('advToggle').checked;
+  document.getElementById('advBlock').classList.toggle('show', on);
+  document.querySelectorAll('.advanced-section').forEach(function(el){
+    if(el.id !== 'advBlock') el.style.visibility = on ? 'visible' : 'hidden';
+  });
+}
+function toggleDetail(btn){
+  var box = btn.nextElementSibling;
+  var showing = box.classList.toggle('show');
+  btn.textContent = showing ? "– Réduire le détail des coûts" : "+ Détailler ce coût (matière première / emballage / production)";
+}
+function setSeason(on, btn){
+  document.getElementById('seasonBlock').style.display = on ? 'block' : 'none';
+  var parent = btn.parentElement;
+  parent.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+document.querySelectorAll('.chip').forEach(function(chip){
+  chip.addEventListener('click', function(){
+    var parent = chip.parentElement;
+    parent.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
+    chip.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>

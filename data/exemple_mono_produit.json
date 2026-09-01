@@ -1,0 +1,21 @@
+{
+  "secteur_activite": "Services - Coiffure et esthetique",
+  "produits": [
+    {
+      "nom": "Prestation coiffure standard",
+      "prix_unitaire": 3000,
+      "volume_initial_mensuel": 400,
+      "cout_variable_unitaire": 800
+    }
+  ],
+  "charges_fixes": [
+    { "nom": "Loyer salon", "montant_mensuel": 250000 },
+    { "nom": "Salaires personnel", "montant_mensuel": 600000 },
+    { "nom": "Electricite et eau", "montant_mensuel": 80000 }
+  ],
+  "investissements": [
+    { "nom": "Equipement de coiffure", "montant": 3500000, "duree_amortissement_ans": 5 }
+  ],
+  "taux_croissance_a2": 0.15,
+  "taux_croissance_a3": 0.10
+}

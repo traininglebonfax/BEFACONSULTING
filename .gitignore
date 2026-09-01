@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+scratch_out/
+recalc_test/
+*.log
+out_test.xlsx
+payload*.json
+headers*.txt
+dash_full.txt

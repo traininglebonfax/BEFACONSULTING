@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Créer mon Business Plan</title>
+<style>
+  :root{
+    --dark-green:#1E4D2B;
+    --mid-green:#2E7D32;
+    --pale-green:#E8F5E9;
+    --pale-blue:#D9E1F2;
+    --ink:#1f2937;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --bg:#f4f6f5;
+    --card:#ffffff;
+    --amber-bg:#FFF4E0;
+    --amber-line:#F0B429;
+    --amber-text:#8a5a00;
+    --grey-bg:#eef1f0;
+    --grey-text:#516066;
+    --red:#b91c1c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.45;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px;}
+
+  header.top{ background:var(--dark-green); color:#fff; padding:26px 20px 22px; }
+  header.top .inner{max-width:900px;margin:0 auto;}
+  header.top h1{margin:0 0 6px;font-size:22px;}
+  header.top p{margin:0;color:#cfe3d4;font-size:13.5px;max-width:640px;}
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    padding:12px 16px; margin:20px 0 24px; font-size:12.5px; color:var(--muted);
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700;
+    padding:3px 9px; border-radius:999px; letter-spacing:.2px;
+  }
+  .badge.default{background:var(--grey-bg);color:var(--grey-text); border:1px solid #d6dcda;}
+  .badge.fill{background:var(--amber-bg); color:var(--amber-text); border:1px solid var(--amber-line);}
+  .badge.gen{background:var(--pale-green); color:var(--dark-green); border:1px solid #bfe3c4;}
+
+  .advtoggle{ margin-left:auto; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); font-weight:600; }
+  .switch{position:relative; width:38px; height:21px; flex:none;}
+  .switch input{opacity:0;width:0;height:0;}
+  .slider-el{position:absolute;inset:0;background:#cbd5c9;border-radius:999px;cursor:pointer;transition:.15s;}
+  .slider-el:before{content:"";position:absolute;height:15px;width:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
+  input:checked + .slider-el{background:var(--mid-green);}
+  input:checked + .slider-el:before{transform:translateX(17px);}
+
+  .step{ background:var(--card); border:1px solid var(--line); border-radius:12px; margin-bottom:18px; overflow:hidden; }
+  .step-head{ display:flex; align-items:center; gap:10px; background:linear-gradient(180deg,#fff,#fbfcfb); border-bottom:1px solid var(--line); padding:14px 18px; }
+  .step-num{ width:26px;height:26px;border-radius:50%;background:var(--dark-green);color:#fff; display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex:none; }
+  .step-head h2{margin:0;font-size:15.5px;}
+  .step-head .hint{margin-left:auto;font-size:11.5px;color:var(--muted);}
+  .step-body{padding:16px 18px 18px;}
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  .flabel{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; margin-bottom:6px; }
+  .fdesc{font-size:11.5px;color:var(--muted);margin:2px 0 6px;}
+
+  select, input[type=text], input[type=number], input[type=date]{
+    width:100%; padding:8px 10px; border:1px solid #cbd5d1; border-radius:7px;
+    font-size:13.5px; background:#fff; color:var(--ink);
+  }
+  select:focus, input:focus{outline:2px solid var(--mid-green); outline-offset:1px;}
+  .fill-input{background:#fffdf6; border-color:var(--amber-line);}
+
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .row3{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:12px;}
+  .row4{display:grid; grid-template-columns:1.4fr .9fr 1fr 1fr auto; gap:10px; align-items:end;}
+  @media (max-width:620px){ .row2,.row3,.row4{grid-template-columns:1fr;} }
+
+  .card-line{ border:1px solid var(--line); border-radius:9px; padding:12px 14px; margin-bottom:10px; background:#fafbfa; position:relative; }
+  .card-line .rm{ position:absolute; top:8px; right:8px; background:none; border:none; color:var(--red); font-size:12px; cursor:pointer; font-weight:600; }
+
+  .btn{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; border:1px solid var(--mid-green); cursor:pointer; background:#fff; color:var(--mid-green); }
+  .btn:hover{background:var(--pale-green);}
+  .btn.primary{ background:var(--dark-green); color:#fff; border-color:var(--dark-green); font-size:15px; padding:13px 22px; }
+  .btn.primary:hover{background:#163a20;}
+  .btn.primary:disabled{background:#9ab3a1;border-color:#9ab3a1;cursor:not-allowed;}
+  .btn.small{font-size:12px;padding:5px 10px;}
+
+  .toggle-yn{display:flex; gap:8px;}
+  .toggle-yn button{ flex:1; padding:8px; border-radius:7px; border:1px solid #cbd5d1; background:#fff; font-size:13px; cursor:pointer; font-weight:600;color:var(--ink); }
+  .toggle-yn button.active{background:var(--dark-green); color:#fff; border-color:var(--dark-green);}
+
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{ padding:8px 12px; border-radius:8px; border:1.5px solid #cbd5d1; font-size:12.5px; cursor:pointer; background:#fff; font-weight:600; color:var(--ink); }
+  .chip.active{border-color:var(--mid-green); background:var(--pale-green); color:var(--dark-green);}
+
+  .slider-pair{display:flex; align-items:center; gap:12px;}
+  .slider-pair input[type=range]{flex:1; accent-color:var(--mid-green);}
+  .slider-vals{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:4px;}
+
+  .month-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:8px;}
+  .month-grid .m{text-align:center;}
+  .month-grid label{display:block; font-size:11px; color:var(--muted); margin-bottom:3px;}
+  .month-grid select{padding:5px 4px; font-size:11.5px;}
+  #seasonBlock{display:none; margin-top:10px; border-top:1px dashed var(--line); padding-top:12px;}
+
+  .advanced-section{display:none;}
+  .advanced-section.show{display:block;}
+  .adv-flag{ display:inline-block; font-size:10.5px; font-weight:700; color:#8a5a00; background:#FFF4E0; border:1px solid var(--amber-line); border-radius:5px; padding:1px 6px; margin-left:6px; }
+
+  .detail-toggle{ background:none;border:none;color:var(--mid-green);font-size:12px;font-weight:700;cursor:pointer; padding:0; margin-top:6px; }
+  .detail-fields{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
+  .detail-fields.show{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+
+  .footer-cta{ text-align:center; padding:26px 10px 10px; }
+  .footer-cta p{font-size:12.5px; color:var(--muted); max-width:520px; margin:12px auto 0;}
+
+  .sector-note{ background:var(--pale-green); border:1px solid #bfe3c4; color:var(--dark-green); border-radius:8px; padding:8px 12px; font-size:12px; margin-top:8px; }
+
+  .error-box{ background:#fdecec; border:1px solid #f3b4b4; color:var(--red); border-radius:8px; padding:10px 14px; font-size:12.5px; margin:0 0 16px; white-space:pre-line; display:none; }
+  .error-box.show{display:block;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <h1>Créer mon Business Plan</h1>
+    <p>Ne remplissez que ce qui concerne VOTRE projet. Tout le reste est déjà pré-rempli avec une valeur usuelle — modifiez-la seulement si nécessaire.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="legend">
+    <span class="badge default">● Pré-rempli</span>
+    <span style="font-size:12px;">valeur par défaut déjà en place, à ajuster seulement si besoin</span>
+    <span class="badge fill">● À compléter</span>
+    <span style="font-size:12px;">propre à votre projet, personne d'autre ne peut la deviner</span>
+    <span class="badge gen">● Généré par l'IA</span>
+    <span style="font-size:12px;">arrive au Lot 4 — pour l'instant un texte par défaut est envoyé</span>
+    <div class="advtoggle">
+      Mode avancé
+      <label class="switch">
+        <input type="checkbox" id="advToggle" onchange="toggleAdvanced()">
+        <span class="slider-el"></span>
+      </label>
+    </div>
+  </div>
+
+  <div id="errorBox" class="error-box"></div>
+
+  <!-- STEP 1 : SECTEUR & OFFRE -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <h2>Votre activité</h2>
+      <span class="hint">2 champs à décider, le reste s'ajuste tout seul</span>
+    </div>
+    <div class="step-body">
+
+      <div class="field">
+        <div class="flabel">Secteur d'activité <span class="badge fill">À compléter</span></div>
+        <select id="secteur" class="fill-input">
+          <option>Agroalimentaire / transformation</option>
+          <option>Commerce / distribution</option>
+          <option>Services</option>
+          <option>Artisanat / production manuelle</option>
+          <option>BTP / construction</option>
+          <option>Technologie / digital</option>
+          <option>Agriculture / élevage</option>
+          <option>Autre</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Nom du projet <span class="badge default">Pré-rempli</span></div>
+        <input type="text" id="nomProjet" value="Mon Projet" />
+        <div class="fdesc">Sert uniquement au nom du fichier téléchargé — aucune cellule du classeur n'y correspond.</div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Vos produits / services <span class="badge fill">À compléter</span></div>
+        <div class="fdesc">Ajoutez une ligne par produit ou service (12 maximum).</div>
+        <div id="produitsList"></div>
+        <button type="button" class="btn small" onclick="addProduit()">+ Ajouter un produit / service</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 2 : CROISSANCE -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <h2>Croissance attendue</h2>
+      <span class="hint">1 choix, tout le reste en découle</span>
+    </div>
+    <div class="step-body">
+
+      <div class="field">
+        <div class="flabel">Rythme de croissance visé <span class="badge fill">À compléter</span></div>
+        <div class="fdesc">Un profil suffit — pas besoin de connaître un pourcentage exact.</div>
+        <div class="chips" id="croissanceChips">
+          <div class="chip" data-a2="0.10" data-a3="0.08">Prudente (+10%/an)</div>
+          <div class="chip active" data-a2="0.20" data-a3="0.15">Modérée (+20%/an)</div>
+          <div class="chip" data-a2="0.30" data-a3="0.25">Soutenue (+30%/an)</div>
+          <div class="chip" data-custom="1">Personnalisé…</div>
+        </div>
+        <div class="row2" id="croissanceCustom" style="display:none; margin-top:10px;">
+          <div><label style="font-size:11px;color:var(--muted);">Taux annuel 2</label><input type="number" id="croissanceA2Custom" step="0.01" value="0.20"></div>
+          <div><label style="font-size:11px;color:var(--muted);">Taux annuel 3</label><input type="number" id="croissanceA3Custom" step="0.01" value="0.15"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="flabel">Votre activité est-elle saisonnière ? <span class="badge fill">À compléter</span></div>
+        <div class="toggle-yn" style="max-width:220px;">
+          <button type="button" class="active" onclick="setSeason(false,this)">Non</button>
+          <button type="button" onclick="setSeason(true,this)">Oui</button>
+        </div>
+        <div id="seasonBlock">
+          <div class="fdesc">Pour chaque mois, indiquez juste le niveau.</div>
+          <div class="month-grid" id="monthGrid"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STEP 3 : CHARGES FIXES -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">3</div>
+      <h2>Charges fixes mensuelles</h2>
+      <span class="hint">Les postes usuels sont déjà listés — remplissez juste les montants qui vous concernent</span>
+    </div>
+    <div class="step-body">
+      <div class="row3" style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">
+        <div>POSTE</div><div>MONTANT / MOIS (FCFA)</div><div></div>
+      </div>
+      <div id="chargesList"></div>
+      <div style="margin-top:14px;"><button type="button" class="btn small" onclick="addCharge()">+ Ajouter un autre poste de charge</button></div>
+
+      <div class="field advanced-section" id="advCharges" style="margin-top:16px;">
+        <div class="flabel">Évolution des charges fixes <span class="badge default">Pré-rempli</span></div>
+        <div class="row2">
+          <div><label style="font-size:11px;color:var(--muted);">Année 2</label><input type="number" id="chargesEvolA2" step="0.01" value="0.05"></div>
+          <div><label style="font-size:11px;color:var(--muted);">Année 3</label><input type="number" id="chargesEvolA3" step="0.01" value="0.10"></div>
+        </div>
+        <div class="fdesc">Taux unique appliqué à la masse totale des charges fixes (le modèle ne différencie plus par poste — voir README).</div>
+      </div>
+      <div class="fdesc" style="margin-top:8px;" id="chargesEvolNote">Évolution annuelle des charges : <b>+5%/an puis +10%/an</b> appliqué automatiquement. <span class="adv-flag">Réglable en mode avancé</span></div>
+    </div>
+  </div>
+
+  <!-- STEP 4 : INVESTISSEMENT -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">4</div>
+      <h2>Investissement de départ</h2>
+      <span class="hint">Laissez vide si vous n'investissez rien au démarrage</span>
+    </div>
+    <div class="step-body">
+      <div id="investissementsList"></div>
+      <button type="button" class="btn small" onclick="addInvestissement()">+ Ajouter un investissement</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 : FINANCEMENT & BFR -->
+  <div class="step">
+    <div class="step-head">
+      <div class="step-num">5</div>
+      <h2>Financement & délais de paiement</h2>
+      <span class="hint">Tout est pré-réglé sur des valeurs courantes — ajustez si besoin</span>
+    </div>
+    <div class="step-body">
+
+      <div class="field">
+        <div class="flabel">Répartition du financement <span class="badge default">Pré-rempli</span></div>
+        <div class="slider-pair">
+          <input type="range" id="partFP" min="0" max="100" value="35" oninput="updateFinancementLabel()">
+        </div>
+        <div class="slider-vals"><span id="fpLabel">Fonds propres : 35%</span><span id="empruntLabel">Emprunt bancaire : 65%</span></div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Taux d'intérêt annuel <span class="badge default">Pré-rempli</span></div>
+          <select id="tauxInteret">
+            <option value="0.06">6%</option>
+            <option value="0.075">7,5%</option>
+            <option value="0.09" selected>9% (moyenne PME régionale)</option>
+            <option value="0.10">10%</option>
+            <option value="0.12">12%</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="flabel">Durée de remboursement <span class="badge default">Pré-rempli</span></div>
+          <select id="dureeRemb">
+            <option value="24">24 mois</option>
+            <option value="36">36 mois</option>
+            <option value="48" selected>48 mois</option>
+            <option value="60">60 mois</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Délai de paiement clients <span class="badge default">Pré-rempli</span></div>
+          <select id="delaiClients">
+            <option value="15">15 jours</option>
+            <option value="30" selected>30 jours</option>
+            <option value="45">45 jours</option>
+            <option value="60">60 jours</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="flabel">Délai de paiement fournisseurs <span class="badge default">Pré-rempli</span></div>
+          <select id="delaiFournisseurs">
+            <option value="30">30 jours</option>
+            <option value="45" selected>45 jours</option>
+            <option value="60">60 jours</option>
+            <option value="90">90 jours</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADVANCED SECTION -->
+  <div class="step advanced-section" id="advBlock">
+    <div class="step-head" style="background:#fbf7ee;">
+      <div class="step-num" style="background:#8a5a00;">✦</div>
+      <h2>Mode avancé <span class="adv-flag">optionnel</span></h2>
+      <span class="hint">Rarement utile — tout a déjà une valeur raisonnable</span>
+    </div>
+    <div class="step-body">
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Pays / devise <span class="badge default">Pré-rempli</span></div>
+          <select id="paysDevise">
+            <option selected>Côte d'Ivoire / FCFA</option>
+            <option>Sénégal / FCFA</option>
+            <option>Cameroun / FCFA</option>
+            <option>France / EUR</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="flabel">Forme juridique <span class="badge default">Pré-rempli</span></div>
+          <select id="formeJuridique">
+            <option selected>SARL</option>
+            <option>Entreprise individuelle</option>
+            <option>SA</option>
+            <option>Coopérative</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Durée du Business Plan</div>
+          <input type="text" value="3 ans (fixe dans ce modele)" disabled style="background:#f1f3f2;color:var(--muted);">
+        </div>
+        <div class="field">
+          <div class="flabel">Date de démarrage <span class="badge default">Pré-rempli</span></div>
+          <input type="date" id="dateDemarrage">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <div class="flabel">Taux d'Impôt sur les Sociétés <span class="badge default">Pré-rempli</span></div>
+          <input type="number" id="tauxIS" step="0.01" value="0.25">
+        </div>
+        <div class="field">
+          <div class="flabel">Capacité maximale mensuelle (optionnel)</div>
+          <input type="number" id="capaciteMax" placeholder="Laisser vide = pas de plafond">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-cta">
+    <button type="button" id="submitBtn" class="btn primary" onclick="submitForm()">Générer mon Business Plan →</button>
+    <p id="statusMsg">Le fichier Excel complet (11 feuilles, formules vivantes) sera téléchargé directement — l'aperçu par feuille arrive au Lot 3.</p>
+  </div>
+
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+let produitCount = 0;
+let chargeCount = 0;
+let investCount = 0;
+
+const MONTH_LABELS = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sept","Oct","Nov","Déc"];
+const SEASON_LEVEL_COEF = { "Faible": 0.7, "Normal": 1.0, "Fort": 1.2, "Pic": 1.35 };
+const DEFAULT_CHARGES = [
+  "Salaires & charges sociales", "Loyer", "Transport / logistique",
+  "Marketing / communication", "Énergie / eau", "Maintenance",
+  "Frais administratifs", "Assurances",
+];
+
+function toggleAdvanced(){
+  var on = document.getElementById('advToggle').checked;
+  document.querySelectorAll('.advanced-section').forEach(function(el){
+    el.classList.toggle('show', on);
+  });
+}
+
+function addProduit(nom, prix, volume, cout){
+  produitCount++;
+  var id = 'produit_' + produitCount;
+  var div = document.createElement('div');
+  div.className = 'card-line';
+  div.dataset.produitId = id;
+  div.innerHTML = `
+    <button type="button" class="rm" onclick="this.closest('.card-line').remove()">✕ retirer</button>
+    <div class="row3">
+      <div><label style="font-size:11px;color:var(--muted);">Nom du produit/service</label>
+        <input type="text" class="fill-input p-nom" placeholder="Ex. Jus Ananas / Passion 33cl" value="${nom||''}"></div>
+      <div><label style="font-size:11px;color:var(--muted);">Unité de vente</label>
+        <select class="p-unite">
+          <option selected>unites/mois</option><option>Kg/mois</option><option>heures/mois</option>
+          <option>prestations/mois</option><option>abonnements/mois</option>
+        </select>
+      </div>
+      <div><label style="font-size:11px;color:var(--muted);">Prix de vente unitaire (FCFA)</label>
+        <input type="number" class="fill-input p-prix" placeholder="0" value="${prix||''}"></div>
+    </div>
+    <div class="row2" style="margin-top:10px;">
+      <div><label style="font-size:11px;color:var(--muted);">Volume de vente initial / mois</label>
+        <input type="number" class="fill-input p-volume" placeholder="0" value="${volume||''}"></div>
+      <div><label style="font-size:11px;color:var(--muted);">Coût variable total par unité (FCFA)</label>
+        <input type="number" class="fill-input p-cout" placeholder="0" value="${cout||''}"></div>
+    </div>
+    <button type="button" class="detail-toggle" onclick="toggleDetail(this)">+ Détailler ce coût (matière première / emballage / production)</button>
+    <div class="detail-fields">
+      <div><label style="font-size:11px;color:var(--muted);">Matière première</label><input type="number" class="p-mp" placeholder="0"></div>
+      <div><label style="font-size:11px;color:var(--muted);">Emballage</label><input type="number" class="p-emb" placeholder="0"></div>
+      <div><label style="font-size:11px;color:var(--muted);">Production</label><input type="number" class="p-prod" placeholder="0"></div>
+    </div>
+  `;
+  document.getElementById('produitsList').appendChild(div);
+}
+
+function toggleDetail(btn){
+  var box = btn.nextElementSibling;
+  var showing = box.classList.toggle('show');
+  btn.textContent = showing ? "– Réduire le détail des coûts" : "+ Détailler ce coût (matière première / emballage / production)";
+  var card = btn.closest('.card-line');
+  card.querySelector('.p-cout').disabled = showing;
+}
+
+function addCharge(nom, montant){
+  chargeCount++;
+  var div = document.createElement('div');
+  div.className = 'row3';
+  div.style.marginTop = '8px';
+  div.innerHTML = `
+    <input type="text" class="c-nom" style="padding-top:8px;border:none;background:transparent;font-size:13px;" value="${nom||''}" ${nom ? 'readonly' : ''}>
+    <input type="number" class="fill-input c-montant" placeholder="0" value="${montant||''}">
+    <button type="button" class="rm" style="position:static;" onclick="this.closest('.row3').remove()">✕</button>
+  `;
+  document.getElementById('chargesList').appendChild(div);
+}
+
+function addInvestissement(nom, montant, duree){
+  investCount++;
+  var div = document.createElement('div');
+  div.className = 'card-line';
+  div.innerHTML = `
+    <button type="button" class="rm" onclick="this.closest('.card-line').remove()">✕ retirer</button>
+    <div class="row3">
+      <div><label style="font-size:11px;color:var(--muted);">Poste d'investissement</label>
+        <input type="text" class="fill-input i-nom" placeholder="Ex. Équipement de production" value="${nom||''}"></div>
+      <div><label style="font-size:11px;color:var(--muted);">Montant HT (FCFA)</label>
+        <input type="number" class="fill-input i-montant" placeholder="0" value="${montant||''}"></div>
+      <div><label style="font-size:11px;color:var(--muted);">Durée d'amortissement (ans)</label>
+        <input type="number" class="i-duree" value="${duree||5}"></div>
+    </div>
+  `;
+  document.getElementById('investissementsList').appendChild(div);
+}
+
+function setSeason(on, btn){
+  document.getElementById('seasonBlock').style.display = on ? 'block' : 'none';
+  var parent = btn.parentElement;
+  parent.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
+function updateFinancementLabel(){
+  var fp = parseInt(document.getElementById('partFP').value, 10);
+  document.getElementById('fpLabel').textContent = 'Fonds propres : ' + fp + '%';
+  document.getElementById('empruntLabel').textContent = 'Emprunt bancaire : ' + (100 - fp) + '%';
+}
+
+function initMonthGrid(){
+  var grid = document.getElementById('monthGrid');
+  MONTH_LABELS.forEach(function(label, i){
+    var def = (i === 10) ? 'Fort' : (i === 11) ? 'Pic' : 'Normal';
+    var div = document.createElement('div');
+    div.className = 'm';
+    div.innerHTML = `<label>${label}</label>
+      <select class="month-select">
+        <option ${def==='Faible'?'selected':''}>Faible</option>
+        <option ${def==='Normal'?'selected':''}>Normal</option>
+        <option ${def==='Fort'?'selected':''}>Fort</option>
+        <option ${def==='Pic'?'selected':''}>Pic</option>
+      </select>`;
+    grid.appendChild(div);
+  });
+}
+
+document.getElementById('croissanceChips').addEventListener('click', function(e){
+  var chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('#croissanceChips .chip').forEach(function(c){ c.classList.remove('active'); });
+  chip.classList.add('active');
+  document.getElementById('croissanceCustom').style.display = chip.dataset.custom ? 'grid' : 'none';
+});
+
+function getCroissance(){
+  var active = document.querySelector('#croissanceChips .chip.active');
+  if(active.dataset.custom){
+    return {
+      a2: parseFloat(document.getElementById('croissanceA2Custom').value) || 0,
+      a3: parseFloat(document.getElementById('croissanceA3Custom').value) || 0,
+    };
+  }
+  return { a2: parseFloat(active.dataset.a2), a3: parseFloat(active.dataset.a3) };
+}
+
+function collectPayload(){
+  var produits = [];
+  document.querySelectorAll('#produitsList .card-line').forEach(function(card){
+    var nom = card.querySelector('.p-nom').value.trim();
+    if(!nom) return;
+    var prix = parseFloat(card.querySelector('.p-prix').value) || 0;
+    var volume = parseFloat(card.querySelector('.p-volume').value) || 0;
+    var unite = card.querySelector('.p-unite').value;
+    var detailShown = card.querySelector('.detail-fields').classList.contains('show');
+    var produit = { nom: nom, prix_unitaire: prix, volume_initial_mensuel: volume, unite_volume: unite };
+    if(detailShown){
+      produit.cout_matiere_premiere = parseFloat(card.querySelector('.p-mp').value) || 0;
+      produit.cout_emballage = parseFloat(card.querySelector('.p-emb').value) || 0;
+      produit.cout_production = parseFloat(card.querySelector('.p-prod').value) || 0;
+    } else {
+      produit.cout_variable_unitaire = parseFloat(card.querySelector('.p-cout').value) || 0;
+    }
+    produits.push(produit);
+  });
+
+  var charges = [];
+  document.querySelectorAll('#chargesList .row3').forEach(function(row){
+    var nom = row.querySelector('.c-nom').value.trim();
+    var montant = parseFloat(row.querySelector('.c-montant').value) || 0;
+    if(nom && montant > 0) charges.push({ nom: nom, montant_mensuel: montant });
+  });
+
+  var investissements = [];
+  document.querySelectorAll('#investissementsList .card-line').forEach(function(card){
+    var nom = card.querySelector('.i-nom').value.trim();
+    var montant = parseFloat(card.querySelector('.i-montant').value) || 0;
+    if(nom && montant > 0){
+      investissements.push({
+        nom: nom, montant: montant,
+        duree_amortissement_ans: parseFloat(card.querySelector('.i-duree').value) || 5,
+      });
+    }
+  });
+
+  var saisonnaliteOn = document.getElementById('seasonBlock').style.display === 'block';
+  var saisonnalite = null;
+  if(saisonnaliteOn){
+    saisonnalite = Array.from(document.querySelectorAll('.month-select')).map(function(sel){
+      return SEASON_LEVEL_COEF[sel.value];
+    });
+  }
+
+  var croissance = getCroissance();
+  var fp = parseInt(document.getElementById('partFP').value, 10) / 100;
+
+  return {
+    secteur_activite: document.getElementById('secteur').value,
+    nom_projet: document.getElementById('nomProjet').value,
+    forme_juridique: document.getElementById('formeJuridique').value,
+    pays_devise: document.getElementById('paysDevise').value,
+    date_demarrage: document.getElementById('dateDemarrage').value,
+    produits: produits,
+    charges_fixes: charges,
+    investissements: investissements,
+    taux_croissance_a2: croissance.a2,
+    taux_croissance_a3: croissance.a3,
+    saisonnalite: saisonnalite,
+    taux_evolution_charges_a2: parseFloat(document.getElementById('chargesEvolA2').value) || 0.05,
+    taux_evolution_charges_a3: parseFloat(document.getElementById('chargesEvolA3').value) || 0.10,
+    part_fonds_propres: fp,
+    part_emprunt: 1 - fp,
+    taux_interet_annuel: parseFloat(document.getElementById('tauxInteret').value),
+    duree_remboursement_mois: parseInt(document.getElementById('dureeRemb').value, 10),
+    taux_is: parseFloat(document.getElementById('tauxIS').value) || 0.25,
+    delai_clients_jours: parseInt(document.getElementById('delaiClients').value, 10),
+    delai_fournisseurs_jours: parseInt(document.getElementById('delaiFournisseurs').value, 10),
+    capacite_max_mensuelle: document.getElementById('capaciteMax').value ? parseFloat(document.getElementById('capaciteMax').value) : null,
+  };
+}
+
+function showError(msg){
+  var box = document.getElementById('errorBox');
+  box.textContent = msg;
+  box.classList.add('show');
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function clearError(){
+  var box = document.getElementById('errorBox');
+  box.classList.remove('show');
+  box.textContent = '';
+}
+
+async function submitForm(){
+  clearError();
+  var payload = collectPayload();
+
+  if(payload.produits.length === 0){
+    showError("Ajoutez au moins un produit ou service (nom, prix et volume).");
+    return;
+  }
+  if(payload.charges_fixes.length === 0){
+    showError("Ajoutez au moins une charge fixe avec un montant.");
+    return;
+  }
+
+  var btn = document.getElementById('submitBtn');
+  var status = document.getElementById('statusMsg');
+  btn.disabled = true;
+  status.textContent = "Génération en cours (calcul + recalcul du classeur)…";
+
+  try{
+    var resp = await fetch(API_BASE + '/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if(!resp.ok){
+      var detail = 'Erreur inconnue';
+      try{ detail = (await resp.json()).detail; }catch(e){}
+      showError(detail);
+      status.textContent = "La génération a échoué — voir le message ci-dessus.";
+      return;
+    }
+    var blob = await resp.blob();
+    var disposition = resp.headers.get('Content-Disposition') || '';
+    var filename = 'business_plan.xlsx';
+    var starMatch = disposition.match(/filename\*=utf-8''([^;]+)/i);
+    var plainMatch = disposition.match(/filename="?([^";]+)"?/i);
+    if(starMatch) filename = decodeURIComponent(starMatch[1]);
+    else if(plainMatch) filename = plainMatch[1];
+
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    window.URL.revokeObjectURL(url);
+
+    status.textContent = "Fichier généré et téléchargé : " + filename;
+  } catch(e){
+    showError("Impossible de contacter le serveur (" + e.message + "). Verifiez que le backend est lance.");
+    status.textContent = "";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// --- Initialisation ---
+addProduit();
+DEFAULT_CHARGES.forEach(function(nom){ addCharge(nom, ''); });
+addInvestissement();
+initMonthGrid();
+</script>
+
+</body>
+</html>

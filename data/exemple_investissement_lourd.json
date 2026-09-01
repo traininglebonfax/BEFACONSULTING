@@ -1,0 +1,24 @@
+{
+  "secteur_activite": "Industrie - Transformation metallique",
+  "produits": [
+    { "nom": "Portail metallique standard", "prix_unitaire": 150000, "volume_initial_mensuel": 20, "cout_variable_unitaire": 70000 },
+    { "nom": "Fenetre metallique sur mesure", "prix_unitaire": 45000, "volume_initial_mensuel": 60, "cout_variable_unitaire": 20000 }
+  ],
+  "charges_fixes": [
+    { "nom": "Salaires atelier", "montant_mensuel": 1800000 },
+    { "nom": "Loyer atelier industriel", "montant_mensuel": 500000 },
+    { "nom": "Electricite industrielle", "montant_mensuel": 700000 }
+  ],
+  "investissements": [
+    { "nom": "Presse plieuse CNC", "montant": 45000000, "duree_amortissement_ans": 10 },
+    { "nom": "Poste de soudure industriel", "montant": 18000000, "duree_amortissement_ans": 8 },
+    { "nom": "Ligne de decoupe laser", "montant": 60000000, "duree_amortissement_ans": 10 },
+    { "nom": "Amenagement atelier", "montant": 12000000, "duree_amortissement_ans": 15 },
+    { "nom": "Vehicule utilitaire de livraison", "montant": 9000000, "duree_amortissement_ans": 5 }
+  ],
+  "taux_croissance_a2": 0.12,
+  "taux_croissance_a3": 0.10,
+  "part_fonds_propres": 0.20,
+  "part_emprunt": 0.80,
+  "duree_remboursement_mois": 60
+}

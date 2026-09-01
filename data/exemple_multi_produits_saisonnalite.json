@@ -1,0 +1,30 @@
+{
+  "secteur_activite": "Agroalimentaire - Boissons naturelles",
+  "produits": [
+    { "nom": "Jus Ananas / Passion (33cl)", "prix_unitaire": 350, "volume_initial_mensuel": 25000, "cout_variable_unitaire": 190 },
+    { "nom": "Jus Bissap (33cl)", "prix_unitaire": 250, "volume_initial_mensuel": 35000, "cout_variable_unitaire": 140 },
+    { "nom": "Jus Gingembre (33cl)", "prix_unitaire": 300, "volume_initial_mensuel": 30000, "cout_variable_unitaire": 160 },
+    { "nom": "Jus Mangue (33cl)", "prix_unitaire": 320, "volume_initial_mensuel": 18000, "cout_variable_unitaire": 175 },
+    { "nom": "Jus Cocktail Tropical (33cl)", "prix_unitaire": 380, "volume_initial_mensuel": 12000, "cout_variable_unitaire": 200 },
+    { "nom": "Eau aromatisee Citron (50cl)", "prix_unitaire": 200, "volume_initial_mensuel": 40000, "cout_variable_unitaire": 90 }
+  ],
+  "charges_fixes": [
+    { "nom": "Salaires fixes et charges sociales", "montant_mensuel": 2500000 },
+    { "nom": "Loyer usine et bureaux", "montant_mensuel": 800000 },
+    { "nom": "Transport et logistique", "montant_mensuel": 1200000 },
+    { "nom": "Marketing et promotion", "montant_mensuel": 1000000 },
+    { "nom": "Electricite, eau et fluides", "montant_mensuel": 600000 },
+    { "nom": "Maintenance equipements", "montant_mensuel": 400000 },
+    { "nom": "Frais administratifs", "montant_mensuel": 350000 },
+    { "nom": "Assurances professionnelles", "montant_mensuel": 200000 }
+  ],
+  "investissements": [
+    { "nom": "Equipements de production", "montant": 22000000, "duree_amortissement_ans": 7 },
+    { "nom": "Machines de conditionnement", "montant": 15000000, "duree_amortissement_ans": 5 },
+    { "nom": "Chambres froides", "montant": 10000000, "duree_amortissement_ans": 5 },
+    { "nom": "Vehicules de livraison", "montant": 8500000, "duree_amortissement_ans": 4 }
+  ],
+  "taux_croissance_a2": 0.35,
+  "taux_croissance_a3": 0.25,
+  "saisonnalite": [0.7, 0.8, 0.9, 1.0, 1.0, 1.05, 0.95, 0.9, 1.05, 1.1, 1.2, 1.35]
+}
