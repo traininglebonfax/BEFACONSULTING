@@ -262,6 +262,11 @@ def health():
     return {"status": "ok"}
 
 
+# Phase 2 : Business Plan au format BEFA Consulting
+from backend.befa_api import router as befa_router  # noqa: E402
+
+app.include_router(befa_router)
+
 
 if os.path.isdir(WEB_DIR):
     app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")

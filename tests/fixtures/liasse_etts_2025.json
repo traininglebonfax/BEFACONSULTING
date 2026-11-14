@@ -1,0 +1,675 @@
+{
+ "entreprise": {
+  "raison_sociale": "ENTREPRISE DE TRANSIT TRANSPORT ET SERVICES",
+  "sigle": "ETTS",
+  "ncc": "2041469 E",
+  "adresse": "01 BP 334 ABIDJAN 01",
+  "exercice_clos_le": "31/12/2025",
+  "duree_mois": 12
+ },
+ "actif": [
+  {
+   "ref": "AD",
+   "libelle": "IMMOBILISATIONS INCORPORELLES",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AE",
+   "libelle": "Frais de développement et de prospection",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AF",
+   "libelle": "Brevets, licences, logiciels, et droits similaires",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AG",
+   "libelle": "Fonds commercial et droit au bail",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AH",
+   "libelle": "Autres immobilisations incorporelles",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AI",
+   "libelle": "IMMOBILISATIONS CORPORELLES",
+   "brut": 12600000,
+   "amortissements": 12600000,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AJ",
+   "libelle": "Terrains",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AK",
+   "libelle": "Bâtiments",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AL",
+   "libelle": "Aménagements, agencements et installations",
+   "brut": 1500000,
+   "amortissements": 1500000,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AM",
+   "libelle": "Matériel, mobilier et actifs biologiques",
+   "brut": 5100000,
+   "amortissements": 5100000,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AN",
+   "libelle": "Matériel de transport",
+   "brut": 6000000,
+   "amortissements": 6000000,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AP",
+   "libelle": "Avances et acomptes versés sur immobilisations",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AQ",
+   "libelle": "IMMOBILISATIONS FINANCIERES",
+   "brut": 50000000,
+   "amortissements": null,
+   "net": 50000000,
+   "net_n1": 20000000
+  },
+  {
+   "ref": "AR",
+   "libelle": "Titres de participation",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "AS",
+   "libelle": "Autres immobilisations financières",
+   "brut": 50000000,
+   "amortissements": null,
+   "net": 50000000,
+   "net_n1": 20000000
+  },
+  {
+   "ref": "AZ",
+   "libelle": "TOTAL ACTIF IMMOBILISE",
+   "brut": 62600000,
+   "amortissements": 12600000,
+   "net": 50000000,
+   "net_n1": 20000000
+  },
+  {
+   "ref": "BA",
+   "libelle": "ACTIF CIRCULANT HAO",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BB",
+   "libelle": "STOCKS ET ENCOURS",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BG",
+   "libelle": "CREANCES ET EMPLOIS ASSIMILES",
+   "brut": 154937907,
+   "amortissements": null,
+   "net": 154937907,
+   "net_n1": 182780407
+  },
+  {
+   "ref": "BH",
+   "libelle": "Fournisseurs avances versées",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BI",
+   "libelle": "Clients",
+   "brut": 154937907,
+   "amortissements": null,
+   "net": 154937907,
+   "net_n1": 182780407
+  },
+  {
+   "ref": "BJ",
+   "libelle": "Autres créances",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BK",
+   "libelle": "TOTAL ACTIF CIRCULANT",
+   "brut": 154937907,
+   "amortissements": null,
+   "net": 154937907,
+   "net_n1": 182780407
+  },
+  {
+   "ref": "BQ",
+   "libelle": "Titres de placement",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BR",
+   "libelle": "Valeurs à encaisser",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BS",
+   "libelle": "Banques, chèques postaux, caisse et assimilés",
+   "brut": -1144423,
+   "amortissements": null,
+   "net": -1144423,
+   "net_n1": 37428216
+  },
+  {
+   "ref": "BT",
+   "libelle": "TOTAL TRESORERIE-ACTIF",
+   "brut": -1144423,
+   "amortissements": null,
+   "net": -1144423,
+   "net_n1": 37428216
+  },
+  {
+   "ref": "BU",
+   "libelle": "Ecart de conversion-Actif",
+   "brut": null,
+   "amortissements": null,
+   "net": null,
+   "net_n1": null
+  },
+  {
+   "ref": "BZ",
+   "libelle": "TOTAL GENERAL",
+   "brut": 216393484,
+   "amortissements": 12600000,
+   "net": 203793484,
+   "net_n1": 240208623
+  }
+ ],
+ "passif": [
+  {
+   "ref": "CA",
+   "libelle": "Capital",
+   "n": 25000000,
+   "n1": 25000000
+  },
+  {
+   "ref": "CB",
+   "libelle": "Apporteurs capital non appelé (-)",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CD",
+   "libelle": "Primes liées au capital social",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CE",
+   "libelle": "Ecarts de réévaluation",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CF",
+   "libelle": "Réserves indisponibles",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CG",
+   "libelle": "Réserves libres",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CH",
+   "libelle": "Report à nouveau (+ ou -)",
+   "n": 77393944,
+   "n1": 104542948
+  },
+  {
+   "ref": "CJ",
+   "libelle": "Résultat net de l'exercice (bénéfice + ou perte -)",
+   "n": 43955675,
+   "n1": 56123410
+  },
+  {
+   "ref": "CL",
+   "libelle": "Subventions d'investissement",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CM",
+   "libelle": "Provisions réglementées",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "CP",
+   "libelle": "TOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILEES",
+   "n": 146349619,
+   "n1": 185666358
+  },
+  {
+   "ref": "DA",
+   "libelle": "Emprunts et dettes financières diverses",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DB",
+   "libelle": "Dettes de location acquisition",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DC",
+   "libelle": "Provisions pour risques et charges",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DD",
+   "libelle": "TOTAL DETTES FINANCIERES ET RESSOURCES ASSIMILEES",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DF",
+   "libelle": "TOTAL RESSOURCES STABLES",
+   "n": 146349619,
+   "n1": 185666358
+  },
+  {
+   "ref": "DH",
+   "libelle": "Dettes circulantes HAO",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DI",
+   "libelle": "Clients, avances reçues",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DJ",
+   "libelle": "Fournisseurs d'exploitation",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DK",
+   "libelle": "Dettes fiscales et sociales",
+   "n": 27443865,
+   "n1": 54542265
+  },
+  {
+   "ref": "DM",
+   "libelle": "Autres dettes",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DN",
+   "libelle": "Provisions pour risques à court terme",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DP",
+   "libelle": "TOTAL PASSIF CIRCULANT",
+   "n": 27443865,
+   "n1": 54542265
+  },
+  {
+   "ref": "DQ",
+   "libelle": "Banques, crédits d'escompte",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DR",
+   "libelle": "Banques, établissements financiers et crédits de trésorerie",
+   "n": 30000000,
+   "n1": null
+  },
+  {
+   "ref": "DT",
+   "libelle": "TOTAL TRESORERIE-PASSIF",
+   "n": 30000000,
+   "n1": null
+  },
+  {
+   "ref": "DV",
+   "libelle": "Ecart de conversion-Passif",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "DZ",
+   "libelle": "TOTAL GENERAL",
+   "n": 203793484,
+   "n1": 240208623
+  }
+ ],
+ "compte_resultat": [
+  {
+   "ref": "TA",
+   "libelle": "Ventes de marchandises",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RA",
+   "libelle": "Achats de marchandises",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RB",
+   "libelle": "Variation de stocks de marchandises",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "XA",
+   "libelle": "MARGE COMMERCIALE",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TB",
+   "libelle": "Ventes de produits fabriqués",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TC",
+   "libelle": "Travaux, services vendus",
+   "n": 540675290,
+   "n1": 690344120
+  },
+  {
+   "ref": "TD",
+   "libelle": "Produits accessoires",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "XB",
+   "libelle": "CHIFFRE D'AFFAIRES",
+   "n": 540675290,
+   "n1": 690344120
+  },
+  {
+   "ref": "TE",
+   "libelle": "Production stockée (ou déstockage)",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TF",
+   "libelle": "Production immobilisée",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TG",
+   "libelle": "Subventions d'exploitation",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TH",
+   "libelle": "Autres produits",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TI",
+   "libelle": "Transferts de charges d'exploitation",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RC",
+   "libelle": "Achats de matières premières et fournitures liées",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RD",
+   "libelle": "Variation de stocks de matières premières et fournitures liées",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RE",
+   "libelle": "Autres achats",
+   "n": -11983300,
+   "n1": -14527315
+  },
+  {
+   "ref": "RF",
+   "libelle": "Variation de stocks d'autres approvisionnements",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RG",
+   "libelle": "Transports",
+   "n": -3505600,
+   "n1": -4205400
+  },
+  {
+   "ref": "RH",
+   "libelle": "Services extérieurs",
+   "n": -451668295,
+   "n1": -568988505
+  },
+  {
+   "ref": "RI",
+   "libelle": "Impôts et taxes",
+   "n": -1029840,
+   "n1": -1029840
+  },
+  {
+   "ref": "RJ",
+   "libelle": "Autres charges",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "XC",
+   "libelle": "VALEUR AJOUTEE",
+   "n": 72488255,
+   "n1": 101593060
+  },
+  {
+   "ref": "RK",
+   "libelle": "Charges de personnel",
+   "n": -12865000,
+   "n1": -12865000
+  },
+  {
+   "ref": "XD",
+   "libelle": "EXCEDENT BRUT D'EXPLOITATION",
+   "n": 59623255,
+   "n1": 88728060
+  },
+  {
+   "ref": "TJ",
+   "libelle": "Reprises d'amortissements, provisions et dépréciations",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RL",
+   "libelle": "Dotations aux amortissements, aux provisions et dépréciations",
+   "n": null,
+   "n1": -12600000
+  },
+  {
+   "ref": "XE",
+   "libelle": "RESULTAT D'EXPLOITATION",
+   "n": 59623255,
+   "n1": 76128060
+  },
+  {
+   "ref": "TK",
+   "libelle": "Revenus financiers et assimilés",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TL",
+   "libelle": "Reprises de provisions et dépréciations financières",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TM",
+   "libelle": "Transferts de charges financières",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RM",
+   "libelle": "Frais financiers et charges assimilées",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RN",
+   "libelle": "Dotations aux provisions et aux dépréciations financières",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "XF",
+   "libelle": "RESULTAT FINANCIER",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "XG",
+   "libelle": "RESULTAT DES ACTIVITES ORDINAIRES",
+   "n": 59623255,
+   "n1": 76128060
+  },
+  {
+   "ref": "TN",
+   "libelle": "Produits des cessions d'immobilisations",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "TO",
+   "libelle": "Autres Produits HAO",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RO",
+   "libelle": "Valeurs comptables des cessions d'immobilisations",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RP",
+   "libelle": "Autres Charges HAO",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "XH",
+   "libelle": "RESULTAT HORS ACTIVITES ORDINAIRES",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RQ",
+   "libelle": "Participation des travailleurs",
+   "n": null,
+   "n1": null
+  },
+  {
+   "ref": "RS",
+   "libelle": "Impôts sur le résultat",
+   "n": -15667580,
+   "n1": -20004650
+  },
+  {
+   "ref": "XI",
+   "libelle": "RESULTAT NET",
+   "n": 43955675,
+   "n1": 56123410
+  }
+ ],
+ "remarques": "Document lisible. Trésorerie-actif (BS/BT) imprimée en négatif (-1 144 423), recopiée telle quelle. Le total capitaux propres imprimé (CP) ne correspond pas à la somme arithmétique des lignes CA+CH+CJ ; valeurs recopiées sans correction.",
+ "pages": [
+  1,
+  9,
+  10,
+  11
+ ]
+}
