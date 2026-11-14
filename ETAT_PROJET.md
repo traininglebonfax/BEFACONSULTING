@@ -1,5 +1,99 @@
 # Etat du projet — a reprendre ici
 
+## PHASE 2 (nov. 2026) : personnalisation BEFA Consulting — Business Plan PDF
+
+Objectif valide avec l'utilisateur le 14/11/2026 : produire un Business Plan **PDF** au format du cabinet BEFA
+(modeles dans `Model Business Plan/`), a partir d'un formulaire + fichiers importes. Deux variantes :
+- `nouveau_projet` (modele COREAL FOOD, bilan d'ouverture) ;
+- `entreprise_existante` (modele dossier de credit O'IVOIRE, analyse bilan N / N-1).
+
+Decisions actees :
+- Google Trends : le personnel BEFA exporte lui-meme les CSV depuis trends.google.com (multiTimeline, geoMap,
+  relatedQueries) et les depose sur la page. Pas de pytrends / SerpApi. Facultatif.
+- Chiffres : toujours calcules par le moteur Python `befa/` (jamais par l'IA). L'IA redige le texte et peut
+  chercher des statistiques sectorielles sur le web **avec sources fiables citees** (accord utilisateur).
+- Charte : logo repris du site (`assets/branding/logo_befa.png`), couleurs du logo : orange `#F27F24`, gris `#9F999B`.
+  Pied de page des modeles : "Réalisé par Bureau d'Etudes Financières et d'Assistance-Consulting — Page N".
+- PDF : document Word genere puis converti par LibreOffice (deja requis) -> le consultant recoit aussi le .docx.
+
+Lots :
+1. **Moteur financier BEFA — FAIT** (`befa/prets.py`, `befa/projection.py`, `befa/historique.py`,
+   `tests/test_befa_finance.py`, 16 tests). Reproduit au franc pres le compte d'exploitation 6 ans, le ratio
+   de couverture et le plan de financement (annee 0/1) de COREAL, et l'analyse bilan + CR 2025/2024 d'O'IVOIRE.
+   Echeanciers : annuites constantes, differe total (interets capitalises) / partiel, in fine (spot), periodicites.
+   Constat : les modeles BEFA contiennent des incoherences (VA 2027-2029 d'O'IVOIRE fausse ; frais financiers
+   COREAL non reproductibles depuis les conditions de pret annoncees) -> le moteur les evite par construction.
+2. **Import des liasses SYSCOHADA — FAIT** (`befa/liasse.py`, `befa/ia.py`, route `POST /api/befa/liasse`
+   dans `backend/befa_api.py`, `tests/test_befa_liasse.py`, 9 tests). pypdf repere les pages utiles (ident.,
+   bilan actif, passif, CR) -> Claude (`claude-opus-5-5`, JSON impose, repli serveur `fallbacks: "default"`)
+   recopie chaque ligne par code REF -> conversion DETERMINISTE + controles contre les totaux imprimes
+   (AZ, BK, BZ, CP, DZ, XB, XC, XD, XE, XI) ; convention de signe des charges deduite de XC.
+   Teste en reel sur ETTS 2025 et bilan d'ouverture COREAL 2024 (zero ecart, ~35 s par liasse) ; ces lectures
+   reelles sont les fixtures `tests/fixtures/liasse_*.json`. La "note_ia" (remarque libre) n'est PAS une alerte :
+   elle s'est deja trompee une fois (CP ETTS juge faux a tort). Alerte BEFA : "Autres dettes" (DM) > 20 % du
+   bilan -> suggerer un reclassement en compte courant d'associes (capitaux propres), jamais d'office.
+   uvicorn --reload se fige sous Windows/Python 3.14 (2 fois) : `--reload` retire de `lancer_local.bat` ;
+   apres une modif de code, REDEMARRER le serveur (sinon les nouvelles routes repondent 405).
+3. **Google Trends — FAIT** (`befa/trends.py`, `befa/graphiques.py`, route `POST /api/befa/trends`,
+   `tests/test_befa_trends.py`, 11 tests). Lit multiTimeline / geoMap / relatedQueries / relatedEntities,
+   FR ou EN, `,` ou `;`, UTF-8 / UTF-16 / cp1252, "<1". Calcule sans IA : tendance (1re vs derniere annee,
+   seuil +/-15 %), pente, pic, saisonnalite (>= 2 ans), variation recente, fiabilite (> 10 % de zeros =
+   faible volume). `faits()` = phrases chiffrees pour l'IA / le PDF ; `source()` et `AVERTISSEMENT` (indice
+   relatif, pas un volume). Fixture REELLE : `tests/fixtures/trends_multiTimeline_huile_de_palme.csv`
+   (export utilisateur : baisse -48 %, 14 % de zeros, pic 22/10/2023, mars/mai/fevrier forts).
+   Graphiques matplotlib : palette categorielle validee (script dataviz) #E8711A,#1F6FB2,#3A8A4A,#8E4FA6,#B8860B.
+4. **Redaction — FAIT, essai reel complet a refaire** (`befa/dossier.py`, `befa/commentaires.py`,
+   `befa/redaction.py`, route `POST /api/befa/redaction`, `tests/test_befa_redaction.py`, 13 tests).
+   - `DossierBEFA` = modele de toutes les saisies (2 variantes) ; exemple complet : `data/befa_exemple_coreal.json`.
+   - Commentaires des tableaux financiers ecrits par le PROGRAMME (`commentaires.py`, style BEFA, "16,08 milliards
+     FCFA", "en année 1" / "en 2026") : CE, financement, plan, couverture ; bilan + CR historiques (O'IVOIRE).
+   - Recherche web : outil `web_search_20250305` VOLONTAIREMENT (la variante 20260209 a filtrage dynamique ne
+     renvoie aucune citation dans le texte -> controle des sources impossible). Pas de `user_location` (CI refuse,
+     erreur 400). Fragments cites regroupes en phrases ; affirmation sans citation = ecartee ; extraits conserves.
+     Essai reel : 48 faits / 32 sources en 66 s (fixture `redaction_coreal_recherche.json`).
+   - Redaction : JSON impose (sections par cle + SWOT), effort high ; renvois [Sx] valides, inconnus retires ;
+     tout nombre absent des donnees fournies -> alerte consultant (`verifier_chiffres`, tolerance 0,6 %).
+     Fixture reelle `redaction_coreal_brut.json` (10 sections, 12 risques, SWOT) = redaction faite SANS faits
+     sources (1er essai) : zero chiffre invente detecte.
+   - Correction moteur : le capital du credit spot n'entre plus dans le service de la dette (DSCR).
+   - **A FAIRE** : credit API epuise le 14/11/2026 pendant l'essai reel -> relancer `rediger()` complet sur
+     l'exemple COREAL (recherche + redaction avec renvois [Sx]) une fois le compte recharge.
+5. **Document Word + PDF — FAIT** (`befa/document.py`, `befa/pdf.py`, routes `POST /api/befa/generer`
+   (multipart : `dossier` JSON, `redaction` JSON facultative, `fichiers_trends`) et
+   `GET /api/befa/telecharger/{job}/{pdf|docx}`, `tests/test_befa_document.py`, 5 tests).
+   - python-docx -> LibreOffice (profil temporaire isole par conversion). Structure COREAL (8 parties) /
+     O'IVOIRE (4 parties) ; page de garde + logo + contacts BEFA ; pied "Réalisé par Bureau d'Études
+     Financières et d'Assistance-Consulting — Page N" ; tableaux orange, zeros en "–" ; graphiques ;
+     renvois [Sx] -> appels de note [n] + page "Sources" ; sections IA absentes -> encart "À compléter".
+   - Sommaire en 2-3 passes (LibreOffice ne pagine pas un sommaire Word) : 1re passe avec "§§" pour
+     reperer les pages du sommaire, puis reperage des titres dans le PDF (pypdf). Teste titre par titre.
+   - Pieges regles : largeurs de colonnes = grille du tableau (`_grille`, sinon LibreOffice les ignore) ;
+     police du theme Word retiree des styles de titres (sinon Calibri au lieu d'Arial).
+   - Exemples : `python -m scripts.generer_exemple_befa` -> `sorties/` (ignore par git) ;
+     `data/befa_exemple_oivoire.json` (entreprise existante). COREAL : 20 pages en ~13 s.
+   - Dockerfile : ajout de `libreoffice-writer` (conversion Word -> PDF).
+6. **Formulaire web — FAIT** (`web/index.html` = page d'accueil ; ancien outil Excel deplace en
+   `web/excel.html`). Routes ajoutees : `GET /api/befa/exemples/{coreal|oivoire}`, `POST /api/befa/projection`
+   (apercu instantane, repond toujours 200 avec `erreurs`), montage `/assets`. `tests/test_befa_web.py` (4 tests).
+   - 8 etapes : type, entreprise, projet, documents comptables (import liasse + validation chiffres + case
+     "verifie"), Google Trends, donnees financieres (apercu recalcule a la saisie), redaction IA (lancement,
+     relecture/correction des sections et du SWOT, sources), generation PDF + Word.
+   - Etat dans localStorage (`befa_dossier_v1`, try/catch) + enregistrer/ouvrir un dossier .json (inclut la
+     redaction `_redaction` et les CSV Trends `_trends_csv`) ; les cles `_...` ne sont jamais envoyees au serveur.
+   - TESTE DANS CHROME (14/11/2026) : exemple COREAL, saisie -> apercu recalcule, generation 16 pages depuis le
+     navigateur, relecture redaction persistee, message clair "credit API epuise", zero erreur console.
+   - Non teste en reel faute de credit API : import de liasse et redaction depuis l'interface (routes testees).
+
+## Reste a faire (phase 2)
+- Recharger le credit API puis : essai reel complet de la redaction (recherche + [Sx]) et de l'import de liasse
+  depuis l'interface.
+- Faire valider par BEFA la mise en page du PDF (exemples dans `sorties/` via `python -m scripts.generer_exemple_befa`).
+- Commit des phases 1 (modifs non commitees anterieures) et 2 : a faire sur demande de l'utilisateur.
+
+---
+
+## PHASE 1 (archive) — classeur Excel
+
 Derniere session de la phase 1 : Lots 1, 2, 3 et 4 termines et testes (Lot 4 teste avec un vrai appel API Anthropic).
 
 ## Fait et valide
