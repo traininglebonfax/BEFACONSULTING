@@ -140,3 +140,85 @@ def rediger_dossier(dossier: dict, recherche_web: bool = True):
     except IaError as e:
         raise HTTPException(status_code=502, detail=str(e))
     return red.vers_json()
+
+
+# ----------------------------------------------------------------------
+# Lot 5 : generation du Business Plan (Word + PDF)
+# ----------------------------------------------------------------------
+import json as _json  # noqa: E402
+import os as _os  # noqa: E402
+import tempfile as _tempfile  # noqa: E402
+import uuid as _uuid  # noqa: E402
+
+from fastapi import Form  # noqa: E402
+from fastapi.responses import FileResponse  # noqa: E402
+
+_DOCUMENTS: dict = {}
+_SORTIES = _os.path.join(_tempfile.gettempdir(), "befa_business_plans")
+
+
+def _nom_fichier(texte: str) -> str:
+    sur = "".join(c if c.isalnum() or c in "-_" else "_" for c in texte).strip("_")
+    return sur[:60] or "business_plan"
+
+
+@router.post("/generer")
+async def generer_business_plan(
+    dossier: str = Form(...),
+    redaction: Optional[str] = Form(None),
+    fichiers_trends: List[UploadFile] = File(default=[]),
+):
+    """Genere le Business Plan BEFA. `dossier` et `redaction` (facultative, issue de /redaction et
+    eventuellement corrigee) sont des chaines JSON ; les CSV Google Trends sont facultatifs."""
+    from befa.document import generer
+    from befa.dossier import DossierBEFA
+    from befa.pdf import PdfError
+    from befa.projection import FinanceInputError
+    from befa.redaction import redaction_depuis_json
+
+    try:
+        d = DossierBEFA.from_dict(_json.loads(dossier))
+        red = redaction_depuis_json(_json.loads(redaction)) if redaction else None
+    except (ValueError, KeyError, TypeError) as e:
+        raise HTTPException(status_code=422, detail=f"Données mal formées : {e}")
+    erreurs = d.validate()
+    if erreurs:
+        raise HTTPException(status_code=422, detail="\n".join(erreurs))
+    donnees_trends = None
+    lus = [(f.filename or "trends.csv", await f.read()) for f in fichiers_trends if f.filename]
+    if lus:
+        try:
+            donnees_trends = trends.lire_fichiers(lus)
+        except trends.TrendsError as e:
+            raise HTTPException(status_code=422, detail=str(e))
+        if not d.trends_faits:
+            d.trends_faits, d.trends_source = trends.faits(donnees_trends), trends.source(donnees_trends)
+
+    job = _uuid.uuid4().hex
+    prefixe = "Business_Plan" if d.variante == "nouveau_projet" else "Dossier_credit"
+    nom = f"{prefixe}_{_nom_fichier(d.entreprise.sigle or d.entreprise.raison_sociale)}"
+    try:
+        res = generer(d, red, donnees_trends, _os.path.join(_SORTIES, job), nom)
+    except FinanceInputError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except PdfError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    _DOCUMENTS[job] = {"pdf": res.pdf, "docx": res.docx}
+    return {
+        "job_id": job,
+        "pages": res.pages,
+        "sommaire_complet": res.sommaire_complet,
+        "alertes": res.alertes + (red.alertes if red else []),
+        "pdf": f"/api/befa/telecharger/{job}/pdf",
+        "docx": f"/api/befa/telecharger/{job}/docx",
+    }
+
+
+@router.get("/telecharger/{job_id}/{format_}")
+def telecharger(job_id: str, format_: str):
+    doc = _DOCUMENTS.get(job_id)
+    if not doc or format_ not in ("pdf", "docx") or not _os.path.exists(doc[format_]):
+        raise HTTPException(status_code=404, detail="Document introuvable ou expiré : relancez la génération.")
+    types = {"pdf": "application/pdf",
+             "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+    return FileResponse(doc[format_], media_type=types[format_], filename=_os.path.basename(doc[format_]))

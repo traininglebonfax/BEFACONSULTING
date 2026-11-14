@@ -12,5 +12,6 @@ payload*.json
 headers*.txt
 dash_full.txt
 .env
+sorties/
 # Documents clients d origine (confidentiels, non versionnes)
 Model Business Plan/

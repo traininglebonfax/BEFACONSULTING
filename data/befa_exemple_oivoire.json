@@ -1,0 +1,87 @@
+{
+  "variante": "entreprise_existante",
+  "annee_document": "2026",
+  "entreprise": {
+    "raison_sociale": "O'IVOIRE SARL",
+    "sigle": "O'IVOIRE",
+    "forme_juridique": "Société à Responsabilité Limitée",
+    "capital": 10000000,
+    "date_creation": "10/05/2023",
+    "rccm": "CI-DAL-01-2025-M-00962",
+    "ville": "Daloa",
+    "siege": "Daloa, quartier Gbeuliville",
+    "objet_social": ["Forage hydraulique", "Construction de châteaux d'eau", "Production et commercialisation d'eau minérale", "Bâtiment et travaux publics"],
+    "activite": "Prestations de forage hydraulique, construction de châteaux d'eau, bâtiment et travaux publics pour des particuliers, des entreprises et des collectivités."
+  },
+  "actionnaires": [{"nom": "OUEDRAOGO SALIFOU", "montant": 10000000, "nationalite": "", "nature": "Personne physique"}],
+  "dirigeants": [{"nom": "OUEDRAOGO SALIFOU", "fonction": "Gérant", "profil": "Gestion quotidienne de l'entreprise"}],
+  "produits": [
+    {"nom": "Forage hydraulique", "description": "Études, foration et équipement de forages pour particuliers, exploitations agricoles et collectivités."},
+    {"nom": "Châteaux d'eau", "description": "Construction d'ouvrages de stockage et de distribution d'eau."},
+    {"nom": "Bâtiment et travaux publics", "description": "Travaux de génie civil associés aux ouvrages hydrauliques."}
+  ],
+  "clients": [
+    {"nom": "Conseil régional du Haut-Sassandra", "mode_paiement": "Virement", "delai": "30 jours après facture"},
+    {"nom": "Conseil régional de la Marahoué", "mode_paiement": "Virement", "delai": "30 jours après facture"},
+    {"nom": "Particuliers, mutuelles et chefferies", "mode_paiement": "Espèces ou chèque", "delai": "Au comptant"}
+  ],
+  "fournisseurs": [
+    {"nom": "Grossistes en matériaux", "mode_paiement": "Espèces / chèque", "delai": "Comptant", "localisation": "Daloa"}
+  ],
+  "pool_bancaire": "L'entreprise est en relation avec deux établissements, sans facilité de crédit. Elle s'engage à domicilier l'ensemble de ses flux dans les livres de l'établissement qui consentira le financement.",
+  "projet": {
+    "intitule": "Acquisition d'une foreuse industrielle",
+    "secteur": "Génie civil, hydraulique et distribution d'eau",
+    "localisation": "Daloa, Haut-Sassandra (zone Ouest)",
+    "zone_marche": "Côte d'Ivoire, zones Ouest et Nord",
+    "objet": "Acquisition, importation et mise en service d'une foreuse de haute performance.",
+    "contexte_besoin": "L'entreprise loue aujourd'hui des foreuses pour 1 à 2,5 millions FCFA par forage ; la location représente plus de 30 % de ses charges d'exploitation.",
+    "objectifs": ["Réduire les coûts de location", "Améliorer la réactivité et la maîtrise du planning", "Augmenter les marges et la capacité d'exécution"],
+    "mots_cles_marche": ["Forage"]
+  },
+  "projection": {
+    "annees": ["2026", "2027", "2028", "2029"],
+    "produits": [{"libelle": "Travaux, services rendus", "montants": [617768960, 679545856, 781477737, 859625511]}],
+    "charges": [
+      {"libelle": "Autres achats", "rubrique": "autres_achats", "montants": [70559780, 77615760, 89258125, 98183935]},
+      {"libelle": "Transport", "rubrique": "transport", "montants": [500000, 575000, 635000, 700000]},
+      {"libelle": "Services extérieurs", "rubrique": "services_exterieurs", "montants": [247107585, 271818345, 312591095, 343850210]},
+      {"libelle": "Impôts et taxes", "rubrique": "impots_taxes", "montants": [5964430, 6560875, 7216965, 7938670]},
+      {"libelle": "Salaires", "rubrique": "salaires", "montants": 28803600}
+    ],
+    "investissements": [
+      {"libelle": "Prix d'achat de la foreuse (160 000 USD)", "montant": 89021027, "annee": 1, "duree_amortissement_ans": 7},
+      {"libelle": "Droits et taxes de douane", "montant": 33454067, "annee": 1, "duree_amortissement_ans": 7},
+      {"libelle": "Frais logistiques, assurance et mise en service", "montant": 51921380, "annee": 1, "duree_amortissement_ans": 7}
+    ],
+    "prets": [
+      {"libelle": "CMT foreuse", "montant": 122475094, "taux_annuel": 0.105, "duree_mois": 36, "type": "CMT", "differe_partiel_mois": 4, "periodicite": "mensuelle", "annee_deblocage": 1, "garantie": "Dépôt à terme de 35 millions FCFA", "objet": "Acquisition d'une foreuse neuve"}
+    ],
+    "apports": [{"libelle": "Apport du promoteur", "montant": 51921380, "annee": 1}],
+    "dotations_existantes": [9069520, 9069520, 3000000, 0],
+    "augmentation_bfr_force": [18886758, 14479848, 23891750, 18317008],
+    "taux_is": 0.25
+  },
+  "bilan_n": {"exercice": "2025",
+    "immobilisations": [
+      {"libelle": "Frais d'établissement", "brut": 250000, "amortissements": 125000},
+      {"libelle": "Installation & Agencement", "brut": 7589600, "amortissements": 3794800},
+      {"libelle": "Matériels", "brut": 22508000, "amortissements": 11254000},
+      {"libelle": "Matériel de transport", "brut": 15000000, "amortissements": 7500000},
+      {"libelle": "Autres Immobilisations", "brut": 500000, "amortissements": 0}],
+    "stocks": 73800190, "avances_fournisseurs": 32500000, "creances_clients": 20230500, "tresorerie_actif": 15393200,
+    "capital": 10000000, "reserves_report": 19966545, "resultat_net": 127512175, "compte_courant_associes": 7000000,
+    "fournisseurs": 549770, "dettes_fiscales": 38600, "dettes_sociales": 30600},
+  "bilan_n1": {"exercice": "2024",
+    "immobilisations": [
+      {"libelle": "Frais d'établissement", "brut": 250000, "amortissements": 75000},
+      {"libelle": "Installation & Agencement", "brut": 7589600, "amortissements": 2276880},
+      {"libelle": "Matériels", "brut": 22508000, "amortissements": 6752400},
+      {"libelle": "Matériel de transport", "brut": 15000000, "amortissements": 4500000},
+      {"libelle": "Autres Immobilisations", "brut": 500000, "amortissements": 0}],
+    "stocks": 50300190, "avances_fournisseurs": 15000000, "creances_clients": 19480500, "tresorerie_actif": 10300600,
+    "capital": 10000000, "reserves_report": 7570525, "resultat_net": 101500815, "compte_courant_associes": 7000000,
+    "fournisseurs": 1079770, "dettes_fiscales": 126500, "dettes_sociales": 47000},
+  "cr_n": {"exercice": "2025", "chiffre_affaires": 537190400, "autres_achats": 61356330, "transport": 445900, "services_exterieurs": 260187155, "impots_taxes": 5186460, "salaires": 28803600, "dotations": 9069520, "impot_sur_benefice": 44629260},
+  "cr_n1": {"exercice": "2024", "chiffre_affaires": 427608300, "autres_achats": 40813640, "transport": 422400, "services_exterieurs": 206823770, "impots_taxes": 4649270, "salaires": 28803600, "dotations": 9069520, "impot_sur_benefice": 35525285}
+}
