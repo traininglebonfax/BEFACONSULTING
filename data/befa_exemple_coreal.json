@@ -1,0 +1,106 @@
+{
+  "variante": "nouveau_projet",
+  "annee_document": "2025",
+  "entreprise": {
+    "raison_sociale": "COREAL FOOD INDUSTRY SA",
+    "sigle": "COREAL FOOD",
+    "forme_juridique": "Société Anonyme avec Conseil d'Administration",
+    "capital": 10000000,
+    "date_creation": "23/04/2024",
+    "rccm": "CI-GAG-01-2024-B14-00002",
+    "ncc": "2403796 F",
+    "regime_fiscal": "Régime normal d'imposition (RNI)",
+    "centre_impots": "Centre des impôts de Gagnoa",
+    "adresse": "BP 122 CIDEX 03 Abidjan",
+    "siege": "Village de Lelebrekoua, S/P Gagnoa, Région du Gôh",
+    "ville": "Gagnoa",
+    "telephone": "",
+    "email": "",
+    "objet_social": [
+      "Achat et vente de régimes de palme et de graines de palmiste",
+      "Production, conditionnement, transformation et commercialisation d'huile de palme brute et de ses dérivés",
+      "Import / export d'huile de palme brute et de ses dérivés",
+      "Raffinage d'huile de palme brute et commercialisation d'huile de table"
+    ],
+    "activite": "Activité agro-industrielle de transformation de régimes de palme en huile de palme brute et produits dérivés (amandes de palmiste, tourteaux)."
+  },
+  "actionnaires": [
+    {"nom": "DIEGA Didier Dominique Wahi", "montant": 2600000, "nationalite": "Ivoirienne", "nature": "Personne physique"},
+    {"nom": "COREAL CI", "montant": 2600000, "nationalite": "Ivoirienne", "nature": "Personne morale"},
+    {"nom": "TANOH Gnamien Innocent", "montant": 2400000, "nationalite": "Ivoirienne", "nature": "Personne physique"},
+    {"nom": "LOUO Paul-Emmanuel", "montant": 2400000, "nationalite": "Ivoirienne", "nature": "Personne physique"}
+  ],
+  "dirigeants": [
+    {"nom": "DIEGA Didier Dominique Wahi", "fonction": "Président", "profil": "Promoteur, dirigeant de COREAL CI (construction métallique)"}
+  ],
+  "gouvernance": "Assemblée générale et Conseil d'administration ; comité de direction (mensuel) ; comité de production restreint (hebdomadaire) ; comité de production élargi (quotidien).",
+  "produits": [
+    {"nom": "Huile de palme brute", "description": "Produit principal, issu de la pulpe du fruit ; prix encadré par l'interprofession."},
+    {"nom": "Amande de palmiste", "description": "Sous-produit valorisé, issu du noyau du fruit."}
+  ],
+  "clients": [],
+  "fournisseurs": [
+    {"nom": "Planteurs villageois de la région du Gôh", "mode_paiement": "Comptant", "delai": "À la livraison", "localisation": "Gagnoa"}
+  ],
+  "pool_bancaire": "La société sollicite l'accompagnement d'un établissement bancaire de la place pour le financement de l'usine et de sa campagne d'approvisionnement.",
+  "projet": {
+    "intitule": "Huilerie industrielle de 30 tonnes / heure",
+    "secteur": "Transformation agro-industrielle - huile de palme",
+    "localisation": "Lelebrekoua, sous-préfecture de Gagnoa, Région du Gôh",
+    "zone_marche": "Côte d'Ivoire et sous-région CEDEAO",
+    "objet": "Création d'une huilerie industrielle d'une capacité de traitement de 30 tonnes de régimes de palme par heure.",
+    "description": "Usine de transformation des régimes issus des plantations villageoises de la région, montée en puissance de 20 t/h (année 1) à 30 t/h (année 3). Site rural hors zone industrielle, autorisations obtenues.",
+    "objectifs": [
+      "Augmenter la production d'huile de palme en optimisant le rendement de transformation",
+      "Répondre à la demande croissante en huile de palme brute sur les marchés national et sous-régional",
+      "Créer des emplois directs et indirects pour la population locale",
+      "Valoriser la filière palmier à huile et réduire la dépendance aux importations d'huiles végétales",
+      "Assurer une production durable avec une gestion des déchets de transformation"
+    ],
+    "contexte_besoin": "",
+    "phases": [
+      "Conception : études techniques, étude d'impact environnemental et social (ANDE), agrément CEPICI",
+      "Construction : terrassement, génie civil, charpente métallique, installation du process importé de Malaisie",
+      "Tests et mise en service : montée en charge à 20 t/h la première année"
+    ],
+    "emplois_directs": 150,
+    "emplois_indirects": null,
+    "concurrents": [],
+    "mots_cles_marche": ["Huile de palme"],
+    "notes_consultant": "Les prix d'achat des régimes et de vente de l'huile sont encadrés par l'interprofession ; la société s'engage à respecter les prix homologués."
+  },
+  "projection": {
+    "annees": ["Année 1", "Année 2", "Année 3", "Année 4", "Année 5", "Année 6"],
+    "produits": [
+      {"libelle": "Huile de palme brute", "quantites": [25168, 31460, 37752, 37752, 37752, 37752], "prix_unitaire": 620000, "unite": "t"},
+      {"libelle": "Amande de palmiste", "quantites": [4004, 5005, 6006, 6006, 6006, 6006], "prix_unitaire": 120000, "unite": "t"}
+    ],
+    "charges": [
+      {"libelle": "Régimes de palme (achat, déchargement, transport)", "rubrique": "achats_matieres", "quantites": [114400, 143000, 171600, 171600, 171600, 171600], "cout_unitaire": 95000},
+      {"libelle": "Autres achats", "rubrique": "autres_achats", "pct_ca": 0.05},
+      {"libelle": "Transport", "rubrique": "transport", "montants": [723808800, 904761000, 904761000, 904761000, 904761000, 904761000]},
+      {"libelle": "Services extérieurs", "rubrique": "services_exterieurs", "montants": [691639520, 864549400, 864549400, 864549400, 864549400, 864549400]},
+      {"libelle": "Impôts et taxes", "rubrique": "impots_taxes", "montants": [14315333, 17894167, 17894167, 17894171, 17894171, 17894175]},
+      {"libelle": "Salaires", "rubrique": "salaires", "pct_ca": 0.05}
+    ],
+    "investissements": [
+      {"libelle": "Acquisition, foncier et autorisations", "montant": 129000000, "annee": 0, "rubrique": "Acquisition, foncier et autorisations"},
+      {"libelle": "Études techniques et travaux préparatoires du site", "montant": 175000000, "annee": 0, "duree_amortissement_ans": 10},
+      {"libelle": "Charpente métallique du bâtiment industriel", "montant": 163047165, "annee": 0, "duree_amortissement_ans": 20},
+      {"libelle": "Travaux de génie civil (30 t/h)", "montant": 407629528, "annee": 0, "duree_amortissement_ans": 20},
+      {"libelle": "Fournitures, ingénierie et installation du process industriel", "montant": 933366106, "annee": 0, "duree_amortissement_ans": 10},
+      {"libelle": "Matériels industriels importés (Malaisie)", "montant": 401253000, "annee": 0, "duree_amortissement_ans": 10},
+      {"libelle": "Logistique et matériels industriels locaux", "montant": 362706461, "annee": 0, "duree_amortissement_ans": 10},
+      {"libelle": "Matériel de transport et manutention", "montant": 128700000, "annee": 1, "duree_amortissement_ans": 5}
+    ],
+    "prets": [
+      {"libelle": "CMT usine", "montant": 1742248634, "taux_annuel": 0.09, "duree_mois": 84, "type": "CMT", "differe_total_mois": 12, "differe_partiel_mois": 6, "periodicite": "trimestrielle", "annee_deblocage": 0, "objet": "Construction de l'huilerie, équipements et infrastructures"},
+      {"libelle": "Crédit-bail matériel roulant", "montant": 128700000, "taux_annuel": 0.09, "duree_mois": 48, "type": "CREDIT_BAIL", "periodicite": "mensuelle", "annee_deblocage": 1, "objet": "Véhicules et matériel roulant"},
+      {"libelle": "Spot campagne", "montant": 1040000000, "taux_annuel": 0.09, "duree_mois": 72, "type": "SPOT", "in_fine": true, "periodicite": "mensuelle", "annee_deblocage": 1, "objet": "Achat des régimes de palme (renouvelable chaque année)"}
+    ],
+    "apports": [
+      {"libelle": "Fonds propres (apport du promoteur)", "montant": 829753626, "annee": 0}
+    ],
+    "taux_is": 0.25
+  }
+}

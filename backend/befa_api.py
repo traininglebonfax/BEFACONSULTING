@@ -112,3 +112,31 @@ async def importer_trends(fichiers: List[UploadFile] = File(...)):
         "avertissement": trends.AVERTISSEMENT,
         "graphiques": images,
     }
+
+
+@router.post("/redaction")
+def rediger_dossier(dossier: dict, recherche_web: bool = True):
+    """Lot 4 : redaction IA des sections narratives + commentaires financiers (programme) + controles.
+
+    Corps : le dossier BEFA au format JSON (cf. befa.dossier.DossierBEFA, ex. data/befa_exemple_coreal.json).
+    """
+    from befa.dossier import DossierBEFA
+    from befa.projection import FinanceInputError, calculer_projection
+    from befa.redaction import rediger
+
+    try:
+        d = DossierBEFA.from_dict(dossier)
+    except (KeyError, TypeError) as e:
+        raise HTTPException(status_code=422, detail=f"Dossier incomplet ou mal formé : {e}")
+    erreurs = d.validate()
+    if erreurs:
+        raise HTTPException(status_code=422, detail="\n".join(erreurs))
+    try:
+        proj = calculer_projection(d.projection) if d.projection else None
+    except FinanceInputError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    try:
+        red = rediger(d, proj, recherche_web=recherche_web)
+    except IaError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+    return red.vers_json()
