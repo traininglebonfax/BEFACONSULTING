@@ -15,6 +15,7 @@ Deux appels a Claude, puis des controles deterministes :
 """
 import json
 import re
+from urllib.parse import unquote
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -89,6 +90,8 @@ OUTIL_RECHERCHE = {
     "type": "web_search_20250305",
     "name": "web_search",
     "max_uses": 10,
+    # sources ecartees a la demande de l'utilisateur (sous-domaines inclus : fr.wikipedia.org...)
+    "blocked_domains": ["wikipedia.org"],
     # pas de "user_location" : le code pays CI n'est pas accepte par l'outil (erreur 400) ;
     # la consigne de recherche precise la Cote d'Ivoire.
 }
@@ -168,6 +171,14 @@ def _attr(obj, nom, defaut=None):
     return getattr(obj, nom, defaut)
 
 
+def _titre_lisible(titre: str) -> str:
+    """Certains titres arrivent encodes comme une URL ("G%C3%B4h") : on les decode."""
+    titre = titre.strip()
+    if re.search(r"%[0-9A-Fa-f]{2}", titre):
+        titre = unquote(titre).replace("_", " ")
+    return titre
+
+
 def analyser_reponse_recherche(blocs: List[Any]) -> Recherche:
     """Extrait les faits cites et les sources d'une reponse avec recherche web."""
     res = Recherche()
@@ -197,7 +208,7 @@ def analyser_reponse_recherche(blocs: List[Any]) -> Recherche:
         for c in citations:
             url = _attr(c, "url")
             if url not in par_url:
-                par_url[url] = Source(f"S{len(par_url) + 1}", (_attr(c, "title") or url).strip(), url)
+                par_url[url] = Source(f"S{len(par_url) + 1}", _titre_lisible(_attr(c, "title") or url), url)
                 res.sources.append(par_url[url])
             if par_url[url].id not in ids:
                 ids.append(par_url[url].id)

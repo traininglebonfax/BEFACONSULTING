@@ -84,9 +84,19 @@ Lots :
      navigateur, relecture redaction persistee, message clair "credit API epuise", zero erreur console.
    - Non teste en reel faute de credit API : import de liasse et redaction depuis l'interface (routes testees).
 
+## Essai reel complet — FAIT (14/11/2026, apres rechargement du credit API)
+Par les routes du serveur (memes appels que le formulaire), exemple COREAL, resultats dans `sorties/essai_reel/` :
+liasse ETTS 40 s (controles OK) ; Trends 0,3 s ; redaction 206 s (10 sections, 46 faits sources, 33 sources
+citees, 92 renvois [Sx], ZERO chiffre non verifie) ; generation 11 s (23 pages, sommaire complet).
+Renvois controles par echantillon : chiffres du texte = faits de la source citee. Correction : titres de
+sources encodes en URL ("G%C3%B4h") decodes.
+
+Wikipedia exclue de la recherche web a la demande de l'utilisateur (`blocked_domains` de `OUTIL_RECHERCHE`,
+befa/redaction.py ; verifie par un appel reel : parametre accepte par la variante 20250305). Pour exclure
+d'autres sites, ajouter leur domaine a cette liste.
+
 ## Reste a faire (phase 2)
-- Recharger le credit API puis : essai reel complet de la redaction (recherche + [Sx]) et de l'import de liasse
-  depuis l'interface.
+- Faire valider par BEFA la mise en page du PDF (`sorties/essai_reel/Business_Plan_COREAL_essai_reel.pdf`).
 - Faire valider par BEFA la mise en page du PDF (exemples dans `sorties/` via `python -m scripts.generer_exemple_befa`).
 - Commit des phases 1 (modifs non commitees anterieures) et 2 : a faire sur demande de l'utilisateur.
 

@@ -226,3 +226,13 @@ def test_route_redaction(monkeypatch):
     corps["entreprise"]["raison_sociale"] = ""
     r = TestClient(app).post("/api/befa/redaction", json=corps)
     assert r.status_code == 422 and "raison sociale" in r.json()["detail"]
+
+
+def test_titre_de_source_encode():
+    assert R._titre_lisible("G%C3%B4h") == "Gôh"
+    assert R._titre_lisible("  Rapport 100 % fiable ") == "Rapport 100 % fiable"
+
+
+def test_wikipedia_exclue_de_la_recherche():
+    assert R.OUTIL_RECHERCHE["type"] == "web_search_20250305"  # variante qui renvoie des citations
+    assert "wikipedia.org" in R.OUTIL_RECHERCHE["blocked_domains"]
