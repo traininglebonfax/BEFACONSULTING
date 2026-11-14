@@ -11,8 +11,14 @@ import os
 import openpyxl
 import pytest
 
-from engine.ai_text import AiTextError, _parse_response, generate_narrative_texts
-from engine.generator import attach_ai_comments, generate_workbook
+from engine.ai_text import (
+    AiTextError,
+    _parse_cost_suggestions,
+    _parse_response,
+    generate_narrative_texts,
+    suggest_variable_costs,
+)
+from engine.generator import attach_ai_comments, attach_cost_suggestion_comments, generate_workbook
 from engine.models import ProjetInput
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,3 +92,58 @@ def test_attach_ai_comments_ne_fait_rien_si_textes_vides(tmp_path):
     ws = wb["1_HYPOTHESES"]
     assert ws["A1"].comment is None
     assert ws["A30"].comment is None
+
+
+# --- Suggestion de couts variables (role optionnel du Lot 4, cahier des charges Section2) ---
+
+def test_suggest_variable_costs_leve_erreur_sans_cle_api(monkeypatch):
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("ANTHROPIC_AUTH_TOKEN", raising=False)
+    projet = _load_projet("exemple_mono_produit.json")
+    with pytest.raises(AiTextError):
+        suggest_variable_costs(projet, [0])
+
+
+def test_suggest_variable_costs_retourne_vide_sans_index_manquant():
+    projet = _load_projet("exemple_mono_produit.json")
+    assert suggest_variable_costs(projet, []) == {}
+
+
+def test_parse_cost_suggestions_extrait_les_valeurs():
+    text = "0: 450\n1: 620 FCFA\n"
+    result = _parse_cost_suggestions(text, [0, 1])
+    assert result == {0: 450.0, 1: 620.0}
+
+
+def test_parse_cost_suggestions_ignore_les_index_non_demandes():
+    text = "0: 450\n5: 999\n"
+    result = _parse_cost_suggestions(text, [0])
+    assert result == {0: 450.0}
+
+
+def test_attach_cost_suggestion_comments_ecrit_le_commentaire_sans_toucher_a_la_valeur(tmp_path):
+    projet = _load_projet("exemple_mono_produit.json")
+    out_path = str(tmp_path / "cost_comments.xlsx")
+    generate_workbook(projet, out_path)
+
+    wb_before = openpyxl.load_workbook(out_path)
+    valeur_avant = wb_before["1_HYPOTHESES"]["B35"].value
+
+    attach_cost_suggestion_comments(out_path, {0: 450.0})
+
+    wb_after = openpyxl.load_workbook(out_path)
+    cell = wb_after["1_HYPOTHESES"]["B35"]
+    assert cell.value == valeur_avant
+    assert cell.comment is not None
+    assert "450" in cell.comment.text
+
+
+def test_attach_cost_suggestion_comments_ne_fait_rien_si_vide(tmp_path):
+    projet = _load_projet("exemple_mono_produit.json")
+    out_path = str(tmp_path / "cost_comments_vide.xlsx")
+    generate_workbook(projet, out_path)
+
+    attach_cost_suggestion_comments(out_path, {})
+
+    wb = openpyxl.load_workbook(out_path)
+    assert wb["1_HYPOTHESES"]["B35"].comment is None

@@ -9,7 +9,7 @@ Ce module ne modifie jamais le classeur - lecture seule, data_only=True.
 """
 import html as _html
 import re
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 
 import openpyxl
 from openpyxl.utils import get_column_letter
@@ -38,6 +38,23 @@ def _colorize_status_emoji(text: str) -> str:
         if emoji in text:
             text = text.replace(emoji, f'<span style="color:{color};font-weight:700">{glyph}</span>')
     return text
+
+
+# Badge distinct pour une valeur suggeree par l'IA (role optionnel du Lot 4,
+# cahier des charges Section2) - different du vert "genere par l'IA" (texte
+# narratif) : violet, pour bien signaler "valeur par defaut proposee,
+# modifiable" plutot que "contenu redige par l'IA".
+AI_SUGGESTED_BADGE_COLOR = "#6d28d9"
+AI_SUGGESTED_BADGE_BG = "#f5f3ff"
+
+
+def _ai_suggested_badge(tooltip: str) -> str:
+    return (
+        f'<span class="bp-ai-suggested" title="{_html.escape(tooltip)}" '
+        f'style="display:inline-block;margin-left:6px;padding:1px 6px;border-radius:5px;'
+        f'font-size:10.5px;font-weight:700;background:{AI_SUGGESTED_BADGE_BG};'
+        f'color:{AI_SUGGESTED_BADGE_COLOR};">✦ IA</span>'
+    )
 
 
 def _rgb_to_css(argb: Optional[str]) -> Optional[str]:
@@ -73,7 +90,8 @@ def _format_value(value, number_format: str) -> str:
     return _html.escape(str(value))
 
 
-def sheet_to_html(ws) -> str:
+def sheet_to_html(ws, ai_suggested_cells: Optional[Dict[str, str]] = None) -> str:
+    ai_suggested_cells = ai_suggested_cells or {}
     merges = {}  # (row, col) -> (rowspan, colspan) for top-left anchors
     covered = set()
     for rng in ws.merged_cells.ranges:
@@ -138,6 +156,9 @@ def sheet_to_html(ws) -> str:
 
             style_attr = f' style="{";".join(style_parts)}"' if style_parts else ""
             text = _colorize_status_emoji(_format_value(cell.value, cell.number_format))
+            tooltip = ai_suggested_cells.get(cell.coordinate)
+            if tooltip:
+                text += _ai_suggested_badge(tooltip)
             cells_html.append(f"<td{span_attr}{style_attr}>{text}</td>")
 
         rows_html.append(f"<tr>{''.join(cells_html)}</tr>")
@@ -230,12 +251,21 @@ def _bar_chart_svg(chart: dict) -> str:
     )
 
 
-def workbook_to_preview(xlsx_path: str) -> List[dict]:
-    """Retourne [{name, html}, ...] dans l'ordre des feuilles du classeur recalcule."""
+def workbook_to_preview(
+    xlsx_path: str, ai_suggested_cells: Optional[Dict[Tuple[str, str], str]] = None
+) -> List[dict]:
+    """Retourne [{name, html}, ...] dans l'ordre des feuilles du classeur recalcule.
+
+    `ai_suggested_cells` (optionnel) : {(nom_feuille, "B35"): "texte info-bulle", ...} -
+    ajoute un badge "Suggere IA" sur ces cellules (role optionnel du Lot 4, cf.
+    engine.ai_text.suggest_variable_costs / engine.generator.attach_cost_suggestion_comments).
+    """
+    ai_suggested_cells = ai_suggested_cells or {}
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
     result = []
     for name in wb.sheetnames:
         ws = wb[name]
         charts_html = "".join(_bar_chart_svg(c) for c in _extract_bar_charts(wb, ws))
-        result.append({"name": name, "html": charts_html + sheet_to_html(ws)})
+        sheet_cells = {coord: tip for (sheet, coord), tip in ai_suggested_cells.items() if sheet == name}
+        result.append({"name": name, "html": charts_html + sheet_to_html(ws, sheet_cells)})
     return result

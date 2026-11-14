@@ -22,8 +22,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from engine.ai_text import AiTextError, generate_narrative_texts
-from engine.generator import attach_ai_comments, generate_workbook
+from engine.ai_text import AiTextError, generate_narrative_texts, suggest_variable_costs
+from engine.generator import attach_ai_comments, attach_cost_suggestion_comments, generate_workbook
 from engine.models import ChargeFixe, Investissement, ProjetInput, ProjetInputError, Produit
 from engine.preview import workbook_to_preview
 from engine.recalc import RecalcError, recalculate_and_check
@@ -136,13 +136,38 @@ def _to_projet_input(payload: ProjetIn) -> ProjetInput:
 
 
 def _generate_and_recalc(payload: ProjetIn) -> tuple:
-    """Valide, genere, recalcule le classeur, puis genere les textes narratifs IA
-    (Lot 4) et les attache en commentaires de cellule (jamais bloquant : si l'IA
-    est indisponible, la generation du Business Plan continue sans les textes).
+    """Valide, genere, recalcule le classeur, puis appelle l'IA pour :
+    1. les textes narratifs (role principal du Lot 4) ;
+    2. les couts variables unitaires laisses vides par l'utilisateur, suggeres
+       a partir du secteur d'activite (role optionnel du Lot 4, cahier des
+       charges Section2 - "a activer avec prudence").
+    Les deux sont attaches en commentaires de cellule, jamais bloquants : si
+    l'IA est indisponible, la generation continue (avec un avertissement pour
+    les textes ; les couts manquants font alors echouer la validation avec un
+    message clair invitant a les saisir a la main).
 
-    Retourne (job_id, out_path, projet, ai_texts, ai_warning).
+    Retourne (job_id, out_path, projet, ai_texts, ai_warning, cost_suggestions).
+    `cost_suggestions` : [{"index", "nom", "valeur"}, ...].
     """
     projet = _to_projet_input(payload)
+
+    missing_cost_indices = [i for i, p in enumerate(projet.produits) if p.cout_variable_unitaire is None]
+    cost_suggestions_map = {}
+    if missing_cost_indices:
+        try:
+            cost_suggestions_map = suggest_variable_costs(projet, missing_cost_indices)
+            for index, valeur in cost_suggestions_map.items():
+                projet.produits[index].cout_variable_unitaire = valeur
+        except AiTextError as e:
+            noms = ", ".join(projet.produits[i].nom for i in missing_cost_indices)
+            raise HTTPException(
+                status_code=422,
+                detail=(
+                    f"Le cout variable unitaire de {noms} n'est pas renseigne et la "
+                    f"suggestion automatique par l'IA a echoue ({e}). Merci de le saisir "
+                    "manuellement dans le formulaire."
+                ),
+            )
 
     try:
         projet.validate()
@@ -170,26 +195,44 @@ def _generate_and_recalc(payload: ProjetIn) -> tuple:
     except AiTextError as e:
         ai_warning = str(e)
 
-    return job_id, out_path, projet, ai_texts, ai_warning
+    cost_suggestions = []
+    if cost_suggestions_map:
+        attach_cost_suggestion_comments(out_path, cost_suggestions_map)
+        cost_suggestions = [
+            {"index": i, "nom": projet.produits[i].nom, "valeur": v}
+            for i, v in sorted(cost_suggestions_map.items())
+        ]
+
+    return job_id, out_path, projet, ai_texts, ai_warning, cost_suggestions
 
 
 @app.post("/api/preview")
 def preview(payload: ProjetIn):
-    job_id, out_path, projet, ai_texts, ai_warning = _generate_and_recalc(payload)
+    job_id, out_path, projet, ai_texts, ai_warning, cost_suggestions = _generate_and_recalc(payload)
 
     filename_base = projet.nom_projet.strip() or projet.secteur_activite.strip() or "business_plan"
     safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in filename_base).strip() or "business_plan"
     _JOBS[job_id] = {"path": out_path, "filename": f"{safe_name}.xlsx"}
 
-    sheets = workbook_to_preview(out_path)
-    return {"job_id": job_id, "sheets": sheets, "ai_texts": ai_texts, "ai_warning": ai_warning}
+    ai_suggested_cells = {
+        ("1_HYPOTHESES", f"B{35 + s['index']}"): f"Cout variable suggere par l'IA pour {s['nom']} : {s['valeur']:,.0f} FCFA"
+        for s in cost_suggestions
+    }
+    sheets = workbook_to_preview(out_path, ai_suggested_cells)
+    return {
+        "job_id": job_id,
+        "sheets": sheets,
+        "ai_texts": ai_texts,
+        "ai_warning": ai_warning,
+        "cost_suggestions": cost_suggestions,
+    }
 
 
 @app.post("/api/generate")
 def generate(payload: ProjetIn):
     """Conserve pour compatibilite (Lot 2) : genere et telecharge directement,
     sans passer par l'apercu. Inclut aussi les textes IA (Lot 4) en commentaires."""
-    job_id, out_path, projet, _ai_texts, _ai_warning = _generate_and_recalc(payload)
+    job_id, out_path, projet, _ai_texts, _ai_warning, _cost_suggestions = _generate_and_recalc(payload)
 
     filename_base = projet.nom_projet.strip() or projet.secteur_activite.strip() or "business_plan"
     safe_name = "".join(c if c.isalnum() or c in " -_" else "_" for c in filename_base).strip() or "business_plan"
@@ -217,6 +260,7 @@ def download(job_id: str):
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
 
 
 if os.path.isdir(WEB_DIR):

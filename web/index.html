@@ -47,6 +47,7 @@
   .badge.default{background:var(--grey-bg);color:var(--grey-text); border:1px solid #d6dcda;}
   .badge.fill{background:var(--amber-bg); color:var(--amber-text); border:1px solid var(--amber-line);}
   .badge.gen{background:var(--pale-green); color:var(--dark-green); border:1px solid #bfe3c4;}
+  .badge.sugg{background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe;}
 
   .advtoggle{ margin-left:auto; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); font-weight:600; }
   .switch{position:relative; width:38px; height:21px; flex:none;}
@@ -164,7 +165,9 @@
     <span class="badge fill">● À compléter</span>
     <span style="font-size:12px;">propre à votre projet, personne d'autre ne peut la deviner</span>
     <span class="badge gen">● Généré par l'IA</span>
-    <span style="font-size:12px;">arrive au Lot 4 — pour l'instant un texte par défaut est envoyé</span>
+    <span style="font-size:12px;">description et justification de croissance, rédigées par l'IA</span>
+    <span class="badge sugg">● Suggéré par l'IA</span>
+    <span style="font-size:12px;">valeur par défaut proposée selon le secteur si vous laissez le champ vide — modifiable</span>
     <div class="advtoggle">
       Mode avancé
       <label class="switch">
@@ -469,7 +472,7 @@ function addProduit(nom, prix, volume, cout){
       <div><label style="font-size:11px;color:var(--muted);">Volume de vente initial / mois</label>
         <input type="number" class="fill-input p-volume" placeholder="0" value="${volume||''}"></div>
       <div><label style="font-size:11px;color:var(--muted);">Coût variable total par unité (FCFA)</label>
-        <input type="number" class="fill-input p-cout" placeholder="0" value="${cout||''}"></div>
+        <input type="number" class="fill-input p-cout" placeholder="Laisser vide = suggéré par l'IA selon le secteur" value="${cout||''}"></div>
     </div>
     <button type="button" class="detail-toggle" onclick="toggleDetail(this)">+ Détailler ce coût (matière première / emballage / production)</button>
     <div class="detail-fields">
@@ -584,7 +587,10 @@ function collectPayload(){
       produit.cout_emballage = parseFloat(card.querySelector('.p-emb').value) || 0;
       produit.cout_production = parseFloat(card.querySelector('.p-prod').value) || 0;
     } else {
-      produit.cout_variable_unitaire = parseFloat(card.querySelector('.p-cout').value) || 0;
+      var coutVal = card.querySelector('.p-cout').value;
+      // Laisse vide -> non envoye (null cote backend) -> l'IA suggere une valeur
+      // selon le secteur (role optionnel du Lot 4, cahier des charges §2).
+      if(coutVal !== ''){ produit.cout_variable_unitaire = parseFloat(coutVal) || 0; }
     }
     produits.push(produit);
   });
@@ -673,24 +679,39 @@ function escapeHtml(s){
   return div.innerHTML;
 }
 
-function renderAiNote(aiTexts, aiWarning){
+function renderAiNote(aiTexts, aiWarning, costSuggestions){
   var box = document.getElementById('aiNote');
+  var blocks = [];
+
   if(aiTexts){
-    box.innerHTML = `
+    blocks.push(`
       <div class="ai-note">
         <span class="badge gen">● Généré par l'IA</span>
         <p><span class="lbl">Description de l'activité</span>${escapeHtml(aiTexts.description_activite)}</p>
         <p><span class="lbl">Justification du profil de croissance</span>${escapeHtml(aiTexts.justification_croissance)}</p>
-      </div>`;
+      </div>`);
   } else if(aiWarning){
-    box.innerHTML = `
+    blocks.push(`
       <div class="ai-note warn">
         <span class="badge fill">● IA indisponible</span>
         <p>${escapeHtml(aiWarning)} Le Business Plan a tout de même été généré, sans les textes narratifs.</p>
-      </div>`;
-  } else {
-    box.innerHTML = '';
+      </div>`);
   }
+
+  if(costSuggestions && costSuggestions.length){
+    var items = costSuggestions.map(function(s){
+      return `<li>${escapeHtml(s.nom)} : <b>${Math.round(s.valeur).toLocaleString('fr-FR')} FCFA</b></li>`;
+    }).join('');
+    blocks.push(`
+      <div class="ai-note">
+        <span class="badge sugg">● Suggéré par l'IA</span>
+        <p><span class="lbl">Coût variable unitaire non renseigné — valeur proposée selon le secteur</span></p>
+        <ul style="margin:4px 0 0; padding-left:18px;">${items}</ul>
+        <p style="margin-top:8px;">Pas d'accord ? Renseignez le champ correspondant dans le formulaire ci-dessus et régénérez l'aperçu.</p>
+      </div>`);
+  }
+
+  box.innerHTML = blocks.join('');
 }
 
 function renderPreview(sheets){
@@ -757,7 +778,7 @@ async function submitForm(){
     }
     var data = await resp.json();
     currentJobId = data.job_id;
-    renderAiNote(data.ai_texts, data.ai_warning);
+    renderAiNote(data.ai_texts, data.ai_warning, data.cost_suggestions);
     renderPreview(data.sheets);
     document.getElementById('downloadBlock').classList.add('show');
     status.textContent = "Aperçu généré sans erreur — vérifiez les feuilles ci-dessous avant de télécharger.";

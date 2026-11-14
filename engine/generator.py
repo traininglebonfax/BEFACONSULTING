@@ -186,6 +186,35 @@ def attach_ai_comments(xlsx_path: str, description_activite: str, justification_
     wb.save(xlsx_path)
 
 
+def attach_cost_suggestion_comments(xlsx_path: str, cost_suggestions: dict) -> None:
+    """Attache un commentaire de cellule sur chaque cout variable unitaire
+    (1_HYPOTHESES!B{35+i}) suggere par l'IA (role optionnel du Lot 4, cahier
+    des charges Section2) faute de valeur fournie par l'utilisateur.
+
+    `cost_suggestions` : {index_produit: valeur_suggeree}. Ne touche a AUCUNE
+    formule - la valeur elle-meme est deja ecrite comme une saisie normale par
+    generate_workbook ; ce commentaire sert uniquement a l'identifier comme
+    suggestion IA (reste modifiable par l'utilisateur, cf. regle du cahier
+    des charges) - voir aussi engine.preview pour le badge dans l'apercu web.
+    """
+    if not cost_suggestions:
+        return
+
+    wb = openpyxl.load_workbook(xlsx_path)
+    ws1 = wb["1_HYPOTHESES"]
+
+    for index, valeur in cost_suggestions.items():
+        cell = ws1.cell(row=35 + index, column=2)
+        cell.comment = Comment(
+            f"Cout variable unitaire suggere par l'IA (valeur non fournie) : "
+            f"{valeur:,.0f} FCFA. Modifiable - resaisissez le champ correspondant "
+            "dans le formulaire et regenerez l'apercu si besoin.",
+            AI_COMMENT_AUTHOR,
+        )
+
+    wb.save(xlsx_path)
+
+
 def _snapshot_formulas(wb) -> dict:
     snap = {}
     for sheet in wb.sheetnames:
