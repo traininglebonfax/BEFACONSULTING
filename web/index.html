@@ -1,809 +1,705 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Créer mon Business Plan</title>
+<title>Business Plan BEFA</title>
+<link rel="icon" href="/assets/branding/logo_befa.png">
 <style>
-  :root{
-    --dark-green:#1E4D2B;
-    --mid-green:#2E7D32;
-    --pale-green:#E8F5E9;
-    --pale-blue:#D9E1F2;
-    --ink:#1f2937;
-    --muted:#64748b;
-    --line:#e2e8f0;
-    --bg:#f4f6f5;
-    --card:#ffffff;
-    --amber-bg:#FFF4E0;
-    --amber-line:#F0B429;
-    --amber-text:#8a5a00;
-    --grey-bg:#eef1f0;
-    --grey-text:#516066;
-    --red:#b91c1c;
-  }
-  *{box-sizing:border-box;}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    line-height:1.45;
-  }
-  .wrap{max-width:900px;margin:0 auto;padding:28px 20px 80px;}
-
-  header.top{ background:var(--dark-green); color:#fff; padding:26px 20px 22px; }
-  header.top .inner{max-width:900px;margin:0 auto;}
-  header.top h1{margin:0 0 6px;font-size:22px;}
-  header.top p{margin:0;color:#cfe3d4;font-size:13.5px;max-width:640px;}
-
-  .legend{
-    display:flex; flex-wrap:wrap; gap:10px; align-items:center;
-    background:var(--card); border:1px solid var(--line); border-radius:10px;
-    padding:12px 16px; margin:20px 0 24px; font-size:12.5px; color:var(--muted);
-  }
-  .badge{
-    display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700;
-    padding:3px 9px; border-radius:999px; letter-spacing:.2px;
-  }
-  .badge.default{background:var(--grey-bg);color:var(--grey-text); border:1px solid #d6dcda;}
-  .badge.fill{background:var(--amber-bg); color:var(--amber-text); border:1px solid var(--amber-line);}
-  .badge.gen{background:var(--pale-green); color:var(--dark-green); border:1px solid #bfe3c4;}
-  .badge.sugg{background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe;}
-
-  .advtoggle{ margin-left:auto; display:flex; align-items:center; gap:8px; font-size:13px; color:var(--ink); font-weight:600; }
-  .switch{position:relative; width:38px; height:21px; flex:none;}
-  .switch input{opacity:0;width:0;height:0;}
-  .slider-el{position:absolute;inset:0;background:#cbd5c9;border-radius:999px;cursor:pointer;transition:.15s;}
-  .slider-el:before{content:"";position:absolute;height:15px;width:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.15s;}
-  input:checked + .slider-el{background:var(--mid-green);}
-  input:checked + .slider-el:before{transform:translateX(17px);}
-
-  .step{ background:var(--card); border:1px solid var(--line); border-radius:12px; margin-bottom:18px; overflow:hidden; }
-  .step-head{ display:flex; align-items:center; gap:10px; background:linear-gradient(180deg,#fff,#fbfcfb); border-bottom:1px solid var(--line); padding:14px 18px; }
-  .step-num{ width:26px;height:26px;border-radius:50%;background:var(--dark-green);color:#fff; display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;flex:none; }
-  .step-head h2{margin:0;font-size:15.5px;}
-  .step-head .hint{margin-left:auto;font-size:11.5px;color:var(--muted);}
-  .step-body{padding:16px 18px 18px;}
-
-  .field{margin-bottom:14px;}
-  .field:last-child{margin-bottom:0;}
-  .flabel{ display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; margin-bottom:6px; }
-  .fdesc{font-size:11.5px;color:var(--muted);margin:2px 0 6px;}
-
-  select, input[type=text], input[type=number], input[type=date]{
-    width:100%; padding:8px 10px; border:1px solid #cbd5d1; border-radius:7px;
-    font-size:13.5px; background:#fff; color:var(--ink);
-  }
-  select:focus, input:focus{outline:2px solid var(--mid-green); outline-offset:1px;}
-  .fill-input{background:#fffdf6; border-color:var(--amber-line);}
-
-  .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
-  .row3{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:12px;}
-  .row4{display:grid; grid-template-columns:1.4fr .9fr 1fr 1fr auto; gap:10px; align-items:end;}
-  @media (max-width:620px){ .row2,.row3,.row4{grid-template-columns:1fr;} }
-
-  .card-line{ border:1px solid var(--line); border-radius:9px; padding:12px 14px; margin-bottom:10px; background:#fafbfa; position:relative; }
-  .card-line .rm{ position:absolute; top:8px; right:8px; background:none; border:none; color:var(--red); font-size:12px; cursor:pointer; font-weight:600; }
-
-  .btn{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; border:1px solid var(--mid-green); cursor:pointer; background:#fff; color:var(--mid-green); }
-  .btn:hover{background:var(--pale-green);}
-  .btn.primary{ background:var(--dark-green); color:#fff; border-color:var(--dark-green); font-size:15px; padding:13px 22px; }
-  .btn.primary:hover{background:#163a20;}
-  .btn.primary:disabled{background:#9ab3a1;border-color:#9ab3a1;cursor:not-allowed;}
-  .btn.small{font-size:12px;padding:5px 10px;}
-
-  .toggle-yn{display:flex; gap:8px;}
-  .toggle-yn button{ flex:1; padding:8px; border-radius:7px; border:1px solid #cbd5d1; background:#fff; font-size:13px; cursor:pointer; font-weight:600;color:var(--ink); }
-  .toggle-yn button.active{background:var(--dark-green); color:#fff; border-color:var(--dark-green);}
-
-  .chips{display:flex; flex-wrap:wrap; gap:8px;}
-  .chip{ padding:8px 12px; border-radius:8px; border:1.5px solid #cbd5d1; font-size:12.5px; cursor:pointer; background:#fff; font-weight:600; color:var(--ink); }
-  .chip.active{border-color:var(--mid-green); background:var(--pale-green); color:var(--dark-green);}
-
-  .slider-pair{display:flex; align-items:center; gap:12px;}
-  .slider-pair input[type=range]{flex:1; accent-color:var(--mid-green);}
-  .slider-vals{display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-top:4px;}
-
-  .month-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:8px;}
-  .month-grid .m{text-align:center;}
-  .month-grid label{display:block; font-size:11px; color:var(--muted); margin-bottom:3px;}
-  .month-grid select{padding:5px 4px; font-size:11.5px;}
-  #seasonBlock{display:none; margin-top:10px; border-top:1px dashed var(--line); padding-top:12px;}
-
-  .advanced-section{display:none;}
-  .advanced-section.show{display:block;}
-  .adv-flag{ display:inline-block; font-size:10.5px; font-weight:700; color:#8a5a00; background:#FFF4E0; border:1px solid var(--amber-line); border-radius:5px; padding:1px 6px; margin-left:6px; }
-
-  .detail-toggle{ background:none;border:none;color:var(--mid-green);font-size:12px;font-weight:700;cursor:pointer; padding:0; margin-top:6px; }
-  .detail-fields{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);}
-  .detail-fields.show{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
-
-  .footer-cta{ text-align:center; padding:26px 10px 10px; }
-  .footer-cta p{font-size:12.5px; color:var(--muted); max-width:520px; margin:12px auto 0;}
-
-  .sector-note{ background:var(--pale-green); border:1px solid #bfe3c4; color:var(--dark-green); border-radius:8px; padding:8px 12px; font-size:12px; margin-top:8px; }
-
-  .error-box{ background:#fdecec; border:1px solid #f3b4b4; color:var(--red); border-radius:8px; padding:10px 14px; font-size:12.5px; margin:0 0 16px; white-space:pre-line; display:none; }
-  .error-box.show{display:block;}
-
-  .preview-panel{display:none; margin-top:22px;}
-  .preview-panel.show{display:block;}
-  .preview-tabs{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
-  .preview-tab{ padding:7px 12px; border-radius:7px; border:1px solid var(--line); background:#fff; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; }
-  .preview-tab.active{background:var(--dark-green); color:#fff; border-color:var(--dark-green);}
-  .preview-sheet{ display:none; overflow-x:auto; background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px; }
-  .preview-sheet.active{display:block;}
-  .preview-sheet table.bp-sheet{border-collapse:collapse; font-size:12px;}
-  .preview-sheet table.bp-sheet td{border:1px solid #e9edec; padding:3px 6px; white-space:nowrap;}
-  .bp-chart{margin:0 0 18px;}
-  .bp-chart-title{font-size:13px; font-weight:700; color:var(--dark-green); margin-bottom:6px;}
-  .bp-chart svg{width:100%; max-width:520px; height:auto; display:block;}
-  .download-block{display:none; text-align:center; margin-top:20px;}
-  .download-block.show{display:block;}
-
-  .ai-note{ background:var(--pale-green); border:1px solid #bfe3c4; border-radius:10px; padding:14px 16px; margin-bottom:16px; font-size:12.5px; }
-  .ai-note .badge{margin-bottom:8px;}
-  .ai-note p{margin:4px 0 10px;}
-  .ai-note p:last-child{margin-bottom:0;}
-  .ai-note .lbl{font-weight:700; color:var(--dark-green); display:block; margin-bottom:2px;}
-  .ai-note.warn{background:var(--amber-bg); border-color:var(--amber-line); color:var(--amber-text);}
+:root{
+  --orange:#F27F24; --orange-fonce:#B85A12; --orange-pale:#FDF0E4; --gris:#9F999B;
+  --encre:#1F2328; --encre-2:#5B6168; --ligne:#E3E1E2; --fond:#F6F5F4; --carte:#FFFFFF;
+  --vert:#2E7D32; --vert-pale:#E8F5E9; --rouge:#B42318; --rouge-pale:#FDECEA; --ambre:#8A5A00; --ambre-pale:#FFF4E0;
+  --rayon:10px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--encre);background:var(--fond);font-size:14px;line-height:1.45}
+header{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--carte);border-bottom:3px solid var(--orange);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+header img{height:38px}
+header h1{font-size:17px;margin:0;font-weight:600}
+header .actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+header .actions select{width:auto}
+a.btn{text-decoration:none;display:inline-block}
+.app{display:grid;grid-template-columns:250px 1fr;gap:20px;padding:20px;max-width:1500px;margin:0 auto}
+nav.etapes{position:sticky;top:80px;align-self:start;background:var(--carte);border-radius:var(--rayon);padding:8px;border:1px solid var(--ligne)}
+nav.etapes button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:8px;font:inherit;color:var(--encre);cursor:pointer}
+nav.etapes button:hover{background:var(--fond)}
+nav.etapes button.actif{background:var(--orange-pale);color:var(--orange-fonce);font-weight:600}
+nav.etapes .num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--fond);border:1px solid var(--ligne);flex:none}
+nav.etapes button.ok .num{background:var(--vert);color:#fff;border-color:var(--vert)}
+nav.etapes button.actif .num{background:var(--orange);color:#fff;border-color:var(--orange)}
+main{min-width:0}
+.carte{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--rayon);padding:20px 22px;margin-bottom:16px}
+h2{margin:0 0 4px;font-size:20px}
+h3{margin:18px 0 8px;font-size:15px;color:var(--orange-fonce)}
+p.aide{margin:0 0 14px;color:var(--encre-2)}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px 16px}
+.champ{display:flex;flex-direction:column;gap:4px}
+.champ.large{grid-column:1/-1}
+label{font-size:12.5px;color:var(--encre-2);font-weight:600}
+input,select,textarea{font:inherit;padding:7px 9px;border:1px solid #CFCBCC;border-radius:7px;background:#fff;color:var(--encre);width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:0;border-color:var(--orange)}
+textarea{min-height:70px;resize:vertical}
+input.num{text-align:right;font-variant-numeric:tabular-nums}
+.btn{font:inherit;border:1px solid #CFCBCC;background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;color:var(--encre);white-space:nowrap}
+.btn:hover{border-color:var(--orange)}
+.btn.principal{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.btn.principal:hover{background:var(--orange-fonce)}
+.btn.petit{padding:4px 9px;font-size:12.5px}
+.btn.sup{border:0;background:none;color:var(--rouge);font-size:18px;padding:0 6px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+table.liste{width:100%;border-collapse:collapse;margin:6px 0 8px}
+table.liste th{font-size:12px;text-align:left;color:var(--encre-2);padding:4px 6px;border-bottom:1px solid var(--ligne)}
+table.liste td{padding:3px 4px;vertical-align:top}
+.defile{overflow-x:auto}
+table.apercu{border-collapse:collapse;font-size:12px;width:100%;font-variant-numeric:tabular-nums}
+table.apercu th{background:var(--orange);color:#fff;padding:5px 8px;text-align:right;white-space:nowrap}
+table.apercu th:first-child,table.apercu td:first-child{text-align:left}
+table.apercu td{padding:4px 8px;border-bottom:1px solid var(--ligne);text-align:right;white-space:nowrap}
+table.apercu tr.total td{background:var(--orange-pale);font-weight:700}
+table.apercu tr.sous_total td{background:#F1F0F0;font-weight:600}
+table.apercu tr.detail td:first-child{padding-left:18px;font-style:italic}
+.choix{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.choix button{text-align:left;border:2px solid var(--ligne);background:#fff;border-radius:var(--rayon);padding:18px;cursor:pointer;font:inherit}
+.choix button.actif{border-color:var(--orange);background:var(--orange-pale)}
+.choix strong{display:block;font-size:16px;margin-bottom:4px}
+.alerte{padding:10px 12px;border-radius:8px;margin:8px 0;border-left:4px solid}
+.alerte.err{background:var(--rouge-pale);border-color:var(--rouge);color:var(--rouge)}
+.alerte.att{background:var(--ambre-pale);border-color:#F0B429;color:var(--ambre)}
+.alerte.ok{background:var(--vert-pale);border-color:var(--vert);color:var(--vert)}
+.alerte.info{background:#EEF3F8;border-color:#1F6FB2;color:#1F4E79}
+.alerte ul{margin:4px 0 0;padding-left:18px}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.annees{display:grid;gap:4px}
+.pied-etape{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+.charge{border:1px solid var(--ligne);border-radius:8px;padding:10px;margin-bottom:10px;background:#FCFCFB}
+.charge .entete{display:grid;grid-template-columns:2fr 1.2fr 1.2fr auto;gap:8px;align-items:end;margin-bottom:6px}
+.ligne-annees{display:grid;gap:6px;align-items:center}
+.ligne-annees span{font-size:12px;color:var(--encre-2)}
+.attente{display:flex;align-items:center;gap:10px;color:var(--encre-2)}
+.roue{width:18px;height:18px;border:3px solid var(--orange-pale);border-top-color:var(--orange);border-radius:50%;animation:t 1s linear infinite}
+@keyframes t{to{transform:rotate(360deg)}}
+.section-red{border-top:1px solid var(--ligne);padding-top:10px;margin-top:10px}
+.sources li{margin-bottom:4px;font-size:12.5px}
+.badge{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:20px;background:var(--fond);border:1px solid var(--ligne);color:var(--encre-2)}
+img.graph{max-width:100%;border:1px solid var(--ligne);border-radius:8px;margin:6px 0}
+.bilan-total{font-weight:600;margin-top:6px}
+.cache{display:none}
+@media (max-width:900px){
+  .app{grid-template-columns:1fr;padding:12px}
+  nav.etapes{position:static;display:flex;overflow-x:auto;gap:4px}
+  nav.etapes button{width:auto;white-space:nowrap}
+  .deux{grid-template-columns:1fr}
+  .charge .entete{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
-
-<header class="top">
-  <div class="inner">
-    <h1>Créer mon Business Plan</h1>
-    <p>Ne remplissez que ce qui concerne VOTRE projet. Tout le reste est déjà pré-rempli avec une valeur usuelle — modifiez-la seulement si nécessaire.</p>
+<header>
+  <img src="/assets/branding/logo_befa.png" alt="BEFA Consulting">
+  <h1>Business Plan — générateur BEFA</h1>
+  <div class="actions">
+    <select id="exemple" class="btn" aria-label="Charger un exemple">
+      <option value="">Charger un exemple…</option>
+      <option value="coreal">Nouveau projet — COREAL FOOD</option>
+      <option value="oivoire">Entreprise existante — O'IVOIRE</option>
+    </select>
+    <button class="btn" id="ouvrir">Ouvrir un dossier</button>
+    <button class="btn" id="enregistrer">Enregistrer le dossier</button>
+    <button class="btn" id="nouveau">Nouveau dossier</button>
+    <input type="file" id="fichier-dossier" accept=".json,application/json" class="cache">
   </div>
 </header>
-
-<div class="wrap">
-
-  <div class="legend">
-    <span class="badge default">● Pré-rempli</span>
-    <span style="font-size:12px;">valeur par défaut déjà en place, à ajuster seulement si besoin</span>
-    <span class="badge fill">● À compléter</span>
-    <span style="font-size:12px;">propre à votre projet, personne d'autre ne peut la deviner</span>
-    <span class="badge gen">● Généré par l'IA</span>
-    <span style="font-size:12px;">description et justification de croissance, rédigées par l'IA</span>
-    <span class="badge sugg">● Suggéré par l'IA</span>
-    <span style="font-size:12px;">valeur par défaut proposée selon le secteur si vous laissez le champ vide — modifiable</span>
-    <div class="advtoggle">
-      Mode avancé
-      <label class="switch">
-        <input type="checkbox" id="advToggle" onchange="toggleAdvanced()">
-        <span class="slider-el"></span>
-      </label>
-    </div>
-  </div>
-
-  <div id="errorBox" class="error-box"></div>
-
-  <!-- STEP 1 : SECTEUR & OFFRE -->
-  <div class="step">
-    <div class="step-head">
-      <div class="step-num">1</div>
-      <h2>Votre activité</h2>
-      <span class="hint">2 champs à décider, le reste s'ajuste tout seul</span>
-    </div>
-    <div class="step-body">
-
-      <div class="field">
-        <div class="flabel">Secteur d'activité <span class="badge fill">À compléter</span></div>
-        <select id="secteur" class="fill-input">
-          <option>Agroalimentaire / transformation</option>
-          <option>Commerce / distribution</option>
-          <option>Services</option>
-          <option>Artisanat / production manuelle</option>
-          <option>BTP / construction</option>
-          <option>Technologie / digital</option>
-          <option>Agriculture / élevage</option>
-          <option>Autre</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <div class="flabel">Nom du projet <span class="badge default">Pré-rempli</span></div>
-        <input type="text" id="nomProjet" value="Mon Projet" />
-        <div class="fdesc">Sert uniquement au nom du fichier téléchargé — aucune cellule du classeur n'y correspond.</div>
-      </div>
-
-      <div class="field">
-        <div class="flabel">Vos produits / services <span class="badge fill">À compléter</span></div>
-        <div class="fdesc">Ajoutez une ligne par produit ou service (12 maximum).</div>
-        <div id="produitsList"></div>
-        <button type="button" class="btn small" onclick="addProduit()">+ Ajouter un produit / service</button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- STEP 2 : CROISSANCE -->
-  <div class="step">
-    <div class="step-head">
-      <div class="step-num">2</div>
-      <h2>Croissance attendue</h2>
-      <span class="hint">1 choix, tout le reste en découle</span>
-    </div>
-    <div class="step-body">
-
-      <div class="field">
-        <div class="flabel">Rythme de croissance visé <span class="badge fill">À compléter</span></div>
-        <div class="fdesc">Un profil suffit — pas besoin de connaître un pourcentage exact.</div>
-        <div class="chips" id="croissanceChips">
-          <div class="chip" data-a2="0.10" data-a3="0.08">Prudente (+10%/an)</div>
-          <div class="chip active" data-a2="0.20" data-a3="0.15">Modérée (+20%/an)</div>
-          <div class="chip" data-a2="0.30" data-a3="0.25">Soutenue (+30%/an)</div>
-          <div class="chip" data-custom="1">Personnalisé…</div>
-        </div>
-        <div class="row2" id="croissanceCustom" style="display:none; margin-top:10px;">
-          <div><label style="font-size:11px;color:var(--muted);">Taux annuel 2</label><input type="number" id="croissanceA2Custom" step="0.01" value="0.20"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Taux annuel 3</label><input type="number" id="croissanceA3Custom" step="0.01" value="0.15"></div>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="flabel">Votre activité est-elle saisonnière ? <span class="badge fill">À compléter</span></div>
-        <div class="toggle-yn" style="max-width:220px;">
-          <button type="button" class="active" onclick="setSeason(false,this)">Non</button>
-          <button type="button" onclick="setSeason(true,this)">Oui</button>
-        </div>
-        <div id="seasonBlock">
-          <div class="fdesc">Pour chaque mois, indiquez juste le niveau.</div>
-          <div class="month-grid" id="monthGrid"></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- STEP 3 : CHARGES FIXES -->
-  <div class="step">
-    <div class="step-head">
-      <div class="step-num">3</div>
-      <h2>Charges fixes mensuelles</h2>
-      <span class="hint">Les postes usuels sont déjà listés — remplissez juste les montants qui vous concernent</span>
-    </div>
-    <div class="step-body">
-      <div class="row3" style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px;">
-        <div>POSTE</div><div>MONTANT / MOIS (FCFA)</div><div></div>
-      </div>
-      <div id="chargesList"></div>
-      <div style="margin-top:14px;"><button type="button" class="btn small" onclick="addCharge()">+ Ajouter un autre poste de charge</button></div>
-
-      <div class="field advanced-section" id="advCharges" style="margin-top:16px;">
-        <div class="flabel">Évolution des charges fixes <span class="badge default">Pré-rempli</span></div>
-        <div class="row2">
-          <div><label style="font-size:11px;color:var(--muted);">Année 2</label><input type="number" id="chargesEvolA2" step="0.01" value="0.05"></div>
-          <div><label style="font-size:11px;color:var(--muted);">Année 3</label><input type="number" id="chargesEvolA3" step="0.01" value="0.10"></div>
-        </div>
-        <div class="fdesc">Taux unique appliqué à la masse totale des charges fixes (le modèle ne différencie plus par poste — voir README).</div>
-      </div>
-      <div class="fdesc" style="margin-top:8px;" id="chargesEvolNote">Évolution annuelle des charges : <b>+5%/an puis +10%/an</b> appliqué automatiquement. <span class="adv-flag">Réglable en mode avancé</span></div>
-    </div>
-  </div>
-
-  <!-- STEP 4 : INVESTISSEMENT -->
-  <div class="step">
-    <div class="step-head">
-      <div class="step-num">4</div>
-      <h2>Investissement de départ</h2>
-      <span class="hint">Laissez vide si vous n'investissez rien au démarrage</span>
-    </div>
-    <div class="step-body">
-      <div id="investissementsList"></div>
-      <button type="button" class="btn small" onclick="addInvestissement()">+ Ajouter un investissement</button>
-    </div>
-  </div>
-
-  <!-- STEP 5 : FINANCEMENT & BFR -->
-  <div class="step">
-    <div class="step-head">
-      <div class="step-num">5</div>
-      <h2>Financement & délais de paiement</h2>
-      <span class="hint">Tout est pré-réglé sur des valeurs courantes — ajustez si besoin</span>
-    </div>
-    <div class="step-body">
-
-      <div class="field">
-        <div class="flabel">Répartition du financement <span class="badge default">Pré-rempli</span></div>
-        <div class="slider-pair">
-          <input type="range" id="partFP" min="0" max="100" value="35" oninput="updateFinancementLabel()">
-        </div>
-        <div class="slider-vals"><span id="fpLabel">Fonds propres : 35%</span><span id="empruntLabel">Emprunt bancaire : 65%</span></div>
-      </div>
-
-      <div class="row2">
-        <div class="field">
-          <div class="flabel">Taux d'intérêt annuel <span class="badge default">Pré-rempli</span></div>
-          <select id="tauxInteret">
-            <option value="0.06">6%</option>
-            <option value="0.075">7,5%</option>
-            <option value="0.09" selected>9% (moyenne PME régionale)</option>
-            <option value="0.10">10%</option>
-            <option value="0.12">12%</option>
-          </select>
-        </div>
-        <div class="field">
-          <div class="flabel">Durée de remboursement <span class="badge default">Pré-rempli</span></div>
-          <select id="dureeRemb">
-            <option value="24">24 mois</option>
-            <option value="36">36 mois</option>
-            <option value="48" selected>48 mois</option>
-            <option value="60">60 mois</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row2">
-        <div class="field">
-          <div class="flabel">Délai de paiement clients <span class="badge default">Pré-rempli</span></div>
-          <select id="delaiClients">
-            <option value="15">15 jours</option>
-            <option value="30" selected>30 jours</option>
-            <option value="45">45 jours</option>
-            <option value="60">60 jours</option>
-          </select>
-        </div>
-        <div class="field">
-          <div class="flabel">Délai de paiement fournisseurs <span class="badge default">Pré-rempli</span></div>
-          <select id="delaiFournisseurs">
-            <option value="30">30 jours</option>
-            <option value="45" selected>45 jours</option>
-            <option value="60">60 jours</option>
-            <option value="90">90 jours</option>
-          </select>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ADVANCED SECTION -->
-  <div class="step advanced-section" id="advBlock">
-    <div class="step-head" style="background:#fbf7ee;">
-      <div class="step-num" style="background:#8a5a00;">✦</div>
-      <h2>Mode avancé <span class="adv-flag">optionnel</span></h2>
-      <span class="hint">Rarement utile — tout a déjà une valeur raisonnable</span>
-    </div>
-    <div class="step-body">
-      <div class="row2">
-        <div class="field">
-          <div class="flabel">Pays / devise <span class="badge default">Pré-rempli</span></div>
-          <select id="paysDevise">
-            <option selected>Côte d'Ivoire / FCFA</option>
-            <option>Sénégal / FCFA</option>
-            <option>Cameroun / FCFA</option>
-            <option>France / EUR</option>
-          </select>
-        </div>
-        <div class="field">
-          <div class="flabel">Forme juridique <span class="badge default">Pré-rempli</span></div>
-          <select id="formeJuridique">
-            <option selected>SARL</option>
-            <option>Entreprise individuelle</option>
-            <option>SA</option>
-            <option>Coopérative</option>
-          </select>
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <div class="flabel">Durée du Business Plan</div>
-          <input type="text" value="3 ans (fixe dans ce modele)" disabled style="background:#f1f3f2;color:var(--muted);">
-        </div>
-        <div class="field">
-          <div class="flabel">Date de démarrage <span class="badge default">Pré-rempli</span></div>
-          <input type="date" id="dateDemarrage">
-        </div>
-      </div>
-      <div class="row2">
-        <div class="field">
-          <div class="flabel">Taux d'Impôt sur les Sociétés <span class="badge default">Pré-rempli</span></div>
-          <input type="number" id="tauxIS" step="0.01" value="0.25">
-        </div>
-        <div class="field">
-          <div class="flabel">Capacité maximale mensuelle (optionnel)</div>
-          <input type="number" id="capaciteMax" placeholder="Laisser vide = pas de plafond">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="footer-cta">
-    <button type="button" id="submitBtn" class="btn primary" onclick="submitForm()">Générer mon Business Plan →</button>
-    <p id="statusMsg">Un aperçu de chaque feuille s'affichera ici avant tout téléchargement.</p>
-  </div>
-
-  <div class="preview-panel" id="previewPanel">
-    <div id="aiNote"></div>
-    <div class="preview-tabs" id="previewTabs"></div>
-    <div id="previewSheets"></div>
-  </div>
-
-  <div class="download-block" id="downloadBlock">
-    <button type="button" class="btn primary" onclick="downloadFinal()">Télécharger le fichier Excel complet →</button>
-  </div>
-
+<div class="app">
+  <nav class="etapes" id="nav"></nav>
+  <main id="contenu"></main>
 </div>
 
 <script>
-const API_BASE = window.location.origin;
-let produitCount = 0;
-let chargeCount = 0;
-let investCount = 0;
+"use strict";
+// ======================================================================
+// Etat : D = dossier au format attendu par le serveur (befa.dossier),
+// RED = redaction IA (relue / corrigee), UI = etat de l'interface.
+// Les cles commencant par "_" ne sont jamais envoyees au serveur.
+// ======================================================================
+const CLE_STOCKAGE = "befa_dossier_v1";
+let D, RED = null, UI = {etape: 0};
+let TRENDS_RES = null, LIASSE_RES = null, PROJ_RES = null;
 
-const MONTH_LABELS = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sept","Oct","Nov","Déc"];
-const SEASON_LEVEL_COEF = { "Faible": 0.7, "Normal": 1.0, "Fort": 1.2, "Pic": 1.35 };
-const DEFAULT_CHARGES = [
-  "Salaires & charges sociales", "Loyer", "Transport / logistique",
-  "Marketing / communication", "Énergie / eau", "Maintenance",
-  "Frais administratifs", "Assurances",
-];
-
-function toggleAdvanced(){
-  var on = document.getElementById('advToggle').checked;
-  document.querySelectorAll('.advanced-section').forEach(function(el){
-    el.classList.toggle('show', on);
-  });
-}
-
-function addProduit(nom, prix, volume, cout){
-  produitCount++;
-  var id = 'produit_' + produitCount;
-  var div = document.createElement('div');
-  div.className = 'card-line';
-  div.dataset.produitId = id;
-  div.innerHTML = `
-    <button type="button" class="rm" onclick="this.closest('.card-line').remove()">✕ retirer</button>
-    <div class="row3">
-      <div><label style="font-size:11px;color:var(--muted);">Nom du produit/service</label>
-        <input type="text" class="fill-input p-nom" placeholder="Ex. Jus Ananas / Passion 33cl" value="${nom||''}"></div>
-      <div><label style="font-size:11px;color:var(--muted);">Unité de vente</label>
-        <select class="p-unite">
-          <option selected>unites/mois</option><option>Kg/mois</option><option>heures/mois</option>
-          <option>prestations/mois</option><option>abonnements/mois</option>
-        </select>
-      </div>
-      <div><label style="font-size:11px;color:var(--muted);">Prix de vente unitaire (FCFA)</label>
-        <input type="number" class="fill-input p-prix" placeholder="0" value="${prix||''}"></div>
-    </div>
-    <div class="row2" style="margin-top:10px;">
-      <div><label style="font-size:11px;color:var(--muted);">Volume de vente initial / mois</label>
-        <input type="number" class="fill-input p-volume" placeholder="0" value="${volume||''}"></div>
-      <div><label style="font-size:11px;color:var(--muted);">Coût variable total par unité (FCFA)</label>
-        <input type="number" class="fill-input p-cout" placeholder="Laisser vide = suggéré par l'IA selon le secteur" value="${cout||''}"></div>
-    </div>
-    <button type="button" class="detail-toggle" onclick="toggleDetail(this)">+ Détailler ce coût (matière première / emballage / production)</button>
-    <div class="detail-fields">
-      <div><label style="font-size:11px;color:var(--muted);">Matière première</label><input type="number" class="p-mp" placeholder="0"></div>
-      <div><label style="font-size:11px;color:var(--muted);">Emballage</label><input type="number" class="p-emb" placeholder="0"></div>
-      <div><label style="font-size:11px;color:var(--muted);">Production</label><input type="number" class="p-prod" placeholder="0"></div>
-    </div>
-  `;
-  document.getElementById('produitsList').appendChild(div);
-}
-
-function toggleDetail(btn){
-  var box = btn.nextElementSibling;
-  var showing = box.classList.toggle('show');
-  btn.textContent = showing ? "– Réduire le détail des coûts" : "+ Détailler ce coût (matière première / emballage / production)";
-  var card = btn.closest('.card-line');
-  card.querySelector('.p-cout').disabled = showing;
-}
-
-function addCharge(nom, montant){
-  chargeCount++;
-  var div = document.createElement('div');
-  div.className = 'row3';
-  div.style.marginTop = '8px';
-  div.innerHTML = `
-    <input type="text" class="c-nom" style="padding-top:8px;border:none;background:transparent;font-size:13px;" value="${nom||''}" ${nom ? 'readonly' : ''}>
-    <input type="number" class="fill-input c-montant" placeholder="0" value="${montant||''}">
-    <button type="button" class="rm" style="position:static;" onclick="this.closest('.row3').remove()">✕</button>
-  `;
-  document.getElementById('chargesList').appendChild(div);
-}
-
-function addInvestissement(nom, montant, duree){
-  investCount++;
-  var div = document.createElement('div');
-  div.className = 'card-line';
-  div.innerHTML = `
-    <button type="button" class="rm" onclick="this.closest('.card-line').remove()">✕ retirer</button>
-    <div class="row3">
-      <div><label style="font-size:11px;color:var(--muted);">Poste d'investissement</label>
-        <input type="text" class="fill-input i-nom" placeholder="Ex. Équipement de production" value="${nom||''}"></div>
-      <div><label style="font-size:11px;color:var(--muted);">Montant HT (FCFA)</label>
-        <input type="number" class="fill-input i-montant" placeholder="0" value="${montant||''}"></div>
-      <div><label style="font-size:11px;color:var(--muted);">Durée d'amortissement (ans)</label>
-        <input type="number" class="i-duree" value="${duree||5}"></div>
-    </div>
-  `;
-  document.getElementById('investissementsList').appendChild(div);
-}
-
-function setSeason(on, btn){
-  document.getElementById('seasonBlock').style.display = on ? 'block' : 'none';
-  var parent = btn.parentElement;
-  parent.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-}
-
-function updateFinancementLabel(){
-  var fp = parseInt(document.getElementById('partFP').value, 10);
-  document.getElementById('fpLabel').textContent = 'Fonds propres : ' + fp + '%';
-  document.getElementById('empruntLabel').textContent = 'Emprunt bancaire : ' + (100 - fp) + '%';
-}
-
-function initMonthGrid(){
-  var grid = document.getElementById('monthGrid');
-  MONTH_LABELS.forEach(function(label, i){
-    var def = (i === 10) ? 'Fort' : (i === 11) ? 'Pic' : 'Normal';
-    var div = document.createElement('div');
-    div.className = 'm';
-    div.innerHTML = `<label>${label}</label>
-      <select class="month-select">
-        <option ${def==='Faible'?'selected':''}>Faible</option>
-        <option ${def==='Normal'?'selected':''}>Normal</option>
-        <option ${def==='Fort'?'selected':''}>Fort</option>
-        <option ${def==='Pic'?'selected':''}>Pic</option>
-      </select>`;
-    grid.appendChild(div);
-  });
-}
-
-document.getElementById('croissanceChips').addEventListener('click', function(e){
-  var chip = e.target.closest('.chip');
-  if(!chip) return;
-  document.querySelectorAll('#croissanceChips .chip').forEach(function(c){ c.classList.remove('active'); });
-  chip.classList.add('active');
-  document.getElementById('croissanceCustom').style.display = chip.dataset.custom ? 'grid' : 'none';
-});
-
-function getCroissance(){
-  var active = document.querySelector('#croissanceChips .chip.active');
-  if(active.dataset.custom){
-    return {
-      a2: parseFloat(document.getElementById('croissanceA2Custom').value) || 0,
-      a3: parseFloat(document.getElementById('croissanceA3Custom').value) || 0,
-    };
-  }
-  return { a2: parseFloat(active.dataset.a2), a3: parseFloat(active.dataset.a3) };
-}
-
-function collectPayload(){
-  var produits = [];
-  document.querySelectorAll('#produitsList .card-line').forEach(function(card){
-    var nom = card.querySelector('.p-nom').value.trim();
-    if(!nom) return;
-    var prix = parseFloat(card.querySelector('.p-prix').value) || 0;
-    var volume = parseFloat(card.querySelector('.p-volume').value) || 0;
-    var unite = card.querySelector('.p-unite').value;
-    var detailShown = card.querySelector('.detail-fields').classList.contains('show');
-    var produit = { nom: nom, prix_unitaire: prix, volume_initial_mensuel: volume, unite_volume: unite };
-    if(detailShown){
-      produit.cout_matiere_premiere = parseFloat(card.querySelector('.p-mp').value) || 0;
-      produit.cout_emballage = parseFloat(card.querySelector('.p-emb').value) || 0;
-      produit.cout_production = parseFloat(card.querySelector('.p-prod').value) || 0;
-    } else {
-      var coutVal = card.querySelector('.p-cout').value;
-      // Laisse vide -> non envoye (null cote backend) -> l'IA suggere une valeur
-      // selon le secteur (role optionnel du Lot 4, cahier des charges §2).
-      if(coutVal !== ''){ produit.cout_variable_unitaire = parseFloat(coutVal) || 0; }
-    }
-    produits.push(produit);
-  });
-
-  var charges = [];
-  document.querySelectorAll('#chargesList .row3').forEach(function(row){
-    var nom = row.querySelector('.c-nom').value.trim();
-    var montant = parseFloat(row.querySelector('.c-montant').value) || 0;
-    if(nom && montant > 0) charges.push({ nom: nom, montant_mensuel: montant });
-  });
-
-  var investissements = [];
-  document.querySelectorAll('#investissementsList .card-line').forEach(function(card){
-    var nom = card.querySelector('.i-nom').value.trim();
-    var montant = parseFloat(card.querySelector('.i-montant').value) || 0;
-    if(nom && montant > 0){
-      investissements.push({
-        nom: nom, montant: montant,
-        duree_amortissement_ans: parseFloat(card.querySelector('.i-duree').value) || 5,
-      });
-    }
-  });
-
-  var saisonnaliteOn = document.getElementById('seasonBlock').style.display === 'block';
-  var saisonnalite = null;
-  if(saisonnaliteOn){
-    saisonnalite = Array.from(document.querySelectorAll('.month-select')).map(function(sel){
-      return SEASON_LEVEL_COEF[sel.value];
-    });
-  }
-
-  var croissance = getCroissance();
-  var fp = parseInt(document.getElementById('partFP').value, 10) / 100;
-
+function dossierVide() {
   return {
-    secteur_activite: document.getElementById('secteur').value,
-    nom_projet: document.getElementById('nomProjet').value,
-    forme_juridique: document.getElementById('formeJuridique').value,
-    pays_devise: document.getElementById('paysDevise').value,
-    date_demarrage: document.getElementById('dateDemarrage').value,
-    produits: produits,
-    charges_fixes: charges,
-    investissements: investissements,
-    taux_croissance_a2: croissance.a2,
-    taux_croissance_a3: croissance.a3,
-    saisonnalite: saisonnalite,
-    taux_evolution_charges_a2: parseFloat(document.getElementById('chargesEvolA2').value) || 0.05,
-    taux_evolution_charges_a3: parseFloat(document.getElementById('chargesEvolA3').value) || 0.10,
-    part_fonds_propres: fp,
-    part_emprunt: 1 - fp,
-    taux_interet_annuel: parseFloat(document.getElementById('tauxInteret').value),
-    duree_remboursement_mois: parseInt(document.getElementById('dureeRemb').value, 10),
-    taux_is: parseFloat(document.getElementById('tauxIS').value) || 0.25,
-    delai_clients_jours: parseInt(document.getElementById('delaiClients').value, 10),
-    delai_fournisseurs_jours: parseInt(document.getElementById('delaiFournisseurs').value, 10),
-    capacite_max_mensuelle: document.getElementById('capaciteMax').value ? parseFloat(document.getElementById('capaciteMax').value) : null,
+    variante: "", annee_document: String(new Date().getFullYear()),
+    entreprise: {raison_sociale: "", sigle: "", forme_juridique: "", capital: null, date_creation: "", rccm: "", ncc: "",
+      regime_fiscal: "", centre_impots: "", adresse: "", siege: "", ville: "", telephone: "", email: "",
+      objet_social: [], activite: ""},
+    actionnaires: [], dirigeants: [], gouvernance: "", produits: [], clients: [], fournisseurs: [], pool_bancaire: "",
+    projet: {intitule: "", secteur: "", localisation: "", zone_marche: "Côte d'Ivoire", objet: "", description: "",
+      objectifs: [], contexte_besoin: "", phases: [], emplois_directs: null, emplois_indirects: null, concurrents: [],
+      mots_cles_marche: [], notes_consultant: ""},
+    projection: projectionVide(),
+    bilan_n: null, bilan_n1: null, cr_n: null, cr_n1: null,
+    trends_faits: [], trends_source: "",
+    _trends_csv: [], _liasse_validee: false,
   };
 }
-
-function showError(msg){
-  var box = document.getElementById('errorBox');
-  box.textContent = msg;
-  box.classList.add('show');
-  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-function clearError(){
-  var box = document.getElementById('errorBox');
-  box.classList.remove('show');
-  box.textContent = '';
+function projectionVide() {
+  return {annees: ["Année 1", "Année 2", "Année 3", "Année 4", "Année 5"], produits: [], charges: [],
+    investissements: [], prets: [], apports: [], taux_is: 0.25,
+    jours_clients: 0, jours_stocks: 0, jours_fournisseurs: 0, tresorerie_initiale: 0};
 }
 
-var currentJobId = null;
-
-function hidePreview(){
-  document.getElementById('previewPanel').classList.remove('show');
-  document.getElementById('downloadBlock').classList.remove('show');
-  document.getElementById('previewTabs').innerHTML = '';
-  document.getElementById('previewSheets').innerHTML = '';
-  document.getElementById('aiNote').innerHTML = '';
-  currentJobId = null;
+// ---------------------------------------------------------------- outils
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fr = (v, style) => {
+  if (v === null || v === undefined || v === "") return "";
+  if (style === "ratio") return Number(v).toLocaleString("fr-FR", {maximumFractionDigits: 1});
+  if (style === "pct") return Math.round(v * 100) + " %";
+  return Math.round(v).toLocaleString("fr-FR");
+};
+const n = () => D.projection.annees.length;
+function lire(chemin, obj = D) { return chemin.split(".").reduce((o, k) => (o == null ? undefined : o[k]), obj); }
+function ecrire(chemin, val, obj = D) {
+  const k = chemin.split("."); let o = obj;
+  for (let i = 0; i < k.length - 1; i++) { if (o[k[i]] == null) o[k[i]] = /^\d+$/.test(k[i + 1]) ? [] : {}; o = o[k[i]]; }
+  o[k[k.length - 1]] = val;
 }
-
-function escapeHtml(s){
-  var div = document.createElement('div');
-  div.textContent = s == null ? '' : s;
-  return div.innerHTML;
+function serie(v, longueur, defaut = 0) {
+  if (Array.isArray(v)) { const a = v.slice(0, longueur); while (a.length < longueur) a.push(a.length ? a[a.length - 1] : defaut); return a; }
+  return Array(longueur).fill(v ?? defaut);
 }
-
-function renderAiNote(aiTexts, aiWarning, costSuggestions){
-  var box = document.getElementById('aiNote');
-  var blocks = [];
-
-  if(aiTexts){
-    blocks.push(`
-      <div class="ai-note">
-        <span class="badge gen">● Généré par l'IA</span>
-        <p><span class="lbl">Description de l'activité</span>${escapeHtml(aiTexts.description_activite)}</p>
-        <p><span class="lbl">Justification du profil de croissance</span>${escapeHtml(aiTexts.justification_croissance)}</p>
-      </div>`);
-  } else if(aiWarning){
-    blocks.push(`
-      <div class="ai-note warn">
-        <span class="badge fill">● IA indisponible</span>
-        <p>${escapeHtml(aiWarning)} Le Business Plan a tout de même été généré, sans les textes narratifs.</p>
-      </div>`);
+function pourServeur(obj = D) { return JSON.parse(JSON.stringify(obj, (k, v) => k.startsWith("_") ? undefined : v)); }
+async function api(url, options = {}) {
+  const r = await fetch(url, options);
+  let corps = null; try { corps = await r.json(); } catch (_) {}
+  if (!r.ok) throw new Error((corps && corps.detail) || `Erreur ${r.status}`);
+  return corps;
+}
+function sauver() {
+  try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify({D, RED, UI})); } catch (_) { /* stockage indisponible */ }
+}
+function charger() {
+  try { const s = JSON.parse(localStorage.getItem(CLE_STOCKAGE) || "null"); if (s && s.D) { D = s.D; RED = s.RED; UI = s.UI || {etape: 0}; return; } } catch (_) {}
+  D = dossierVide();
+}
+function normaliser() {
+  // Rend le dossier editable : series annuelles en tableaux, champs absents crees.
+  const vide = dossierVide();
+  for (const k of Object.keys(vide)) if (D[k] === undefined) D[k] = vide[k];
+  D.entreprise = Object.assign(vide.entreprise, D.entreprise);
+  D.projet = Object.assign(vide.projet, D.projet);
+  D.projection = Object.assign(projectionVide(), D.projection || {});
+  const p = D.projection, l = p.annees.length;
+  for (const x of p.produits) {
+    if (x.montants != null) x.montants = serie(x.montants, l);
+    else { x.quantites = serie(x.quantites, l); x.prix_unitaire = serie(x.prix_unitaire, l); }
   }
-
-  if(costSuggestions && costSuggestions.length){
-    var items = costSuggestions.map(function(s){
-      return `<li>${escapeHtml(s.nom)} : <b>${Math.round(s.valeur).toLocaleString('fr-FR')} FCFA</b></li>`;
-    }).join('');
-    blocks.push(`
-      <div class="ai-note">
-        <span class="badge sugg">● Suggéré par l'IA</span>
-        <p><span class="lbl">Coût variable unitaire non renseigné — valeur proposée selon le secteur</span></p>
-        <ul style="margin:4px 0 0; padding-left:18px;">${items}</ul>
-        <p style="margin-top:8px;">Pas d'accord ? Renseignez le champ correspondant dans le formulaire ci-dessus et régénérez l'aperçu.</p>
-      </div>`);
+  for (const c of p.charges) {
+    if (c.montants != null) c.montants = serie(c.montants, l);
+    else if (c.quantites != null) { c.quantites = serie(c.quantites, l); c.cout_unitaire = serie(c.cout_unitaire, l); }
+    else if (Array.isArray(c.pct_ca)) c.pct_ca = c.pct_ca[0];
   }
-
-  box.innerHTML = blocks.join('');
+  for (const k of ["dotations_existantes", "augmentation_bfr_force", "autres_frais_financiers", "remboursements_existants"])
+    if (p[k] != null) p[k] = serie(p[k], l);
 }
 
-function renderPreview(sheets){
-  var tabs = document.getElementById('previewTabs');
-  var container = document.getElementById('previewSheets');
-  tabs.innerHTML = '';
-  container.innerHTML = '';
+// ======================================================================
+// Champs generiques : data-p = chemin dans D (ou RED si data-red), data-t = type
+// ======================================================================
+function champ(libelle, chemin, opts = {}) {
+  const t = opts.type || "text", v = lire(chemin, opts.obj || D);
+  let val = v ?? "";
+  if (t === "lines") val = (v || []).join("\n");
+  if (t === "pct" && v != null) val = +(v * 100).toFixed(4);
+  const attrs = `data-p="${esc(chemin)}" data-t="${t}" ${opts.red ? "data-red" : ""} id="f-${esc(chemin)}"`;
+  let ctrl;
+  if (t === "textarea" || t === "lines")
+    ctrl = `<textarea ${attrs} rows="${opts.rows || 3}" placeholder="${esc(opts.ph || (t === "lines" ? "Un élément par ligne" : ""))}">${esc(val)}</textarea>`;
+  else if (t === "select")
+    ctrl = `<select ${attrs}>${opts.options.map(([o, lib]) => `<option value="${esc(o)}" ${String(v) === String(o) ? "selected" : ""}>${esc(lib)}</option>`).join("")}</select>`;
+  else
+    ctrl = `<input ${attrs} ${["num", "pct", "int"].includes(t) ? 'class="num" inputmode="decimal"' : ""} value="${esc(val)}" placeholder="${esc(opts.ph || "")}">`;
+  if (!libelle) return ctrl;
+  return `<div class="champ ${opts.large ? "large" : ""}"><label for="f-${esc(chemin)}">${esc(libelle)}${opts.requis ? " *" : ""}</label>${ctrl}</div>`;
+}
+function valeurChamp(el) {
+  const t = el.dataset.t, s = el.value;
+  if (t === "num" || t === "pct" || t === "int") {
+    const x = parseFloat(s.replace(/\s/g, "").replace(",", "."));
+    if (isNaN(x)) return null;
+    return t === "pct" ? x / 100 : t === "int" ? Math.round(x) : x;
+  }
+  if (t === "lines") return s.split("\n").map(x => x.trim()).filter(Boolean);
+  if (t === "bool") return el.checked;
+  return s;
+}
+document.addEventListener("input", e => {
+  const el = e.target; if (!el.dataset || !el.dataset.p) return;
+  if (el.dataset.red !== undefined) ecrireRedaction(el); else ecrire(el.dataset.p, valeurChamp(el));
+  sauver(); apresSaisie(el);
+});
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.t === "bool") { ecrire(el.dataset.p, el.checked); sauver(); afficher(); }
+  else if (el.tagName === "SELECT" && el.dataset.p && el.dataset.rerendu !== undefined) afficher();
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-add],[data-del]"); if (!b) return;
+  if (b.dataset.add) { const liste = lire(b.dataset.add) || []; liste.push(JSON.parse(b.dataset.modele)); ecrire(b.dataset.add, liste); }
+  else { const k = b.dataset.del.split("."), i = +k.pop(), liste = lire(k.join(".")); liste.splice(i, 1); }
+  sauver(); afficher();
+});
+function liste(titre, chemin, colonnes, modele, aide = "") {
+  const lignes = lire(chemin) || [];
+  return `<h3>${esc(titre)}</h3>${aide ? `<p class="aide">${esc(aide)}</p>` : ""}
+  <div class="defile"><table class="liste"><thead><tr>${colonnes.map(c => `<th>${esc(c[0])}</th>`).join("")}<th></th></tr></thead><tbody>
+  ${lignes.map((_, i) => `<tr>${colonnes.map(c => `<td style="min-width:${c[3] || 120}px">${champ("", `${chemin}.${i}.${c[1]}`, {type: c[2] || "text"})}</td>`).join("")}
+    <td><button class="btn sup" data-del="${chemin}.${i}" title="Supprimer">×</button></td></tr>`).join("")}
+  </tbody></table></div>
+  <button class="btn petit" data-add="${chemin}" data-modele='${esc(JSON.stringify(modele))}'>+ Ajouter</button>`;
+}
 
-  sheets.forEach(function(sheet, i){
-    var tab = document.createElement('button');
-    tab.type = 'button';
-    tab.className = 'preview-tab' + (i === 0 ? ' active' : '');
-    tab.textContent = sheet.name;
-    tab.onclick = function(){
-      document.querySelectorAll('.preview-tab').forEach(function(t){ t.classList.remove('active'); });
-      document.querySelectorAll('.preview-sheet').forEach(function(s){ s.classList.remove('active'); });
-      tab.classList.add('active');
-      document.getElementById('sheet_' + i).classList.add('active');
-    };
-    tabs.appendChild(tab);
+// ======================================================================
+// Etapes
+// ======================================================================
+const ETAPES = [
+  {titre: "Type de dossier", rendu: etapeType, ok: () => !!D.variante},
+  {titre: "Entreprise", rendu: etapeEntreprise, ok: () => !!D.entreprise.raison_sociale.trim()},
+  {titre: "Projet", rendu: etapeProjet, ok: () => !!(D.projet.intitule.trim() && D.projet.secteur.trim())},
+  {titre: "Documents comptables", rendu: etapeLiasse, ok: () => D.variante === "nouveau_projet" ? true : !!(D.bilan_n && D._liasse_validee)},
+  {titre: "Google Trends", rendu: etapeTrends, ok: () => (D.trends_faits || []).length > 0},
+  {titre: "Données financières", rendu: etapeFinances, ok: () => PROJ_RES && !PROJ_RES.erreurs.length},
+  {titre: "Rédaction IA", rendu: etapeRedaction, ok: () => !!RED},
+  {titre: "Génération du document", rendu: etapeGeneration, ok: () => false},
+];
+function majNav() {
+  $("#nav").innerHTML = ETAPES.map((e, i) =>
+    `<button class="${i === UI.etape ? "actif" : ""} ${e.ok() ? "ok" : ""}" data-etape="${i}"><span class="num">${e.ok() && i !== UI.etape ? "✓" : i + 1}</span>${esc(e.titre)}</button>`).join("");
+}
+function afficher() {
+  majNav();
+  $("#contenu").innerHTML = ETAPES[UI.etape].rendu() + navigation();
+  if (UI.etape === 5) previsualiser(0);
+}
+$("#nav").addEventListener("click", e => { const b = e.target.closest("[data-etape]"); if (b) { UI.etape = +b.dataset.etape; sauver(); afficher(); window.scrollTo(0, 0); } });
+function navigation() {
+  const i = UI.etape;
+  return `<div class="pied-etape">${i > 0 ? `<button class="btn" onclick="aller(${i - 1})">← ${esc(ETAPES[i - 1].titre)}</button>` : "<span></span>"}
+    ${i < ETAPES.length - 1 ? `<button class="btn principal" onclick="aller(${i + 1})">${esc(ETAPES[i + 1].titre)} →</button>` : ""}</div>`;
+}
+function aller(i) { UI.etape = i; sauver(); afficher(); window.scrollTo(0, 0); }
+function apresSaisie(el) {
+  if (UI.etape === 5) previsualiser(600);
+  if (UI.etape === 3 && el.dataset.p.match(/^(bilan|cr)_/)) majTotauxBilan();
+}
 
-    var panel = document.createElement('div');
-    panel.className = 'preview-sheet' + (i === 0 ? ' active' : '');
-    panel.id = 'sheet_' + i;
-    panel.innerHTML = sheet.html;
-    container.appendChild(panel);
+// ---------------------------------------------------------------- 1. type
+function etapeType() {
+  const c = (v, titre, texte) => `<button class="${D.variante === v ? "actif" : ""}" onclick="choisirVariante('${v}')"><strong>${titre}</strong>${texte}</button>`;
+  return `<div class="carte"><h2>Type de dossier</h2><p class="aide">Le plan du document suit le modèle BEFA correspondant.</p>
+  <div class="choix">
+  ${c("nouveau_projet", "Nouveau projet", "Création d'une activité ou d'une unité (modèle COREAL FOOD) : présentation, requête, environnement, marché, organisation, bilan d'ouverture, prévisions sur 5 à 6 ans, risques, SWOT.")}
+  ${c("entreprise_existante", "Entreprise existante — dossier de crédit", "Financement d'un besoin d'une entreprise en activité (modèle O'IVOIRE) : analyse des bilans N / N-1, besoin, projections, étude de marché.")}
+  </div>
+  ${champ("Année du document", "annee_document", {ph: "2026"})}</div>`;
+}
+function choisirVariante(v) { D.variante = v; sauver(); afficher(); }
+
+// ---------------------------------------------------------------- 2. entreprise
+function etapeEntreprise() {
+  const e = "entreprise.";
+  return `<div class="carte"><h2>Entreprise</h2><p class="aide">Identité de la société cliente, telle qu'elle apparaîtra dans la partie « Présentation ».</p>
+  <div class="grille">
+    ${champ("Raison sociale", e + "raison_sociale", {requis: true})}${champ("Sigle", e + "sigle")}
+    ${champ("Forme juridique", e + "forme_juridique", {ph: "SA, SARL, SAS…"})}${champ("Capital social (FCFA)", e + "capital", {type: "num"})}
+    ${champ("Date de création", e + "date_creation", {ph: "JJ/MM/AAAA"})}${champ("RCCM", e + "rccm")}
+    ${champ("N° compte contribuable (NCC)", e + "ncc")}${champ("Régime fiscal", e + "regime_fiscal")}
+    ${champ("Centre des impôts", e + "centre_impots")}${champ("Ville", e + "ville")}
+    ${champ("Siège social", e + "siege")}${champ("Adresse postale", e + "adresse")}
+    ${champ("Téléphone", e + "telephone")}${champ("E-mail", e + "email")}
+    ${champ("Nature de l'activité", e + "activite", {type: "textarea", large: true})}
+    ${champ("Objet social", e + "objet_social", {type: "lines", large: true, rows: 4})}
+  </div>
+  ${liste("Actionnariat", "actionnaires", [["Nom", "nom", "text", 200], ["Nationalité", "nationalite"], ["Nature", "nature", "text", 150], ["Montant (FCFA)", "montant", "num"]], {nom: "", montant: 0, nationalite: "Ivoirienne", nature: "Personne physique"})}
+  ${liste("Dirigeants", "dirigeants", [["Nom", "nom", "text", 200], ["Fonction", "fonction"], ["Profil / expérience", "profil", "text", 260]], {nom: "", fonction: "", profil: ""})}
+  <div class="grille" style="margin-top:12px">${champ("Gouvernance (organes de gestion)", "gouvernance", {type: "textarea", large: true})}</div>
+  ${liste("Produits et services", "produits", [["Nom", "nom", "text", 200], ["Description", "description", "text", 380]], {nom: "", description: ""})}
+  ${liste("Principaux clients", "clients", [["Nom", "nom", "text", 200], ["Mode de règlement", "mode_paiement"], ["Délai", "delai"], ["Localisation", "localisation"]], {nom: "", mode_paiement: "", delai: "", localisation: ""})}
+  ${liste("Principaux fournisseurs", "fournisseurs", [["Nom", "nom", "text", 200], ["Mode de règlement", "mode_paiement"], ["Délai", "delai"], ["Localisation", "localisation"]], {nom: "", mode_paiement: "", delai: "", localisation: ""})}
+  <div class="grille" style="margin-top:12px">${champ("Pool bancaire / relations bancaires", "pool_bancaire", {type: "textarea", large: true})}</div>
+  </div>`;
+}
+
+// ---------------------------------------------------------------- 3. projet
+function etapeProjet() {
+  const p = "projet.", existante = D.variante === "entreprise_existante";
+  return `<div class="carte"><h2>Projet</h2><p class="aide">Ces informations guident la recherche documentaire et la rédaction de l'IA : plus elles sont précises, meilleur est le texte.</p>
+  <div class="grille">
+    ${champ("Intitulé du projet", p + "intitule", {requis: true, ph: "Huilerie industrielle de 30 t/h"})}
+    ${champ("Secteur d'activité", p + "secteur", {requis: true, ph: "Transformation agro-industrielle - huile de palme"})}
+    ${champ("Localisation", p + "localisation", {ph: "Ville, région"})}${champ("Marché visé", p + "zone_marche")}
+    ${champ("Objet du projet", p + "objet", {type: "textarea", large: true})}
+    ${champ("Description technique", p + "description", {type: "textarea", large: true, rows: 4})}
+    ${existante ? champ("Contexte du besoin (pourquoi ce financement maintenant)", p + "contexte_besoin", {type: "textarea", large: true}) : ""}
+    ${champ("Objectifs", p + "objectifs", {type: "lines", large: true, rows: 4})}
+    ${champ("Phases / planning de réalisation", p + "phases", {type: "lines", large: true})}
+    ${champ("Emplois directs créés", p + "emplois_directs", {type: "int"})}${champ("Emplois indirects", p + "emplois_indirects", {type: "int"})}
+    ${champ("Principaux concurrents", p + "concurrents", {type: "lines", large: true})}
+    ${champ("Informations complémentaires pour la rédaction", p + "notes_consultant", {type: "textarea", large: true, ph: "Contexte, atouts, contraintes… tout ce que l'IA doit savoir."})}
+  </div></div>`;
+}
+
+// ---------------------------------------------------------------- 4. liasse
+const CHAMPS_BILAN = [
+  ["Stocks", "stocks"], ["Fournisseurs, avances versées", "avances_fournisseurs"], ["Créances clients", "creances_clients"],
+  ["Autres créances", "autres_creances"], ["Trésorerie actif", "tresorerie_actif"],
+  ["Capital", "capital"], ["Réserves et report à nouveau", "reserves_report"], ["Résultat net", "resultat_net"],
+  ["Subventions d'investissement", "subventions_investissement"], ["Compte courant d'associés", "compte_courant_associes"],
+  ["Dettes financières", "dettes_financieres"], ["Fournisseurs", "fournisseurs"], ["Dettes fiscales", "dettes_fiscales"],
+  ["Dettes sociales", "dettes_sociales"], ["Dettes fiscales et sociales", "dettes_fiscales_sociales"],
+  ["Autres dettes", "autres_dettes"], ["Trésorerie passif", "tresorerie_passif"]];
+const ACTIF = ["stocks", "avances_fournisseurs", "creances_clients", "autres_creances", "tresorerie_actif"];
+const CHAMPS_CR = [
+  ["Chiffre d'affaires", "chiffre_affaires"], ["Achats de marchandises / matières", "achats_matieres"], ["Autres achats", "autres_achats"],
+  ["Transport", "transport"], ["Services extérieurs", "services_exterieurs"], ["Impôts et taxes", "impots_taxes"],
+  ["Autres charges (nettes)", "autres_charges"], ["Salaires", "salaires"], ["Dotations aux amortissements", "dotations"],
+  ["Frais financiers (nets)", "frais_financiers"], ["Résultat HAO", "resultat_hao"], ["Impôt sur le bénéfice", "impot_sur_benefice"]];
+
+function totauxBilan(b) {
+  if (!b) return null;
+  const v = k => +b[k] || 0;
+  const immo = (b.immobilisations || []).reduce((s, x) => s + (+x.brut || 0) - (+x.amortissements || 0), 0);
+  const actif = immo + ACTIF.reduce((s, k) => s + v(k), 0);
+  const passif = CHAMPS_BILAN.map(c => c[1]).filter(k => !ACTIF.includes(k)).reduce((s, k) => s + v(k), 0);
+  return {actif, passif};
+}
+function majTotauxBilan() {
+  for (const k of ["bilan_n", "bilan_n1"]) {
+    const el = document.getElementById("tot-" + k), t = totauxBilan(D[k]); if (!el || !t) continue;
+    const ecart = t.actif - t.passif;
+    el.innerHTML = `Total actif ${fr(t.actif)} — total passif ${fr(t.passif)} : ` +
+      (Math.abs(ecart) <= 1 ? `<span style="color:var(--vert)">équilibré ✓</span>` : `<span style="color:var(--rouge)">écart ${fr(ecart)}</span>`);
+  }
+}
+function formulaireBilan(cle, titre) {
+  const b = D[cle]; if (!b) return "";
+  return `<h3>${esc(titre)} ${esc(b.exercice || "")}</h3>
+  ${liste("Immobilisations", cle + ".immobilisations", [["Poste", "libelle", "text", 260], ["Brut", "brut", "num"], ["Amortissements", "amortissements", "num"]], {libelle: "", brut: 0, amortissements: 0})}
+  <div class="grille">${CHAMPS_BILAN.map(c => champ(c[0], `${cle}.${c[1]}`, {type: "num"})).join("")}</div>
+  <div class="bilan-total" id="tot-${cle}"></div>`;
+}
+function formulaireCR(cle, titre) {
+  const c = D[cle]; if (!c) return "";
+  return `<h3>${esc(titre)} ${esc(c.exercice || "")}</h3><div class="grille">${CHAMPS_CR.map(x => champ(x[0], `${cle}.${x[1]}`, {type: "num"})).join("")}</div>`;
+}
+function etapeLiasse() {
+  const nouveau = D.variante === "nouveau_projet";
+  let h = `<div class="carte"><h2>Documents comptables</h2>
+  <p class="aide">${nouveau ? "Facultatif pour un nouveau projet : importez le bilan d'ouverture s'il existe." : "Importez la liasse fiscale SYSCOHADA du dernier exercice (PDF DGI). Les chiffres N et N-1 sont lus par l'IA puis contrôlés contre les totaux de la liasse."}</p>
+  <input type="file" id="liasse" accept="application/pdf,.pdf"> <button class="btn principal" onclick="importerLiasse()">Lire la liasse</button>
+  <div id="liasse-etat"></div>`;
+  if (LIASSE_RES) {
+    const r = LIASSE_RES;
+    h += r.alertes.length ? `<div class="alerte att"><strong>À vérifier :</strong><ul>${r.alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>`
+      : `<div class="alerte ok">Contrôles automatiques : tous les totaux recalculés concordent avec la liasse (pages lues : ${r.pages_lues.join(", ")}).</div>`;
+    if (r.note_ia) h += `<div class="alerte info"><strong>Note de lecture de l'IA (non vérifiée) :</strong> ${esc(r.note_ia)}</div>`;
+    h += `<p><button class="btn petit" onclick="reprendreIdentite()">Reprendre l'identité lue (${esc(r.entreprise.raison_sociale || "")}) dans le dossier</button></p>`;
+  }
+  h += `</div>`;
+  if (D.bilan_n) {
+    h += `<div class="carte"><h2>Validation des chiffres</h2><p class="aide">Corrigez si nécessaire ; ces montants alimentent l'étude financière du document.</p>
+    ${formulaireBilan("bilan_n", "Bilan")}${formulaireBilan("bilan_n1", "Bilan")}${formulaireCR("cr_n", "Compte de résultat")}${formulaireCR("cr_n1", "Compte de résultat")}
+    <h3>Validation</h3><label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--encre)">
+      <input type="checkbox" data-p="_liasse_validee" data-t="bool" style="width:auto" ${D._liasse_validee ? "checked" : ""}> J'ai vérifié ces chiffres avec la liasse originale.</label>
+    <p><button class="btn petit" onclick="effacerLiasse()">Retirer les données comptables</button></p></div>`;
+    setTimeout(majTotauxBilan, 0);
+  }
+  return h;
+}
+async function importerLiasse() {
+  const f = $("#liasse").files[0]; if (!f) { $("#liasse-etat").innerHTML = `<div class="alerte err">Choisissez d'abord un fichier PDF.</div>`; return; }
+  const debut = Date.now(), minuteur = setInterval(() => { const s = $("#liasse-etat .s"); if (s) s.textContent = Math.round((Date.now() - debut) / 1000) + " s"; }, 1000);
+  $("#liasse-etat").innerHTML = `<p class="attente"><span class="roue"></span>Lecture de la liasse par l'IA (30 à 60 s)… <span class="s"></span></p>`;
+  try {
+    const fd = new FormData(); fd.append("fichier", f);
+    LIASSE_RES = await api("/api/befa/liasse", {method: "POST", body: fd});
+    D.bilan_n = LIASSE_RES.bilan_n; D.bilan_n1 = LIASSE_RES.bilan_n1; D.cr_n = LIASSE_RES.compte_resultat_n; D.cr_n1 = LIASSE_RES.compte_resultat_n1;
+    D._liasse_validee = false; sauver(); afficher();
+  } catch (e) { $("#liasse-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
+  finally { clearInterval(minuteur); }
+}
+function reprendreIdentite() {
+  const e = LIASSE_RES.entreprise;
+  if (e.raison_sociale && !D.entreprise.raison_sociale) D.entreprise.raison_sociale = e.raison_sociale;
+  if (e.sigle && !D.entreprise.sigle) D.entreprise.sigle = e.sigle;
+  if (e.ncc && !D.entreprise.ncc) D.entreprise.ncc = e.ncc;
+  if (e.adresse && !D.entreprise.adresse) D.entreprise.adresse = e.adresse;
+  sauver(); afficher();
+}
+function effacerLiasse() { D.bilan_n = D.bilan_n1 = D.cr_n = D.cr_n1 = null; D._liasse_validee = false; LIASSE_RES = null; sauver(); afficher(); }
+
+// ---------------------------------------------------------------- 5. trends
+function etapeTrends() {
+  let h = `<div class="carte"><h2>Google Trends</h2>
+  <p class="aide">Sur <a href="https://trends.google.com" target="_blank" rel="noopener">trends.google.com</a> : saisissez les mots-clés du projet, choisissez <strong>Côte d'Ivoire</strong> et <strong>5 dernières années</strong>, puis cliquez sur l'icône <strong>Télécharger (⬇)</strong> de chaque encadré : « Évolution de l'intérêt » (obligatoire), « Intérêt par sous-région », « Requêtes associées ». Déposez ici les fichiers CSV obtenus. Étape facultative.</p>
+  <input type="file" id="trends" accept=".csv,text/csv" multiple> <button class="btn principal" onclick="importerTrends()">Analyser</button>
+  <div id="trends-etat"></div>`;
+  if ((D._trends_csv || []).length) h += `<p><span class="badge">Fichiers retenus : ${D._trends_csv.map(f => esc(f.nom)).join(", ")}</span> <button class="btn petit" onclick="effacerTrends()">Retirer</button></p>`;
+  if (TRENDS_RES) {
+    h += `<h3>Constats calculés</h3><ul>${TRENDS_RES.faits.map(f => `<li>${esc(f)}</li>`).join("")}</ul>
+    <p class="aide">${esc(TRENDS_RES.source)}</p>
+    ${Object.values(TRENDS_RES.graphiques).map(g => `<img class="graph" src="${g}" alt="Graphique Google Trends">`).join("")}
+    <div class="alerte info">${esc(TRENDS_RES.avertissement)}</div>`;
+  } else if ((D.trends_faits || []).length) {
+    h += `<h3>Constats enregistrés</h3><ul>${D.trends_faits.map(f => `<li>${esc(f)}</li>`).join("")}</ul>`;
+  }
+  return h + `</div>`;
+}
+async function analyserTrends(fichiers) {
+  const fd = new FormData();
+  for (const f of fichiers) fd.append("fichiers", new Blob([f.texte], {type: "text/csv"}), f.nom);
+  TRENDS_RES = await api("/api/befa/trends", {method: "POST", body: fd});
+  D.trends_faits = TRENDS_RES.faits; D.trends_source = TRENDS_RES.source;
+}
+async function importerTrends() {
+  const fichiers = [...$("#trends").files]; if (!fichiers.length) { $("#trends-etat").innerHTML = `<div class="alerte err">Choisissez au moins un fichier CSV.</div>`; return; }
+  try {
+    const lus = await Promise.all(fichiers.map(async f => ({nom: f.name, texte: await f.text()})));
+    await analyserTrends(lus);
+    D._trends_csv = lus; sauver(); afficher();
+  } catch (e) { $("#trends-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
+}
+function effacerTrends() { D._trends_csv = []; D.trends_faits = []; D.trends_source = ""; TRENDS_RES = null; sauver(); afficher(); }
+
+// ---------------------------------------------------------------- 6. finances
+const RUBRIQUES = [["achats_matieres", "Achats de matières premières"], ["autres_achats", "Autres achats"], ["transport", "Transport"],
+  ["services_exterieurs", "Services extérieurs"], ["impots_taxes", "Impôts et taxes"], ["salaires", "Salaires"]];
+function ligneAnnees(libelle, chemin, type = "num") {
+  return `<div class="ligne-annees" style="grid-template-columns:150px repeat(${n()},minmax(90px,1fr))"><span>${esc(libelle)}</span>
+    ${D.projection.annees.map((_, a) => champ("", `${chemin}.${a}`, {type})).join("")}</div>`;
+}
+function enteteAnnees() {
+  return `<div class="ligne-annees" style="grid-template-columns:150px repeat(${n()},minmax(90px,1fr))"><span></span>${D.projection.annees.map(a => `<span style="text-align:right">${esc(a)}</span>`).join("")}</div>`;
+}
+function etapeFinances() {
+  const p = D.projection, existante = D.variante === "entreprise_existante";
+  const rangs = p.annees[0] && p.annees[0].toLowerCase().startsWith("année");
+  let h = `<div class="carte"><h2>Données financières</h2><p class="aide">Tous les chiffres du document sont calculés à partir de ces saisies (aucun chiffre n'est produit par l'IA). L'aperçu en bas de page se met à jour à chaque modification.</p>
+  <div class="grille">
+    <div class="champ"><label>Nombre d'années de prévision</label><input class="num" id="nb-annees" value="${p.annees.length}" onchange="redimensionner()"></div>
+    <div class="champ"><label>Libellé des colonnes</label><select id="type-annees" onchange="redimensionner()"><option value="rang" ${rangs ? "selected" : ""}>Année 1, Année 2…</option><option value="millesime" ${rangs ? "" : "selected"}>Millésimes (2026, 2027…)</option></select></div>
+    <div class="champ"><label>Première année (millésime)</label><input class="num" id="annee-debut" value="${rangs ? new Date().getFullYear() : esc(p.annees[0])}" onchange="redimensionner()"></div>
+    ${champ("Taux d'impôt sur les sociétés (%)", "projection.taux_is", {type: "pct"})}
+  </div>
+
+  <h3>Produits et services vendus</h3>`;
+  p.produits.forEach((x, i) => {
+    const mode = x.montants != null ? "montants" : "quantites";
+    h += `<div class="charge"><div class="entete">${champ("Libellé", `projection.produits.${i}.libelle`)}${champ("Unité", `projection.produits.${i}.unite`, {ph: "t, unités…"})}
+      <div class="champ"><label>Saisie</label><select onchange="modeProduit(${i}, this.value)"><option value="quantites" ${mode === "quantites" ? "selected" : ""}>Quantités × prix</option><option value="montants" ${mode === "montants" ? "selected" : ""}>Chiffre d'affaires annuel</option></select></div>
+      <button class="btn sup" data-del="projection.produits.${i}" title="Supprimer">×</button></div>
+      ${enteteAnnees()}${mode === "montants" ? ligneAnnees("CA (FCFA)", `projection.produits.${i}.montants`) :
+        ligneAnnees("Quantités", `projection.produits.${i}.quantites`) + ligneAnnees("Prix unitaire (FCFA)", `projection.produits.${i}.prix_unitaire`)}</div>`;
   });
+  h += `<button class="btn petit" onclick="ajouterProduit()">+ Ajouter un produit</button>
 
-  document.getElementById('previewPanel').classList.add('show');
-  document.getElementById('previewPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  <h3>Charges d'exploitation</h3>`;
+  p.charges.forEach((c, i) => {
+    const mode = c.montants != null ? "montants" : c.quantites != null ? "quantites" : "pct";
+    h += `<div class="charge"><div class="entete">${champ("Libellé", `projection.charges.${i}.libelle`)}
+      ${champ("Rubrique", `projection.charges.${i}.rubrique`, {type: "select", options: RUBRIQUES})}
+      <div class="champ"><label>Mode de calcul</label><select onchange="modeCharge(${i}, this.value)"><option value="montants" ${mode === "montants" ? "selected" : ""}>Montant par année</option><option value="pct" ${mode === "pct" ? "selected" : ""}>% du chiffre d'affaires</option><option value="quantites" ${mode === "quantites" ? "selected" : ""}>Quantités × coût unitaire</option></select></div>
+      <button class="btn sup" data-del="projection.charges.${i}" title="Supprimer">×</button></div>
+      ${mode === "pct" ? `<div class="grille">${champ("Pourcentage du CA (%)", `projection.charges.${i}.pct_ca`, {type: "pct"})}</div>` :
+        enteteAnnees() + (mode === "montants" ? ligneAnnees("Montant (FCFA)", `projection.charges.${i}.montants`) :
+        ligneAnnees("Quantités", `projection.charges.${i}.quantites`) + ligneAnnees("Coût unitaire (FCFA)", `projection.charges.${i}.cout_unitaire`))}</div>`;
+  });
+  h += `<button class="btn petit" onclick="ajouterCharge()">+ Ajouter une charge</button>
+
+  ${liste("Investissements", "projection.investissements", [["Libellé", "libelle", "text", 260], ["Montant (FCFA)", "montant", "num"], ["Année (0 = avant démarrage)", "annee", "int", 90], ["Amortissement (ans, vide = non amortissable)", "duree_amortissement_ans", "num", 110]], {libelle: "", montant: 0, annee: 0, duree_amortissement_ans: 5})}
+  ${liste("Apports et fonds propres", "projection.apports", [["Libellé", "libelle", "text", 260], ["Montant (FCFA)", "montant", "num"], ["Année", "annee", "int", 90]], {libelle: "Apport du promoteur", montant: 0, annee: 0})}
+
+  <h3>Concours bancaires sollicités</h3>`;
+  p.prets.forEach((x, i) => {
+    const b = `projection.prets.${i}.`;
+    h += `<div class="charge"><div class="grille">
+      ${champ("Libellé", b + "libelle")}${champ("Type", b + "type", {type: "select", options: [["CMT", "Crédit moyen terme"], ["CLT", "Crédit long terme"], ["CREDIT_BAIL", "Crédit-bail"], ["SPOT", "Crédit spot (campagne)"], ["CCT", "Crédit court terme"]]})}
+      ${champ("Montant (FCFA)", b + "montant", {type: "num"})}${champ("Taux annuel (%)", b + "taux_annuel", {type: "pct"})}
+      ${champ("Durée totale (mois, différé inclus)", b + "duree_mois", {type: "int"})}${champ("Périodicité", b + "periodicite", {type: "select", options: [["mensuelle", "Mensuelle"], ["trimestrielle", "Trimestrielle"], ["semestrielle", "Semestrielle"], ["annuelle", "Annuelle"]]})}
+      ${champ("Différé total (mois)", b + "differe_total_mois", {type: "int"})}${champ("Différé partiel (mois)", b + "differe_partiel_mois", {type: "int"})}
+      ${champ("Année de déblocage (0 = avant démarrage)", b + "annee_deblocage", {type: "int"})}${champ("Remboursement in fine", b + "in_fine", {type: "select", options: [["false", "Non"], ["true", "Oui"]]})}
+      ${champ("Objet", b + "objet")}${champ("Garantie", b + "garantie")}
+    </div><button class="btn petit" data-del="projection.prets.${i}" style="margin-top:8px">Supprimer ce prêt</button></div>`;
+  });
+  h += `<button class="btn petit" onclick="ajouterPret()">+ Ajouter un prêt</button>
+
+  <h3>Besoin en fonds de roulement${existante ? " et données de l'entreprise existante" : ""}</h3>
+  <div class="grille">${champ("Délai clients (jours de CA)", "projection.jours_clients", {type: "num"})}${champ("Stocks (jours d'achats)", "projection.jours_stocks", {type: "num"})}
+    ${champ("Délai fournisseurs (jours d'achats)", "projection.jours_fournisseurs", {type: "num"})}${champ("Trésorerie initiale (FCFA)", "projection.tresorerie_initiale", {type: "num"})}</div>`;
+  if (existante) {
+    p.dotations_existantes = serie(p.dotations_existantes, n());
+    h += `<p class="aide" style="margin-top:10px">Amortissements des immobilisations déjà en place (s'ajoutent à ceux des nouveaux investissements) :</p>${enteteAnnees()}${ligneAnnees("Dotations existantes", "projection.dotations_existantes")}`;
+  }
+  h += `</div><div class="carte" id="apercu-fin"><h2>Aperçu des états prévisionnels</h2><p class="attente"><span class="roue"></span>Calcul…</p></div>`;
+  return h;
+}
+// le select "in_fine" stocke une chaine : conversion avant envoi
+function projectionPourServeur() {
+  const p = pourServeur(D.projection);
+  for (const x of p.prets) x.in_fine = x.in_fine === true || x.in_fine === "true";
+  for (const x of p.investissements) if (!x.duree_amortissement_ans) x.duree_amortissement_ans = null;
+  return p;
+}
+function redimensionner() {
+  const nb = Math.max(1, Math.min(15, parseInt($("#nb-annees").value) || 5));
+  const type = $("#type-annees").value, debut = parseInt($("#annee-debut").value) || new Date().getFullYear();
+  D.projection.annees = Array.from({length: nb}, (_, k) => type === "rang" ? `Année ${k + 1}` : String(debut + k));
+  normaliser(); sauver(); afficher();
+}
+function ajouterProduit() { D.projection.produits.push({libelle: "", unite: "", quantites: serie(0, n()), prix_unitaire: serie(0, n())}); sauver(); afficher(); }
+function ajouterCharge() { D.projection.charges.push({libelle: "", rubrique: "services_exterieurs", montants: serie(0, n())}); sauver(); afficher(); }
+function ajouterPret() { D.projection.prets.push({libelle: "", type: "CMT", montant: 0, taux_annuel: 0.09, duree_mois: 60, differe_total_mois: 0, differe_partiel_mois: 0, periodicite: "mensuelle", annee_deblocage: 0, in_fine: false, objet: "", garantie: ""}); sauver(); afficher(); }
+function modeProduit(i, mode) {
+  const x = D.projection.produits[i];
+  if (mode === "montants") { delete x.quantites; delete x.prix_unitaire; x.montants = serie(0, n()); }
+  else { delete x.montants; x.quantites = serie(0, n()); x.prix_unitaire = serie(0, n()); }
+  sauver(); afficher();
+}
+function modeCharge(i, mode) {
+  const c = D.projection.charges[i]; delete c.montants; delete c.pct_ca; delete c.quantites; delete c.cout_unitaire;
+  if (mode === "montants") c.montants = serie(0, n()); else if (mode === "pct") c.pct_ca = 0; else { c.quantites = serie(0, n()); c.cout_unitaire = serie(0, n()); }
+  sauver(); afficher();
+}
+let minuteurApercu = null;
+function previsualiser(delai) {
+  clearTimeout(minuteurApercu);
+  minuteurApercu = setTimeout(async () => {
+    try {
+      PROJ_RES = await api("/api/befa/projection", {method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({projection: projectionPourServeur(), nom: D.entreprise.sigle || D.entreprise.raison_sociale})});
+    } catch (e) { PROJ_RES = {erreurs: [e.message]}; }
+    const el = $("#apercu-fin"); if (el) el.innerHTML = rendreApercu();
+    majNav();
+  }, delai);
+}
+function tableauApercu(colonnes, lignes) {
+  return `<div class="defile"><table class="apercu"><thead><tr><th>Rubriques</th>${colonnes.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>
+  ${lignes.map(l => `<tr class="${l.style}"><td>${esc(l.libelle)}</td>${l.valeurs.map(v => `<td>${fr(v, l.style === "ratio" ? "ratio" : "")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function rendreApercu() {
+  const r = PROJ_RES;
+  if (!r) return "";
+  if (r.erreurs.length) return `<h2>Aperçu des états prévisionnels</h2><div class="alerte att"><strong>Saisie à compléter :</strong><ul>${r.erreurs.map(e => `<li>${esc(e)}</li>`).join("")}</ul></div>`;
+  const s = r.synthese;
+  return `<h2>Aperçu des états prévisionnels</h2>
+  <p><span class="badge">Investissements : ${fr(s.cout_investissements)} FCFA</span> <span class="badge">Apports : ${fr(s.apports)} FCFA</span> <span class="badge">Prêts : ${fr(s.prets)} FCFA</span></p>
+  <h3>Compte d'exploitation prévisionnel</h3>${tableauApercu(r.annees, r.compte)}<p class="aide">${r.commentaires.compte_exploitation.map(esc).join(" ")}</p>
+  <h3>Plan de financement</h3>${tableauApercu(r.plan.colonnes, r.plan.lignes)}<p class="aide">${r.commentaires.plan_financement.map(esc).join(" ")}</p>
+  <h3>Couverture de la dette</h3>${tableauApercu(r.annees, r.couverture)}<p class="aide">${r.commentaires.couverture_dette.map(esc).join(" ")}</p>`;
 }
 
-async function submitForm(){
-  clearError();
-  hidePreview();
-  var payload = collectPayload();
-
-  if(payload.produits.length === 0){
-    showError("Ajoutez au moins un produit ou service (nom, prix et volume).");
-    return;
-  }
-  if(payload.charges_fixes.length === 0){
-    showError("Ajoutez au moins une charge fixe avec un montant.");
-    return;
-  }
-
-  var btn = document.getElementById('submitBtn');
-  var status = document.getElementById('statusMsg');
-  btn.disabled = true;
-  status.textContent = "Génération en cours (calcul + recalcul du classeur)…";
-
-  try{
-    var resp = await fetch(API_BASE + '/api/preview', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if(!resp.ok){
-      var detail = 'Erreur inconnue';
-      try{ detail = (await resp.json()).detail; }catch(e){}
-      showError(detail);
-      status.textContent = "La génération a échoué — voir le message ci-dessus.";
-      return;
-    }
-    var data = await resp.json();
-    currentJobId = data.job_id;
-    renderAiNote(data.ai_texts, data.ai_warning, data.cost_suggestions);
-    renderPreview(data.sheets);
-    document.getElementById('downloadBlock').classList.add('show');
-    status.textContent = "Aperçu généré sans erreur — vérifiez les feuilles ci-dessous avant de télécharger.";
-  } catch(e){
-    showError("Impossible de contacter le serveur (" + e.message + "). Verifiez que le backend est lance.");
-    status.textContent = "";
-  } finally {
-    btn.disabled = false;
-  }
+// ---------------------------------------------------------------- 7. redaction
+function ecrireRedaction(el) {
+  const [type, i, champ_] = el.dataset.p.split(".");
+  if (type === "section") RED.sections[+i][champ_] = champ_ === "paragraphes" ? el.value.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean) : el.value.split("\n").map(x => x.trim()).filter(Boolean);
+  else if (type === "swot") RED.swot[i] = el.value.split("\n").map(x => x.trim()).filter(Boolean);
+}
+function etapeRedaction() {
+  let h = `<div class="carte"><h2>Rédaction par l'IA</h2>
+  <p class="aide">L'IA recherche des statistiques sectorielles sur le web (seules les affirmations rattachées à une page consultée sont retenues), puis rédige les parties narratives à partir de votre saisie. Les commentaires des tableaux financiers sont écrits par le programme. Comptez 3 à 5 minutes.</p>
+  <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--encre);margin-bottom:10px"><input type="checkbox" id="recherche-web" style="width:auto" checked> Recherche web de statistiques sourcées</label>
+  <button class="btn principal" onclick="lancerRedaction()">${RED ? "Relancer la rédaction (remplace le texte actuel)" : "Lancer la rédaction"}</button>
+  ${RED ? ` <button class="btn" onclick="if(confirmerSuppression())effacerRedaction()">Supprimer la rédaction</button>` : ""}
+  <div id="red-etat"></div></div>`;
+  if (!RED) return h + `<div class="carte"><p class="aide">Sans rédaction, le document est généré avec des encarts « À compléter par le consultant » à la place des parties narratives.</p></div>`;
+  if (RED.alertes.length) h += `<div class="carte"><div class="alerte att"><strong>Points à vérifier :</strong><ul>${RED.alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div></div>`;
+  h += `<div class="carte"><h2>Relecture</h2><p class="aide">Modifiez librement le texte. Paragraphes séparés par une ligne vide ; une puce par ligne. Les renvois [S1], [S2]… deviennent des appels de note vers la page « Sources ».</p>
+  ${RED.sections.map((s, i) => `<div class="section-red"><h3>${esc(s.titre)}</h3>
+    <textarea data-p="section.${i}.paragraphes" data-red rows="${Math.min(18, 3 + s.paragraphes.join(" ").length / 110 | 0)}">${esc(s.paragraphes.join("\n\n"))}</textarea>
+    ${s.puces.length || ["risques", "impact_besoin", "execution", "strategie"].includes(s.cle) ? `<label style="margin-top:6px;display:block">Puces</label><textarea data-p="section.${i}.puces" data-red rows="${Math.max(3, s.puces.length + 1)}">${esc(s.puces.join("\n"))}</textarea>` : ""}</div>`).join("")}
+  <div class="section-red"><h3>Analyse SWOT</h3><div class="deux">
+    ${[["forces", "Forces"], ["faiblesses", "Faiblesses"], ["opportunites", "Opportunités"], ["menaces", "Menaces"]].map(([k, l]) => `<div class="champ"><label>${l}</label><textarea data-p="swot.${k}" data-red rows="6">${esc((RED.swot[k] || []).join("\n"))}</textarea></div>`).join("")}
+  </div></div></div>`;
+  if (RED.sources.length) h += `<div class="carte"><h2>Sources citées (${RED.sources.length})</h2><ol class="sources">${RED.sources.map(s => `<li><strong>[${esc(s.id)}]</strong> ${esc(s.titre)} — <a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></li>`).join("")}</ol>
+    <p class="aide">${RED.faits.length} faits sourcés trouvés, ${RED.consultees.length} pages consultées.</p></div>`;
+  return h;
+}
+function confirmerSuppression() { return window.confirm("Supprimer le texte rédigé ?"); }
+function effacerRedaction() { RED = null; sauver(); afficher(); }
+async function lancerRedaction() {
+  const debut = Date.now(), minuteur = setInterval(() => { const s = $("#red-etat .s"); if (s) s.textContent = Math.round((Date.now() - debut) / 1000) + " s"; }, 1000);
+  $("#red-etat").innerHTML = `<p class="attente"><span class="roue"></span>Recherche documentaire et rédaction en cours… <span class="s"></span></p>`;
+  try {
+    const corps = pourServeur(); corps.projection = PROJ_RES && !PROJ_RES.erreurs.length ? projectionPourServeur() : null;
+    RED = await api(`/api/befa/redaction?recherche_web=${$("#recherche-web").checked}`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(corps)});
+    sauver(); afficher();
+  } catch (e) { $("#red-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
+  finally { clearInterval(minuteur); }
 }
 
-async function downloadFinal(){
-  if(!currentJobId) return;
-  var url = API_BASE + '/api/download/' + currentJobId;
-  var a = document.createElement('a');
-  a.href = url; a.download = '';
-  document.body.appendChild(a); a.click(); a.remove();
+// ---------------------------------------------------------------- 8. generation
+function etapeGeneration() {
+  const verifs = [
+    [!!D.variante, "Type de dossier choisi"],
+    [!!D.entreprise.raison_sociale.trim(), "Raison sociale renseignée"],
+    [!!(D.projet.intitule.trim() && D.projet.secteur.trim()), "Intitulé et secteur du projet renseignés"],
+    [D.variante !== "entreprise_existante" || !!D.bilan_n, "Liasse du dernier exercice importée (entreprise existante)"],
+    [!D.bilan_n || D._liasse_validee, "Chiffres comptables vérifiés par le consultant"],
+    [PROJ_RES ? !PROJ_RES.erreurs.length : D.projection.produits.length > 0, "Données financières complètes"],
+  ];
+  const facultatifs = [[(D.trends_faits || []).length > 0, "Données Google Trends"], [!!RED, "Rédaction IA relue"]];
+  const bloquant = verifs.slice(0, 4).some(v => !v[0]);
+  return `<div class="carte"><h2>Génération du document</h2>
+  <ul style="list-style:none;padding:0">${verifs.map(([ok, l]) => `<li>${ok ? "✅" : "⚠️"} ${esc(l)}</li>`).join("")}
+  ${facultatifs.map(([ok, l]) => `<li>${ok ? "✅" : "○"} ${esc(l)} <span class="badge">facultatif</span></li>`).join("")}</ul>
+  <button class="btn principal" onclick="generer()" ${bloquant ? "disabled" : ""}>Générer le Business Plan (PDF + Word)</button>
+  <div id="gen-etat"></div></div>`;
+}
+async function generer() {
+  $("#gen-etat").innerHTML = `<p class="attente"><span class="roue"></span>Mise en page et conversion PDF (15 à 40 s)…</p>`;
+  try {
+    const corps = pourServeur(); corps.projection = D.projection.produits.length ? projectionPourServeur() : null;
+    const fd = new FormData();
+    fd.append("dossier", JSON.stringify(corps));
+    if (RED) fd.append("redaction", JSON.stringify(RED));
+    for (const f of D._trends_csv || []) fd.append("fichiers_trends", new Blob([f.texte], {type: "text/csv"}), f.nom);
+    const r = await api("/api/befa/generer", {method: "POST", body: fd});
+    $("#gen-etat").innerHTML = `<div class="alerte ok">Document généré : ${r.pages} pages${r.sommaire_complet ? "" : " (sommaire incomplet)"}.</div>
+      <p><a class="btn principal" href="${r.pdf}" target="_blank" rel="noopener">Télécharger le PDF</a> <a class="btn" href="${r.docx}">Télécharger le Word (.docx)</a></p>
+      ${r.alertes.length ? `<div class="alerte att"><strong>Points à vérifier :</strong><ul>${r.alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>` : ""}`;
+  } catch (e) { $("#gen-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
 }
 
-// --- Initialisation ---
-addProduit();
-DEFAULT_CHARGES.forEach(function(nom){ addCharge(nom, ''); });
-addInvestissement();
-initMonthGrid();
+// ======================================================================
+// En-tete : exemples, ouverture / enregistrement
+// ======================================================================
+async function demarrer(dossier, red = null) {
+  D = dossier; RED = red; TRENDS_RES = LIASSE_RES = PROJ_RES = null; normaliser();
+  if ((D._trends_csv || []).length) { try { await analyserTrends(D._trends_csv); } catch (_) {} }
+  UI.etape = 0; sauver(); afficher();
+}
+$("#exemple").addEventListener("change", async e => {
+  const nom = e.target.value; e.target.value = ""; if (!nom) return;
+  try { const d = await api(`/api/befa/exemples/${nom}`); d._liasse_validee = !!d.bilan_n; await demarrer(d); }
+  catch (err) { alert(err.message); }
+});
+$("#nouveau").addEventListener("click", () => { if (window.confirm("Commencer un nouveau dossier ? Le dossier en cours sera effacé de ce navigateur (enregistrez-le d'abord si besoin).")) demarrer(dossierVide()); });
+$("#enregistrer").addEventListener("click", () => {
+  const nom = (D.entreprise.sigle || D.entreprise.raison_sociale || "dossier").replace(/[^\w-]+/g, "_");
+  const blob = new Blob([JSON.stringify({...D, _redaction: RED}, null, 1)], {type: "application/json"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `dossier_BEFA_${nom}.json`; a.click(); URL.revokeObjectURL(a.href);
+});
+$("#ouvrir").addEventListener("click", () => $("#fichier-dossier").click());
+$("#fichier-dossier").addEventListener("change", async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  try { const d = JSON.parse(await f.text()); const red = d._redaction || null; delete d._redaction; await demarrer(d, red); }
+  catch (err) { alert("Fichier de dossier illisible : " + err.message); }
+});
+
+charger(); normaliser();
+if ((D._trends_csv || []).length) analyserTrends(D._trends_csv).then(() => { if (UI.etape === 4) afficher(); }).catch(() => {});
+afficher();
+if (UI.etape !== 5 && D.projection.produits.length) previsualiser(0);  // statut de l'etape "Donnees financieres"
 </script>
-
 </body>
 </html>

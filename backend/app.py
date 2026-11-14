@@ -267,6 +267,10 @@ from backend.befa_api import router as befa_router  # noqa: E402
 
 app.include_router(befa_router)
 
+ASSETS_DIR = os.path.join(BASE_DIR, "assets")
+if os.path.isdir(ASSETS_DIR):
+    app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
+
 
 if os.path.isdir(WEB_DIR):
     app.mount("/", StaticFiles(directory=WEB_DIR, html=True), name="web")

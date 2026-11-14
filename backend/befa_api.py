@@ -222,3 +222,55 @@ def telecharger(job_id: str, format_: str):
     types = {"pdf": "application/pdf",
              "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
     return FileResponse(doc[format_], media_type=types[format_], filename=_os.path.basename(doc[format_]))
+
+
+# ----------------------------------------------------------------------
+# Lot 6 : services du formulaire web
+# ----------------------------------------------------------------------
+_EXEMPLES = {"coreal": "befa_exemple_coreal.json", "oivoire": "befa_exemple_oivoire.json"}
+_DATA = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "data")
+
+
+@router.get("/exemples/{nom}")
+def exemple(nom: str):
+    """Dossiers d'exemple (demonstration, formation des consultants)."""
+    if nom not in _EXEMPLES:
+        raise HTTPException(status_code=404, detail="Exemple inconnu.")
+    with open(_os.path.join(_DATA, _EXEMPLES[nom]), encoding="utf-8") as f:
+        return _json.load(f)
+
+
+@router.post("/projection")
+def apercu_projection(corps: dict):
+    """Apercu instantane des etats previsionnels pendant la saisie.
+
+    Corps : {"projection": {...}, "nom": "COREAL FOOD"}. Repond toujours 200 : en cas de saisie
+    incomplete, `erreurs` decrit ce qui manque (affiche sans bloquer la saisie)."""
+    from befa import commentaires as C
+    from befa.projection import FinanceInputError, ProjectionInput, calculer_projection
+
+    nom = corps.get("nom") or "L'entreprise"
+    try:
+        proj = calculer_projection(ProjectionInput.from_dict(corps.get("projection") or {}))
+    except FinanceInputError as e:
+        return {"erreurs": [l.lstrip("- ") for l in str(e).splitlines() if l.strip() and not l.endswith(":")]}
+    except (TypeError, KeyError, ValueError) as e:
+        return {"erreurs": [f"Saisie incomplète : {e}"]}
+    return {
+        "erreurs": [],
+        "annees": proj.compte.annees,
+        "compte": _lignes(proj.compte.lignes()),
+        "plan": {"colonnes": proj.plan.colonnes, "lignes": _lignes(proj.plan.lignes())},
+        "couverture": _lignes(proj.couverture.lignes() + proj.couverture.lignes_service_dette()),
+        "synthese": {
+            "cout_investissements": proj.cout_total_investissements,
+            "apports": proj.total_apports,
+            "prets": proj.total_prets,
+        },
+        "commentaires": {
+            "financement": C.financement(proj, nom),
+            "compte_exploitation": C.compte_exploitation(proj, nom),
+            "plan_financement": C.plan_financement(proj, nom),
+            "couverture_dette": C.couverture_dette(proj),
+        },
+    }
