@@ -267,3 +267,50 @@ def analyse_compte_resultat(h: AnalyseHistorique, nom: str) -> List[str]:
         paras.append(f"{nom} réalise sur l'exercice {n.exercice} un chiffre d'affaires de {montant(n.chiffre_affaires)} "
                      f"pour un résultat net de {montant(n.resultat_net)}.")
     return paras
+
+
+def bilan_ouverture(b, nom: str) -> List[str]:
+    """Commentaire du bilan d'ouverture PREVISIONNEL d'une startup."""
+    total = b.total_passif
+    if not total:
+        return []
+    fp = b.capitaux_propres
+    paras = [f"Le bilan d'ouverture prévisionnel de {nom} totalise {montant(total)}. Les ressources de démarrage se "
+             f"composent de fonds propres et quasi-fonds propres pour {montant(fp)} ({pct(fp / total)}), dont "
+             f"{montant(b.capital)} de capital"
+             + (f" et {montant(b.compte_courant_associes)} d'apports en compte courant d'associés"
+                if b.compte_courant_associes else "")
+             + (f", et d'emprunts pour {montant(b.dettes_financieres)} ({pct(b.dettes_financieres / total)})."
+                if b.dettes_financieres else ".")]
+    emplois = [f"{montant(b.actif_immobilise_net)} d'immobilisations"] if b.actif_immobilise_net else []
+    if b.stocks:
+        emplois.append(f"{montant(b.stocks)} de stocks initiaux")
+    if b.tresorerie_actif:
+        emplois.append(f"{montant(b.tresorerie_actif)} de disponibilités constituant le fonds de démarrage")
+    if emplois:
+        paras.append("Ces ressources financent " + ", ".join(emplois) + ".")
+    if b.tresorerie_passif:
+        paras.append(f"Les emplois excèdent les ressources de {montant(b.tresorerie_passif)} : ce besoin non couvert "
+                     "doit être financé avant le démarrage.")
+    return paras
+
+
+def evolution(colonnes: List[str], lignes, nom: str) -> List[str]:
+    """Commentaire de l'evolution sur trois exercices (TCAM du chiffre d'affaires et du resultat net)."""
+    par = {l.libelle: l.valeurs for l in lignes}
+    debut, fin = colonnes[0], colonnes[-2]
+    paras = []
+    ca = par.get("Chiffre d'affaires")
+    if ca and ca[0] and ca[-2] is not None:
+        t = ca[-1]
+        paras.append(f"Sur la période {debut}-{fin}, le chiffre d'affaires de {nom} passe de {montant(ca[0])} à "
+                     f"{montant(ca[-2])}" + (f", soit une croissance annuelle moyenne de {pct(t)}." if t is not None else "."))
+    rn = par.get("Résultat net")
+    if rn and rn[-2] is not None:
+        positifs = sum(1 for v in rn[:-1] if v is not None and v > 0)
+        paras.append(f"Le résultat net est bénéficiaire sur {positifs} des {len(rn) - 1} exercices analysés et "
+                     f"s'établit à {montant(rn[-2])} en {fin}.")
+    cp = par.get("Capitaux propres")
+    if cp and cp[0] is not None and cp[-2] is not None:
+        paras.append(f"Les capitaux propres évoluent de {montant(cp[0])} à {montant(cp[-2])} sur la période.")
+    return paras

@@ -1,0 +1,212 @@
+[
+ {
+  "categorie": "A. Documents juridiques et administratifs",
+  "titre": "Projet de statuts de société",
+  "juridique": true,
+  "consigne": "Projet de statuts conforme à l'Acte uniforme OHADA relatif au droit des sociétés commerciales et du GIE, adapté à la forme juridique : dénomination, forme, objet, siège, durée, capital et apports, parts ou actions et leur répartition, cession, gérance ou administration, décisions collectives, exercice social, affectation des résultats, dissolution, formalités.",
+  "calcul": ""
+ },
+ {
+  "categorie": "A. Documents juridiques et administratifs",
+  "titre": "Procès-verbal de constitution",
+  "juridique": true,
+  "consigne": "Procès-verbal de l'assemblée générale constitutive : date, lieu, présents, ordre du jour, adoption des statuts, souscription et libération du capital, nomination des dirigeants (et du commissaire aux comptes le cas échéant), pouvoirs pour les formalités.",
+  "calcul": ""
+ },
+ {
+  "categorie": "A. Documents juridiques et administratifs",
+  "titre": "Décision de nomination du dirigeant",
+  "juridique": true,
+  "consigne": "Décision (des associés ou du conseil) portant nomination du gérant ou du directeur général : identité, durée du mandat, pouvoirs, rémunération à fixer, acceptation.",
+  "calcul": ""
+ },
+ {
+  "categorie": "A. Documents juridiques et administratifs",
+  "titre": "Déclaration sur l'honneur",
+  "juridique": true,
+  "consigne": "Déclaration sur l'honneur du dirigeant (absence de condamnation, exactitude des informations du dossier de financement, régularité fiscale et sociale), avec lieu, date et signature.",
+  "calcul": ""
+ },
+ {
+  "categorie": "A. Documents juridiques et administratifs",
+  "titre": "Attestation de domiciliation",
+  "juridique": true,
+  "consigne": "Attestation de domiciliation du siège social de l'entreprise : identité du domiciliataire, adresse, durée, signature.",
+  "calcul": ""
+ },
+ {
+  "categorie": "A. Documents juridiques et administratifs",
+  "titre": "Pouvoir pour formalités",
+  "juridique": true,
+  "consigne": "Procuration donnée par le dirigeant à un mandataire pour accomplir les formalités administratives (RCCM, impôts, CNPS, banque).",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de prestation de services",
+  "juridique": true,
+  "consigne": "Contrat de prestation de services : parties, objet, description des prestations, obligations, prix et modalités de paiement, durée, confidentialité, responsabilité, résiliation, droit applicable (OHADA, Côte d'Ivoire), règlement des litiges.",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de partenariat",
+  "juridique": true,
+  "consigne": "Contrat de partenariat commercial : objet, apports et engagements de chaque partenaire, partage des résultats, gouvernance, durée, exclusivité éventuelle, sortie, litiges.",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de distribution",
+  "juridique": true,
+  "consigne": "Contrat de distribution : produits, territoire, exclusivité, objectifs, prix et remises, logistique, marque, durée, résiliation.",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de fourniture",
+  "juridique": true,
+  "consigne": "Contrat de fourniture : biens fournis, quantités, qualité et normes, prix, livraison, transfert des risques, paiement, garanties, pénalités, durée.",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de sous-traitance",
+  "juridique": true,
+  "consigne": "Contrat de sous-traitance : travaux ou prestations sous-traités, cahier des charges, délais, prix, contrôle qualité, responsabilité, assurances, paiement, résiliation.",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de vente",
+  "juridique": true,
+  "consigne": "Contrat de vente : chose vendue, prix, modalités de paiement, livraison, transfert de propriété et des risques, garanties, litiges.",
+  "calcul": ""
+ },
+ {
+  "categorie": "B. Contrats commerciaux",
+  "titre": "Contrat de maintenance",
+  "juridique": true,
+  "consigne": "Contrat de maintenance : équipements couverts, maintenance préventive et curative, délais d'intervention, prix, durée, exclusions, responsabilité.",
+  "calcul": ""
+ },
+ {
+  "categorie": "C. Contrats de travail et ressources humaines",
+  "titre": "Contrat de travail à durée déterminée",
+  "juridique": true,
+  "consigne": "Contrat de travail à durée déterminée conforme au Code du travail ivoirien : parties, poste, motif et durée, période d'essai, lieu, horaires, rémunération, congés, CNPS, fin de contrat.",
+  "calcul": ""
+ },
+ {
+  "categorie": "C. Contrats de travail et ressources humaines",
+  "titre": "Contrat de travail à durée indéterminée",
+  "juridique": true,
+  "consigne": "Contrat de travail à durée indéterminée conforme au Code du travail ivoirien : parties, poste, classification, période d'essai, lieu, horaires, rémunération, avantages, congés, CNPS, rupture.",
+  "calcul": ""
+ },
+ {
+  "categorie": "C. Contrats de travail et ressources humaines",
+  "titre": "Convention de stage",
+  "juridique": true,
+  "consigne": "Convention de stage : stagiaire, établissement d'enseignement, entreprise, objet, durée, encadrement, gratification, assurance, obligations.",
+  "calcul": ""
+ },
+ {
+  "categorie": "C. Contrats de travail et ressources humaines",
+  "titre": "Contrat de prestation intellectuelle",
+  "juridique": true,
+  "consigne": "Contrat de prestation intellectuelle (consultant indépendant) : mission, livrables, honoraires, propriété intellectuelle, confidentialité, indépendance.",
+  "calcul": ""
+ },
+ {
+  "categorie": "C. Contrats de travail et ressources humaines",
+  "titre": "Lettre d'engagement",
+  "juridique": false,
+  "consigne": "Lettre d'engagement (proposition d'embauche) : poste, date de prise de fonction, rémunération, conditions, délai d'acceptation.",
+  "calcul": ""
+ },
+ {
+  "categorie": "D. Documents financiers et bancaires",
+  "titre": "Lettre de demande de financement",
+  "juridique": false,
+  "consigne": "Lettre de demande de financement adressée à un établissement financier : présentation de l'entreprise, du projet, montant sollicité, objet, garanties proposées, référence au Business Plan joint.",
+  "calcul": ""
+ },
+ {
+  "categorie": "D. Documents financiers et bancaires",
+  "titre": "Lettre de demande d'ouverture de compte",
+  "juridique": false,
+  "consigne": "Lettre de demande d'ouverture de compte courant professionnel : présentation de l'entreprise, nature du compte, pièces jointes.",
+  "calcul": ""
+ },
+ {
+  "categorie": "D. Documents financiers et bancaires",
+  "titre": "Lettre de demande de découvert bancaire",
+  "juridique": false,
+  "consigne": "Lettre de demande de facilité de caisse ou de découvert : besoin de trésorerie, montant, durée, justification par le cycle d'exploitation, garanties.",
+  "calcul": ""
+ },
+ {
+  "categorie": "D. Documents financiers et bancaires",
+  "titre": "Lettre de demande de crédit d'investissement",
+  "juridique": false,
+  "consigne": "Lettre de demande de crédit d'investissement à moyen ou long terme : objet de l'investissement, coût, apport, montant sollicité, durée, différé, garanties.",
+  "calcul": ""
+ },
+ {
+  "categorie": "D. Documents financiers et bancaires",
+  "titre": "Lettre de demande de crédit de trésorerie",
+  "juridique": false,
+  "consigne": "Lettre de demande de crédit de trésorerie (court terme, campagne, préfinancement de marché) : besoin, montant, durée, sources de remboursement.",
+  "calcul": ""
+ },
+ {
+  "categorie": "D. Documents financiers et bancaires",
+  "titre": "Échéancier prévisionnel de remboursement",
+  "juridique": false,
+  "consigne": "Courte note de présentation de l'échéancier des emprunts sollicités (le tableau est calculé par le programme).",
+  "calcul": "echeancier"
+ },
+ {
+  "categorie": "E. Documents de pilotage",
+  "titre": "Plan stratégique",
+  "juridique": false,
+  "consigne": "Plan stratégique à 3-5 ans : vision, mission, diagnostic, axes stratégiques, objectifs, plan d'actions, indicateurs de suivi.",
+  "calcul": ""
+ },
+ {
+  "categorie": "E. Documents de pilotage",
+  "titre": "Plan d'affaires simplifié",
+  "juridique": false,
+  "consigne": "Plan d'affaires simplifié de 2 à 4 pages : entreprise, projet, marché, organisation, chiffres clés prévisionnels, financement sollicité.",
+  "calcul": ""
+ },
+ {
+  "categorie": "E. Documents de pilotage",
+  "titre": "Plan de trésorerie",
+  "juridique": false,
+  "consigne": "Courte note de présentation du plan de trésorerie (le tableau est repris du plan importé ou calculé par le programme).",
+  "calcul": "tresorerie"
+ },
+ {
+  "categorie": "E. Documents de pilotage",
+  "titre": "Budget prévisionnel",
+  "juridique": false,
+  "consigne": "Courte note de présentation du budget prévisionnel (le compte d'exploitation prévisionnel est calculé par le programme).",
+  "calcul": "budget"
+ },
+ {
+  "categorie": "E. Documents de pilotage",
+  "titre": "Tableau de bord de suivi",
+  "juridique": false,
+  "consigne": "Tableau de bord de suivi : indicateurs clés (commerciaux, financiers, opérationnels) avec définition, fréquence, objectif issu des prévisions et responsable.",
+  "calcul": ""
+ },
+ {
+  "categorie": "E. Documents de pilotage",
+  "titre": "Plan de financement",
+  "juridique": false,
+  "consigne": "Courte note de présentation du plan de financement (le tableau emplois / ressources est calculé par le programme).",
+  "calcul": "plan_financement"
+ }
+]

@@ -39,7 +39,8 @@ def verifier_sommaire(pdf, sommaire):
     pages = textes(pdf)
     sommaire_txt = " ".join(pages[1:3])
     for e in sommaire:
-        m = re.search(re.escape(e.titre) + r"\s*\.*\s*(\d+)", sommaire_txt)
+        # un titre long peut passer a la ligne dans le sommaire
+        m = re.search(r"\s+".join(map(re.escape, e.titre.split())) + r"\s*\.*\s*(\d+)", sommaire_txt)
         assert m, f"titre absent du sommaire : {e.titre}"
         numero = int(m.group(1))
         assert D._normaliser(e.titre) in D._normaliser(pages[numero - 1]), f"{e.titre} absent de la page {numero}"
@@ -51,7 +52,7 @@ def test_business_plan_coreal(tmp_path):
 
     d, red, t = exemple_coreal()
     # un renvoi vers une source : appel de note [1] et bibliographie
-    red.sections[0].paragraphes[0] += " [S1]"
+    next(s for s in red.sections if s.paragraphes).paragraphes[0] += " [S1]"
     red.sources = [Source("S1", "USDA FAS — Oilseeds and Products Annual", "https://apps.fas.usda.gov/rapport")]
     res = D.generer(d, red, t, str(tmp_path), "bp")
     assert res.sommaire_complet and res.alertes == []
@@ -65,7 +66,8 @@ def test_business_plan_coreal(tmp_path):
     tout = "\n".join(pages)
     for attendu in ("COÛT TOTAL DES INVESTISSEMENTS", "Compte d'exploitation prévisionnel", "Plan de financement",
                     "Ratio de couverture de la dette", "Tendances de recherche en ligne (Google Trends)",
-                    "Source : Google Trends, Côte d’Ivoire", "Analyse SWOT", "Bilan d'ouverture au 2024",
+                    "Source : Google Trends, Côte d’Ivoire", "ANALYSE SWOT SYNTHÉTIQUE", "Bilan d'ouverture au 2024",
+                    "PREMIÈRE PARTIE : PRÉSENTATION", "QUATRIÈME PARTIE : ÉTUDE DE MARCHÉ",
                     "[1]  USDA FAS — Oilseeds and Products Annual"):
         assert attendu in tout, attendu
     R = D.construire(d, red, calculer_projection(d.projection), t, {})

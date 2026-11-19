@@ -25,62 +25,86 @@ from .ia import IaError, appeler
 from .projection import Projection
 
 # ----------------------------------------------------------------------
-# Plan des sections (modeles COREAL / O'IVOIRE)
+# Plan des sections : modele de reference "Dossier de credit O'IVOIRE",
+# commun aux deux profils, consignes adaptees (StartUP / PME, ETI, GE).
 # ----------------------------------------------------------------------
+_PLAN = [
+    # (cle, titre, consigne PME/ETI/GE, consigne STARTUP)
+    ("historique", "Historique de la création",
+     "Historique de l'entreprise à partir des informations du dossier (date et lieu de création, forme juridique, "
+     "RCCM, capital, siège, évolutions marquantes). 1 à 2 paragraphes. N'ajoute aucune date absente du dossier.",
+     "Genèse du projet : origine de l'idée, parcours et motivations du ou des promoteurs, stade d'avancement de la "
+     "création (société constituée ou en cours de constitution). 1 à 2 paragraphes."),
+    ("presentation_activite", "Présentation de l'activité",
+     "Activités et prestations de l'entreprise, positionnement, zone d'intervention. 1 à 2 paragraphes ; puces pour "
+     "la liste des activités.",
+     "Activité envisagée, produits et services prévus, modèle économique, zone d'intervention. 1 à 2 paragraphes ; "
+     "puces pour les produits et services."),
+    ("clientele", "Clientèle",
+     "Typologie de la clientèle et modes de règlement ; si une liste de clients chiffrée est fournie, commente le "
+     "portefeuille et la dépendance commerciale en reprenant uniquement les chiffres fournis. 1 à 2 paragraphes.",
+     "Clientèle cible (segments, localisation, besoins), canaux de vente envisagés, conditions de règlement prévues. "
+     "1 à 2 paragraphes."),
+    ("fournisseurs", "Fournisseurs",
+     "Politique d'approvisionnement et principaux fournisseurs (nature des achats, conditions). 1 paragraphe.",
+     "Sources d'approvisionnement envisagées (fournisseurs, équipementiers, matières premières). 1 paragraphe."),
+    ("contexte_besoin", "Contexte",
+     "Pourquoi l'entreprise sollicite ce financement maintenant : situation actuelle, contraintes, opportunité. "
+     "2 à 4 paragraphes.",
+     "Contexte et justification de la création : besoin du marché auquel répond le projet, opportunité, moyens "
+     "nécessaires au démarrage. 2 à 4 paragraphes."),
+    ("besoin_financement", "Besoin de financement",
+     "Paragraphe sur la stratégie de croissance qui motive la demande, puis puces de l'utilisation des fonds "
+     "sollicités (à partir des investissements et prêts fournis).",
+     "Paragraphe sur les besoins de démarrage qui motivent la demande, puis puces de l'utilisation des fonds "
+     "sollicités (à partir des investissements et prêts fournis)."),
+    ("impact_besoin", "Impact du besoin sur les activités de l'entreprise",
+     "Paragraphe d'introduction puis puces des impacts attendus (coûts, réactivité, qualité, capacité, marges).",
+     "Paragraphe d'introduction puis puces des impacts attendus du financement sur le lancement et la montée en "
+     "puissance de l'activité, l'emploi et la rentabilité."),
+    ("contexte_mondial", "Contexte mondial du secteur",
+     "Contexte mondial du secteur (tendances, enjeux, chiffres sourcés). 2 paragraphes, puces possibles.", None),
+    ("contexte_africain", "Contexte africain du secteur",
+     "Contexte africain / CEDEAO / UEMOA du secteur, avec chiffres sourcés. 2 paragraphes, puces possibles.", None),
+    ("contexte_national", "Contexte et marché en Côte d'Ivoire",
+     "Importance stratégique du secteur en Côte d'Ivoire, politiques et investissements publics, cadre "
+     "réglementaire et incitations, chiffres sourcés. 3 à 4 paragraphes, puces possibles.", None),
+    ("contexte_zone", "Contexte et analyse spécifique de la zone d'activité",
+     "Situation de la zone d'activité (région, villes), facteurs structurels de la demande, opportunité économique "
+     "locale. 2 à 3 paragraphes et puces.", None),
+    ("analyse_demande", "Analyse du marché",
+     "Analyse de la demande par segment de clientèle (résidentiel, entreprises, institutions... selon le secteur), "
+     "tendances Google Trends si fournies (avec leur source et leur limite). 3 à 5 paragraphes, puces possibles.", None),
+    ("analyse_prix", "Analyse des prix",
+     "Déterminants des prix et prix pratiqués sur le marché (uniquement des chiffres fournis ou sourcés), "
+     "positionnement prix de l'entreprise. 1 à 2 paragraphes et puces.", None),
+    ("concurrence_directe", "Concurrence locale ou concurrence directe",
+     "Caractéristiques et positionnement des concurrents directs (concurrents cités dans le dossier en priorité). "
+     "1 paragraphe et puces.", None),
+    ("concurrence_nationale", "Concurrence régionale et nationale",
+     "Acteurs structurés au niveau régional et national, forces et limites. 1 paragraphe et puces.", None),
+    ("opportunite_concurrentielle", "Opportunité concurrentielle",
+     "Espace stratégique et avantages concurrentiels de l'entreprise. 1 paragraphe et puces.", None),
+    ("conclusion_marche", "Conclusion et perspectives",
+     "Synthèse de l'étude de marché et perspectives de croissance à moyen et long terme. 2 paragraphes.", None),
+    ("conclusion", "Conclusion générale",
+     "Synthèse : solidité de l'entreprise (en reprenant uniquement les commentaires financiers fournis), "
+     "pertinence du besoin, capacité de remboursement, demande de financement. 2 à 3 paragraphes.",
+     "Synthèse : pertinence du projet de création, potentiel du marché, viabilité prévisionnelle (en reprenant "
+     "uniquement les commentaires financiers fournis, qui sont des PRÉVISIONS), demande de financement. "
+     "2 à 3 paragraphes."),
+]
 SECTIONS = {
-    "nouveau_projet": [
-        ("introduction", "Introduction",
-         "Contexte du secteur au niveau mondial, africain / CEDEAO puis ivoirien (production, consommation, "
-         "importations, politiques publiques), avec des chiffres sourcés ; enjeux ; dernier paragraphe : "
-         "présentation du projet et de son promoteur. 4 à 6 paragraphes."),
-        ("cadre_reglementaire", "Cadre institutionnel et réglementaire",
-         "Réglementation ivoirienne applicable à l'activité, normes environnementales et sanitaires, avantages "
-         "fiscaux et incitations (Code des investissements, agrément CEPICI), accords commerciaux (UEMOA, CEDEAO, "
-         "ZLECAf). 3 à 5 paragraphes."),
-        ("justification", "Justification du projet",
-         "Opportunité économique liée à la demande, disponibilité des ressources / matières premières dans la "
-         "zone, impact sur l'emploi local. 3 paragraphes."),
-        ("marche", "Analyse du marché",
-         "Production et acteurs du secteur, la demande, l'offre, les tendances de recherche Google Trends "
-         "(si fournies, en citant leur source et leur limite), puis le positionnement du projet. 5 à 7 paragraphes."),
-        ("execution", "Exécution du projet",
-         "Maître d'ouvrage, maître d'œuvre, phases de réalisation (conception, construction / installation, "
-         "tests et mise en service) à partir du planning fourni. 2 à 4 paragraphes, puces pour les phases."),
-        ("strategie", "Vision stratégique et plan de progrès",
-         "Priorités, système de gestion, sécurisation des approvisionnements. 2 à 3 paragraphes et puces."),
-        ("risques", "Risques du projet",
-         "Puces : risques de la phase d'investissement puis de la phase d'exploitation (financiers, techniques, "
-         "réglementaires, approvisionnement, marché, sociaux, environnementaux), chacun avec sa mesure "
-         "d'atténuation."),
-        ("perspectives", "Perspectives de développement à moyen et long terme",
-         "Extensions possibles, montée en gamme, stratégies de mise en œuvre. 2 à 3 paragraphes."),
-        ("impact", "Impact environnemental et social",
-         "Description et justification du site, état initial de l'environnement, retombées socio-économiques, "
-         "impacts et mesures. 3 à 4 paragraphes."),
-        ("conclusion", "Conclusion générale",
-         "Synthèse : pertinence du projet, solidité financière (en reprenant uniquement les commentaires "
-         "financiers fournis), demande de financement. 2 paragraphes."),
-    ],
-    "entreprise_existante": [
-        ("presentation_activite", "Présentation de l'activité",
-         "Historique et activités de l'entreprise, clientèle et positionnement. 2 paragraphes."),
-        ("contexte_besoin", "Contexte du besoin",
-         "Pourquoi l'entreprise sollicite ce financement maintenant, situation actuelle et limites. 2 à 3 paragraphes."),
-        ("impact_besoin", "Impact du besoin sur les activités de l'entreprise",
-         "Paragraphe d'introduction puis puces des impacts attendus (coûts, réactivité, qualité, marges)."),
-        ("contexte_secteur", "Contexte général du secteur",
-         "Contexte mondial, africain puis ivoirien du secteur, avec chiffres sourcés. 3 à 4 paragraphes."),
-        ("contexte_zone", "Contexte spécifique de la zone d'activité",
-         "Situation de la zone (région, villes), facteurs structurels de la demande. 2 à 3 paragraphes et puces."),
-        ("marche", "Analyse du marché",
-         "Demande par segment, prix pratiqués, concurrence (locale, régionale, nationale), opportunité "
-         "concurrentielle, tendances Google Trends si fournies. 4 à 6 paragraphes."),
-        ("conclusion_marche", "Conclusion et perspectives",
-         "Synthèse de l'étude de marché. 1 à 2 paragraphes."),
-        ("conclusion", "Conclusion générale",
-         "Synthèse : solidité de l'entreprise (en reprenant uniquement les commentaires financiers fournis), "
-         "pertinence du besoin, capacité de remboursement. 2 paragraphes."),
-    ],
+    "entreprise_existante": [(c, t, pme) for c, t, pme, _ in _PLAN],
+    "nouveau_projet": [(c, t, st or pme) for c, t, pme, st in _PLAN],
+}
+# Cles des versions precedentes (plans COREAL / O'IVOIRE v1) : une redaction deja enregistree reste exploitable.
+ANCIENNES_CLES = {
+    "analyse_demande": ["marche"],
+    "contexte_national": ["contexte_secteur", "introduction"],
+    "contexte_besoin": ["justification"],
+    "conclusion_marche": ["perspectives"],
+    "besoin_financement": ["execution"],
 }
 
 # Variante "de base" de l'outil, volontairement : la variante 20260209 (filtrage
@@ -131,6 +155,8 @@ class Recherche:
 
 
 def _consigne_recherche(d: DossierBEFA) -> str:
+    from .secteurs import reperes
+
     p, e = d.projet, d.entreprise
     sujets = {
         "nouveau_projet": [
@@ -140,22 +166,25 @@ def _consigne_recherche(d: DossierBEFA) -> str:
             "le cadre réglementaire et les incitations à l'investissement applicables (Code des investissements, "
             "CEPICI, normes environnementales et sanitaires) ;",
             f"la zone d'implantation ({p.localisation or 'à préciser'}) : ressources, population, infrastructures ;",
-            "la demande, l'offre et la concurrence sur le marché visé.",
+            "la demande par segment, les prix pratiqués et la concurrence sur le marché visé.",
         ],
         "entreprise_existante": [
             "le contexte mondial et africain du secteur ;",
             "le marché ivoirien du secteur (taille, croissance, programmes publics, acteurs) ;",
             f"la zone d'activité ({p.localisation or e.ville or 'à préciser'}) : besoins, démographie, projets ;",
-            "les prix pratiqués et la concurrence.",
+            "la demande par segment, les prix pratiqués et la concurrence.",
         ],
     }[d.variante]
+    axes = reperes(p.secteur_code, p.secteur)
     return (
         f"Tu prépares l'étude de marché d'un Business Plan rédigé par le cabinet BEFA Consulting (Abidjan) pour "
-        f"l'entreprise « {e.raison_sociale} ».\n"
-        f"Projet : {p.intitule}. Secteur : {p.secteur}. Localisation : {p.localisation or e.ville}. "
+        f"{'le projet de création' if d.startup else 'l’entreprise'} « {d.raison_sociale} ».\n"
+        f"Projet : {p.intitule}. Secteur : {p.secteur}{' — ' + p.sous_secteur if p.sous_secteur else ''}. "
+        f"Localisation : {p.localisation or e.ville}. "
         f"Marché visé : {p.zone_marche}. Produits / services : "
         f"{', '.join(x.nom for x in d.produits) or p.objet or 'voir secteur'}.\n\n"
-        "Fais des recherches sur le web pour documenter :\n- " + "\n- ".join(sujets) + "\n\n"
+        "Fais des recherches sur le web pour documenter :\n- " + "\n- ".join(sujets) + "\n\n" +
+        (axes + "\n\n" if axes else "") +
         f"Privilégie les sources fiables et récentes (moins de 5 ans si possible) : {SOURCES_FIABLES}. "
         "Évite les blogs, forums et sites sans auteur identifiable.\n\n"
         "Restitue tes constats en français, sous forme de courts paragraphes indépendants : chacun énonce un fait "
@@ -286,11 +315,16 @@ SYSTEME_REDACTION = """Tu es consultant senior au cabinet BEFA Consulting (Burea
 
 Style : français soutenu, factuel et convaincant, phrases complètes, vocabulaire bancaire et OHADA ; pas de marketing creux, pas de superlatifs gratuits. Montants en FCFA avec espaces comme séparateurs de milliers.
 
+Profil du demandeur :
+- STARTUP (entreprise en création) : aucun historique comptable ; présente le projet de création, le promoteur et les PRÉVISIONS ; ne présente jamais une estimation comme une donnée réalisée ; le bilan d'ouverture est prévisionnel.
+- PME, ETI, GE (entreprise existante) : appuie-toi sur l'historique, les performances passées et le projet de développement.
+
 Règles impératives sur les chiffres :
 - N'utilise QUE des chiffres présents dans les données fournies : dossier client, faits sourcés, constats Google Trends, commentaires financiers. N'invente, n'estime ni ne recalcule aucun chiffre.
 - Après toute phrase qui reprend un fait sourcé, ajoute son renvoi entre crochets, ex. [S3] ou [S2][S5]. N'utilise que les identifiants fournis.
 - Les commentaires financiers sont déjà rédigés et figureront à côté des tableaux : n'en reprends l'essentiel que dans la conclusion.
-- Si une information manque, rédige sans elle (ou de façon qualitative) ; ne la comble pas par une supposition chiffrée."""
+- Si une information manque, rédige sans elle (ou de façon qualitative) ; ne la comble pas par une supposition chiffrée.
+- N'invente aucune donnée administrative (date, numéro RCCM, capital, nom de dirigeant ou d'associé) absente du dossier."""
 
 
 def _contexte(d: DossierBEFA, rech: Recherche, coms: Dict[str, List[str]]) -> str:
@@ -309,12 +343,21 @@ def _contexte(d: DossierBEFA, rech: Recherche, coms: Dict[str, List[str]]) -> st
 
 
 def _consigne_redaction(d: DossierBEFA) -> str:
+    from .secteurs import reperes
+
     plan = "\n".join(f"- {cle} — « {titre} » : {consigne}" for cle, titre, consigne in SECTIONS[d.variante])
+    axes = reperes(d.projet.secteur_code, d.projet.secteur)
+    profil = ("PROFIL : STARTUP (entreprise en création, Business Plan orienté création et prévisions)."
+              if d.startup else "PROFIL : PME, ETI, GE (entreprise existante, Business Plan intégrant son historique, "
+                                "ses performances et son projet de développement).")
     return (
-        "Rédige les sections suivantes du Business Plan (une entrée par clé, dans cet ordre). Mets le texte "
+        profil + "\n" + (axes + " Adapte l'analyse du marché, de la concurrence, des risques et les recommandations "
+                         "à ce secteur.\n" if axes else "") +
+        "\nRédige les sections suivantes du Business Plan (une entrée par clé, dans cet ordre). Mets le texte "
         "courant dans \"paragraphes\" et les énumérations dans \"puces\" (liste vide si aucune) :\n" + plan +
-        "\n\nRemplis aussi \"swot\" : 4 à 6 éléments concis par rubrique (forces, faiblesses, opportunités, "
-        "menaces), propres à ce projet."
+        "\n\nRemplis aussi \"swot\" : 3 à 5 éléments par rubrique (forces, faiblesses, opportunités, menaces), "
+        "propres à ce projet, chacun au format « Élément identifié : impact sur le projet » "
+        "(ex. « Demande structurelle élevée : volume d'activité soutenu et marché durable »)."
     )
 
 
@@ -384,7 +427,11 @@ class Redaction:
     alertes: List[str]
 
     def section(self, cle: str) -> Optional[SectionRedigee]:
-        return next((s for s in self.sections if s.cle == cle), None)
+        for c in [cle] + ANCIENNES_CLES.get(cle, []):
+            s = next((s for s in self.sections if s.cle == c and (s.paragraphes or s.puces)), None)
+            if s:
+                return s
+        return None
 
     def vers_json(self) -> dict:
         return asdict(self)
@@ -424,7 +471,7 @@ def assembler(d: DossierBEFA, brut: dict, rech: Recherche, coms: Dict[str, List[
     par_cle = {s.get("cle"): s for s in brut.get("sections", [])}
     sections = []
     for cle, titre in titres.items():
-        s = par_cle.get(cle)
+        s = par_cle.get(cle) or next((par_cle[x] for x in ANCIENNES_CLES.get(cle, []) if x in par_cle), None)
         if not s:
             alertes.append(f"Section « {titre} » non rédigée par l'IA : à compléter manuellement.")
             sections.append(SectionRedigee(cle, titre, [], []))

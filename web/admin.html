@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administration BEFA</title>
+<link rel="icon" href="/assets/branding/logo_befa.png">
+<style>
+:root{--orange:#F27F24;--orange-fonce:#B85A12;--orange-pale:#FDF0E4;--encre:#1F2328;--encre-2:#5B6168;--ligne:#E3E1E2;--fond:#F6F5F4;--carte:#fff;--rouge:#B42318;--vert:#2E7D32;--ambre:#8A5A00;--ambre-pale:#FFF4E0}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--encre);background:var(--fond);font-size:14px}
+header{display:flex;align-items:center;gap:16px;padding:10px 20px;background:var(--carte);border-bottom:3px solid var(--orange);flex-wrap:wrap}
+header img{height:38px} header h1{font-size:17px;margin:0}
+header a{margin-left:auto}
+main{max-width:1300px;margin:0 auto;padding:20px}
+.onglets{display:flex;gap:6px;margin-bottom:12px}
+.onglets button{font:inherit;border:1px solid var(--ligne);background:#fff;border-radius:8px 8px 0 0;padding:8px 16px;cursor:pointer}
+.onglets button.actif{background:var(--orange-pale);border-color:var(--orange);color:var(--orange-fonce);font-weight:600}
+.carte{background:var(--carte);border:1px solid var(--ligne);border-radius:10px;padding:18px 20px;margin-bottom:16px}
+.btn{font:inherit;border:1px solid #CFCBCC;background:#fff;border-radius:8px;padding:7px 13px;cursor:pointer;text-decoration:none;color:var(--encre);display:inline-block}
+.btn.principal{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.btn.danger{color:var(--rouge)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--encre-2);font-size:12px;border-bottom:1px solid var(--ligne);padding:6px}
+td{border-bottom:1px solid var(--ligne);padding:6px;vertical-align:top}
+tr.inactif td{opacity:.5}
+.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px 14px}
+.champ{display:flex;flex-direction:column;gap:3px}.champ.large{grid-column:1/-1}
+label{font-size:12.5px;color:var(--encre-2);font-weight:600}
+input,select,textarea{font:inherit;padding:7px 9px;border:1px solid #CFCBCC;border-radius:7px;width:100%}
+textarea{min-height:90px}
+.case{flex-direction:row;align-items:center;gap:8px}.case input{width:auto}
+.badge{font-size:11px;padding:1px 7px;border-radius:20px;background:var(--ambre-pale);color:var(--ambre);border:1px solid #F2D28B}
+.msg{margin:8px 0;padding:8px 12px;border-radius:8px;background:#E8F5E9;color:var(--vert)}
+.msg.err{background:#FDECEA;color:var(--rouge)}
+@media (max-width:700px){main{padding:12px}}
+</style>
+</head>
+<body>
+<header><img src="/assets/branding/logo_befa.png" alt="BEFA Consulting"><h1>Administration — référentiels BEFA</h1><a class="btn" href="/">← Retour au générateur</a></header>
+<main>
+  <div class="onglets"><button data-ref="banques" class="actif">Banques et établissements financiers</button><button data-ref="modeles">Modèles « Autres documents »</button></div>
+  <div id="msg"></div>
+  <div class="carte" id="formulaire"></div>
+  <div class="carte"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px"><input type="search" id="filtre" placeholder="Rechercher…" style="max-width:300px"><span style="margin-left:auto"></span><button class="btn danger" id="reinit">Rétablir la liste d'origine</button></div><div id="liste"></div></div>
+</main>
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CHAMPS = {
+  banques: [["denomination", "Dénomination officielle *"], ["sigle", "Sigle"], ["type", "Type", "select", ["Banque", "Établissement de microfinance", "Établissement financier", "Fonds d'investissement", "Fonds de garantie"]],
+    ["titre_destinataire", "Formule d'adresse (ex. Monsieur le Directeur Général)"], ["destinataire", "Nom du directeur général ou du responsable d'agence"],
+    ["agence", "Agence concernée"], ["adresse", "Adresse du siège"], ["adresse_agence", "Adresse de l'agence"], ["boite_postale", "Boîte postale"], ["ville", "Ville"],
+    ["telephone", "Téléphone"], ["email", "E-mail"], ["notes", "Autres informations utiles", "textarea"], ["a_verifier", "Coordonnées à vérifier", "bool"], ["actif", "Proposée dans la liste", "bool"]],
+  modeles: [["titre", "Titre du document *"], ["categorie", "Catégorie (ex. B. Contrats commerciaux)"], ["consigne", "Contenu attendu (consigne de rédaction pour l'IA)", "textarea"],
+    ["calcul", "Tableau calculé par le programme", "select", ["", "echeancier", "budget", "plan_financement", "tresorerie"]],
+    ["juridique", "Document juridique (mention « projet à faire valider »)", "bool"], ["actif", "Proposé dans la liste", "bool"]],
+};
+let REF = "banques", LISTE = [], EDITION = null;
+async function api(url, o = {}) { const r = await fetch(url, o); let c = null; try { c = await r.json(); } catch (_) {} if (!r.ok) throw new Error((c && c.detail) || `Erreur ${r.status}`); return c; }
+function message(t, err = false) { $("#msg").innerHTML = `<div class="msg ${err ? "err" : ""}">${esc(t)}</div>`; setTimeout(() => { $("#msg").innerHTML = ""; }, 5000); }
+async function charger() { LISTE = await api(`/api/befa/admin/${REF}`); rendre(); }
+function formulaire() {
+  const x = EDITION || {actif: true};
+  $("#formulaire").innerHTML = `<h3 style="margin-top:0">${EDITION && EDITION.id ? "Modifier : " + esc(EDITION.denomination || EDITION.titre) : REF === "banques" ? "Ajouter une banque" : "Ajouter un modèle de document"}</h3>
+  <div class="grille">${CHAMPS[REF].map(([k, l, t, opts]) => {
+    if (t === "bool") return `<div class="champ case"><input type="checkbox" id="c-${k}" ${x[k] ? "checked" : ""}><label for="c-${k}">${esc(l)}</label></div>`;
+    if (t === "select") return `<div class="champ"><label for="c-${k}">${esc(l)}</label><select id="c-${k}">${opts.map(o => `<option value="${esc(o)}" ${String(x[k] ?? "") === o ? "selected" : ""}>${esc(o || "— aucun —")}</option>`).join("")}</select></div>`;
+    if (t === "textarea") return `<div class="champ large"><label for="c-${k}">${esc(l)}</label><textarea id="c-${k}">${esc(x[k] || "")}</textarea></div>`;
+    return `<div class="champ"><label for="c-${k}">${esc(l)}</label><input id="c-${k}" value="${esc(x[k] || "")}"></div>`;
+  }).join("")}</div>
+  <p><button class="btn principal" id="enregistrer">Enregistrer</button> ${EDITION ? `<button class="btn" id="annuler">Annuler</button>` : ""}</p>`;
+  $("#enregistrer").onclick = enregistrer;
+  if ($("#annuler")) $("#annuler").onclick = () => { EDITION = null; formulaire(); };
+}
+async function enregistrer() {
+  const el = {...(EDITION || {})};
+  for (const [k, , t] of CHAMPS[REF]) el[k] = t === "bool" ? $(`#c-${k}`).checked : $(`#c-${k}`).value.trim();
+  if (REF === "modeles") el.juridique = !!el.juridique;
+  try { await api(`/api/befa/admin/${REF}`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(el)}); EDITION = null; message("Enregistré."); await charger(); }
+  catch (e) { message(e.message, true); }
+}
+function rendre() {
+  formulaire();
+  const f = ($("#filtre").value || "").toLowerCase();
+  const l = LISTE.filter(x => JSON.stringify(x).toLowerCase().includes(f));
+  $("#liste").innerHTML = REF === "banques"
+    ? `<table><thead><tr><th>Dénomination</th><th>Type</th><th>Destinataire</th><th>Adresse</th><th>Contact</th><th></th></tr></thead><tbody>${l.map(b => `<tr class="${b.actif ? "" : "inactif"}"><td><strong>${esc(b.denomination)}</strong>${b.sigle ? ` (${esc(b.sigle)})` : ""} ${b.a_verifier ? '<span class="badge">à vérifier</span>' : ""}</td><td>${esc(b.type)}</td><td>${esc(b.titre_destinataire)}<br>${esc(b.destinataire)}</td><td>${esc(b.agence)} ${esc(b.adresse_agence || b.adresse)} ${esc(b.boite_postale)} ${esc(b.ville)}</td><td>${esc(b.telephone)}<br>${esc(b.email)}</td><td style="white-space:nowrap"><button class="btn" data-edit="${esc(b.id)}">Modifier</button> <button class="btn danger" data-sup="${esc(b.id)}">Supprimer</button></td></tr>`).join("")}</tbody></table>`
+    : `<table><thead><tr><th>Catégorie</th><th>Titre</th><th>Contenu attendu</th><th></th></tr></thead><tbody>${l.map(m => `<tr class="${m.actif ? "" : "inactif"}"><td>${esc(m.categorie)}</td><td><strong>${esc(m.titre)}</strong>${m.juridique ? ' <span class="badge">juridique</span>' : ""}${m.calcul ? ` <span class="badge">${esc(m.calcul)}</span>` : ""}</td><td>${esc(m.consigne)}</td><td style="white-space:nowrap"><button class="btn" data-edit="${esc(m.id)}">Modifier</button> <button class="btn danger" data-sup="${esc(m.id)}">Supprimer</button></td></tr>`).join("")}</tbody></table>`;
+}
+document.addEventListener("click", async e => {
+  const o = e.target.closest(".onglets button");
+  if (o) { document.querySelectorAll(".onglets button").forEach(b => b.classList.toggle("actif", b === o)); REF = o.dataset.ref; EDITION = null; await charger(); return; }
+  const ed = e.target.closest("[data-edit]");
+  if (ed) { EDITION = LISTE.find(x => x.id === ed.dataset.edit); formulaire(); window.scrollTo(0, 0); return; }
+  const sup = e.target.closest("[data-sup]");
+  if (sup && window.confirm("Supprimer cet élément ?")) { try { await api(`/api/befa/admin/${REF}/${encodeURIComponent(sup.dataset.sup)}`, {method: "DELETE"}); message("Supprimé."); await charger(); } catch (err) { message(err.message, true); } }
+});
+$("#filtre").addEventListener("input", rendre);
+$("#reinit").addEventListener("click", async () => { if (window.confirm("Rétablir la liste d'origine ? Les ajouts et modifications seront perdus.")) { await api(`/api/befa/admin/${REF}/reinitialiser`, {method: "POST"}); message("Liste d'origine rétablie."); await charger(); } });
+charger().catch(e => message(e.message, true));
+</script>
+</body>
+</html>

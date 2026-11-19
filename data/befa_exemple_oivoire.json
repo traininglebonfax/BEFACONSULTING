@@ -32,6 +32,8 @@
   "projet": {
     "intitule": "Acquisition d'une foreuse industrielle",
     "secteur": "Génie civil, hydraulique et distribution d'eau",
+    "secteur_code": "eau_environnement",
+    "sous_secteur": "Forage et adduction d'eau",
     "localisation": "Daloa, Haut-Sassandra (zone Ouest)",
     "zone_marche": "Côte d'Ivoire, zones Ouest et Nord",
     "objet": "Acquisition, importation et mise en service d'une foreuse de haute performance.",

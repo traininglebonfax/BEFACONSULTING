@@ -46,6 +46,8 @@
   "projet": {
     "intitule": "Huilerie industrielle de 30 tonnes / heure",
     "secteur": "Transformation agro-industrielle - huile de palme",
+    "secteur_code": "agro_industrie",
+    "sous_secteur": "Huilerie",
     "localisation": "Lelebrekoua, sous-préfecture de Gagnoa, Région du Gôh",
     "zone_marche": "Côte d'Ivoire et sous-région CEDEAO",
     "objet": "Création d'une huilerie industrielle d'une capacité de traitement de 30 tonnes de régimes de palme par heure.",

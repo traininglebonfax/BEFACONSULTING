@@ -13,3 +13,5 @@ headers*.txt
 dash_full.txt
 .git/
 .env
+
+donnees/

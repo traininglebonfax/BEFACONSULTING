@@ -264,8 +264,12 @@ def health():
 
 # Phase 2 : Business Plan au format BEFA Consulting
 from backend.befa_api import router as befa_router  # noqa: E402
+from backend.befa_api_v3 import router as befa_router_v3  # noqa: E402
+from backend.securite import installer as installer_securite  # noqa: E402
 
 app.include_router(befa_router)
+app.include_router(befa_router_v3)
+installer_securite(app)
 
 ASSETS_DIR = os.path.join(BASE_DIR, "assets")
 if os.path.isdir(ASSETS_DIR):

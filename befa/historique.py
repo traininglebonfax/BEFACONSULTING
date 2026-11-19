@@ -282,3 +282,39 @@ class AnalyseHistorique:
                     f"compte de résultat ({cr.resultat_net:,.0f}).".replace(",", " ")
                 )
         return alertes
+
+
+def lignes_evolution(bilans: List[Optional[BilanCondense]], crs: List[Optional[CompteResultatCondense]]):
+    """Evolution des agregats cles sur 2 ou 3 exercices (du plus ancien au plus recent).
+
+    Retourne (colonnes, lignes) ; la derniere colonne est le taux de croissance annuel moyen."""
+    paires = [(b, c) for b, c in zip(bilans, crs) if b is not None or c is not None]
+    paires = list(reversed(paires))  # ordre chronologique
+    if len(paires) < 2:
+        return [], []
+    colonnes = [(b or c).exercice for b, c in paires] + ["TCAM"]
+    n = len(paires) - 1
+
+    def ligne(libelle, source, attr, style=""):
+        vals = []
+        for b, c in paires:
+            obj = b if source == "bilan" else c
+            vals.append(getattr(obj, attr) if obj is not None else None)
+        debut, fin = vals[0], vals[-1]
+        tcam = (fin / debut) ** (1 / n) - 1 if debut and fin and debut > 0 and fin > 0 else None
+        return Ligne(libelle, vals + [tcam], style)
+
+    out = [
+        ligne("Chiffre d'affaires", "cr", "chiffre_affaires"),
+        ligne("Valeur ajoutée", "cr", "valeur_ajoutee"),
+        ligne("Excédent brut d'exploitation", "cr", "ebe", "sous_total"),
+        ligne("Résultat net", "cr", "resultat_net", "sous_total"),
+        ligne("Capacité d'autofinancement", "cr", "caf", "total"),
+        ligne("Total bilan", "bilan", "total_actif"),
+        ligne("Capitaux propres", "bilan", "capitaux_propres"),
+        ligne("Dettes financières", "bilan", "dettes_financieres"),
+        ligne("Fonds de roulement", "bilan", "fonds_de_roulement"),
+        ligne("Besoin en fonds de roulement", "bilan", "bfr"),
+        ligne("Trésorerie nette", "bilan", "tresorerie_nette", "total"),
+    ]
+    return colonnes, out

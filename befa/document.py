@@ -2,9 +2,12 @@
 Business Plan au format BEFA Consulting : document Word (python-docx) puis
 PDF (LibreOffice). Lot 5.
 
-Structure calquee sur les modeles du cabinet :
-  - nouveau projet       : modele COREAL FOOD (7 parties + conclusion) ;
-  - entreprise existante : modele O'IVOIRE (4 parties + conclusion).
+Structure : plan du modele de reference « Dossier de credit 1 - O'IVOIRE »
+(4 parties + conclusion generale + annexes), commun aux deux profils :
+  - STARTUP (nouveau_projet)        : historique remplace par la genese du
+    projet, etude financiere = bilan d'ouverture PREVISIONNEL ;
+  - PME, ETI, GE (entreprise_existante) : analyse des bilans N / N-1 et
+    evolution sur trois exercices.
 
 Table des matieres en deux passes : LibreOffice ne met pas a jour les
 numeros de page d'un sommaire Word. On genere un premier PDF, on y repere
@@ -133,6 +136,11 @@ def _bordure_paragraphe(p, cote: str = "bottom", couleur: str = HEX_ORANGE, epai
     ppr.append(pbdr)
 
 
+def insecable(t: str) -> str:
+    """Espace insecable avant « % », « : » et « FCFA » : jamais de « 100 » en fin de ligne et « % » a la suivante."""
+    return re.sub(r" (%|FCFA\b)", lambda m: "\u00a0" + m.group(1), t or "")
+
+
 def _normaliser(t: str) -> str:
     t = unicodedata.normalize("NFKC", t).lower()
     return re.sub(r"[\W_]+", "", t)
@@ -153,6 +161,7 @@ class Redacteur:
         self.sommaire: List[EntreeSommaire] = []
         self.figures = 0
         self.renvois: Dict[str, int] = {}
+        self._lettre = 0  # numerotation a), b), c)... des titres de niveau 3
         self._styles()
 
     # --- styles ---------------------------------------------------------
@@ -167,7 +176,8 @@ class Redacteur:
         pf.space_after = Pt(6)
         pf.line_spacing = 1.15
         for nom, taille, couleur, avant, apres in (("Heading 1", 16, ORANGE, 0, 14), ("Heading 2", 13, ENCRE, 14, 6),
-                                                   ("Heading 3", 11, ORANGE_FONCE, 10, 4)):
+                                                   ("Heading 3", 11, ORANGE_FONCE, 10, 4),
+                                                   ("Heading 4", 10.5, ENCRE, 8, 3)):
             s = st[nom]
             s.font.name = POLICE
             polices = s.element.rPr.rFonts
@@ -182,6 +192,8 @@ class Redacteur:
             s.paragraph_format.space_before = Pt(avant)
             s.paragraph_format.space_after = Pt(apres)
             s.paragraph_format.keep_with_next = True
+        pied = st["Footer"].font  # le numero de page (champ PAGE) prend la taille du style
+        pied.size, pied.color.rgb, pied.name = Pt(8), GRIS, POLICE
         sec = self.doc.sections[0]
         sec.page_height, sec.page_width = Cm(29.7), Cm(21)
         sec.left_margin = sec.right_margin = Cm(1.9)
@@ -213,12 +225,61 @@ class Redacteur:
         _champ(r, "PAGE")
 
     # --- blocs ---------------------------------------------------------------
-    def titre(self, texte: str, niveau: int, saut: bool = False):
-        if saut or niveau == 1:
+    def titre(self, texte: str, niveau: int, saut: Optional[bool] = None, sommaire: bool = True):
+        if saut is None:
+            saut = niveau == 1
+        if saut:
             self.saut_page()
-        self.doc.add_heading(texte, level=niveau)
         if niveau <= 2:
+            self._lettre = 0
+        self.doc.add_heading(texte, level=niveau)
+        if sommaire and niveau <= 4:
             self.sommaire.append(EntreeSommaire(niveau, texte))
+
+    def sous_titre(self, texte: str):
+        """Titre de niveau 3 numerote a), b), c)... comme dans le modele O'IVOIRE."""
+        self.titre(f"{chr(ord('a') + self._lettre)}) {texte}", 3)
+        self._lettre += 1
+
+    def page_partie(self, texte: str):
+        """Page de titre d'une partie (modele O'IVOIRE : intitule seul, centre)."""
+        self.saut_page()
+        for _ in range(14):
+            self.doc.add_paragraph().paragraph_format.space_after = Pt(6)
+        self._lettre = 0
+        h = self.doc.add_heading(texte, level=1)
+        h.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        h.paragraph_format.keep_with_next = False  # sinon le titre suit le saut de page sur la page suivante
+        _bordure_paragraphe(h, "bottom", HEX_ORANGE, 12)
+        self.sommaire.append(EntreeSommaire(1, texte))
+        self.saut_page()
+
+    def paysage(self, actif: bool):
+        """Nouvelle section en orientation paysage (annexes a 12 colonnes) ou portrait."""
+        from docx.enum.section import WD_ORIENT
+
+        sec = self.doc.add_section(WD_SECTION.NEW_PAGE)
+        sec.orientation = WD_ORIENT.LANDSCAPE if actif else WD_ORIENT.PORTRAIT
+        grand, petit = Cm(29.7), Cm(21)
+        sec.page_width, sec.page_height = (grand, petit) if actif else (petit, grand)
+        sec.different_first_page_header_footer = False
+        sec.left_margin = sec.right_margin = Cm(1.2 if actif else 1.9)
+        sec.footer.is_linked_to_previous = False
+        f = sec.footer.paragraphs[0]
+        _bordure_paragraphe(f, "top", HEX_ORANGE, 6)
+        for pos in (8.25, 16.51):  # tabulations du style « Footer » du gabarit Word : a neutraliser
+            f.paragraph_format.tab_stops.add_tab_stop(Cm(pos), WD_TAB_ALIGNMENT.CLEAR)
+        f.paragraph_format.tab_stops.add_tab_stop(Cm(self.largeur_section), WD_TAB_ALIGNMENT.RIGHT)
+        for texte in (f"Réalisé par {CABINET}", "	Page ", None):
+            r = f.add_run(texte or "")
+            r.font.size, r.font.color.rgb = Pt(8), GRIS
+            if texte is None:
+                _champ(r, "PAGE")
+
+    @property
+    def largeur_section(self) -> float:
+        s = self.doc.sections[-1]
+        return (s.page_width - s.left_margin - s.right_margin) / 360000
 
     def saut_page(self):
         paras = self.doc.paragraphs
@@ -247,7 +308,7 @@ class Redacteur:
                 r.font.superscript = True
                 r.font.color.rgb = ORANGE_FONCE
                 continue
-            r = p.add_run(morceau)
+            r = p.add_run(insecable(morceau))
             r.italic, r.bold = italique, gras
             if taille:
                 r.font.size = Pt(taille)
@@ -285,7 +346,8 @@ class Redacteur:
         cap.paragraph_format.space_after = Pt(10)
 
     def tableau(self, entetes: Sequence[str], lignes: Sequence[Ligne], largeur_libelle: float = 5.0,
-                styles_colonnes: Optional[Sequence[str]] = None, taille: float = 8, titre: Optional[str] = None):
+                styles_colonnes: Optional[Sequence[str]] = None, taille: float = 8, titre: Optional[str] = None,
+                largeur_totale: Optional[float] = None):
         """Tableau financier : 1re colonne libelle, colonnes suivantes numeriques."""
         if titre:
             p = self.paragraphe(titre, taille=9, couleur=ORANGE_FONCE)
@@ -293,12 +355,12 @@ class Redacteur:
             p.paragraph_format.keep_with_next = True
             p.paragraph_format.space_after = Pt(3)
         ncol = len(entetes)
-        if ncol >= 8:  # plan de financement avec annee 0 : tableau tres large
+        if ncol >= 8 and largeur_totale is None:  # plan de financement avec annee 0 : tableau tres large
             taille, largeur_libelle = min(taille, 6.8), min(largeur_libelle, 3.3)
         t = self.doc.add_table(rows=1, cols=ncol)
         t.alignment = WD_TABLE_ALIGNMENT.CENTER
         _bordures(t)
-        larg_val = (self.largeur - largeur_libelle) / max(1, ncol - 1)
+        larg_val = ((largeur_totale or self.largeur) - largeur_libelle) / max(1, ncol - 1)
         largeurs = [largeur_libelle] + [larg_val] * (ncol - 1)
         _grille(t, largeurs)
         for i, e in enumerate(entetes):
@@ -358,7 +420,7 @@ class Redacteur:
                 cells[i].width = Cm(largeurs[i])
                 p = cells[i].paragraphs[0]
                 p.paragraph_format.space_after = Pt(0)
-                r = p.add_run(str(v))
+                r = p.add_run(insecable(str(v)))
                 r.font.size = Pt(taille)
                 if gras_premiere_colonne and i == 0:
                     r.bold = True
@@ -374,13 +436,23 @@ class Redacteur:
         trpr.append(el)
 
     # --- page de garde et sommaire -------------------------------------------
-    def page_de_garde(self, d: DossierBEFA, titre_doc: str):
+    def page_de_garde(self, d: DossierBEFA, titre_doc: str, logo_client: Optional[bytes] = None):
         e, p = d.entreprise, d.projet
-        for _ in range(5):
+        for _ in range(3 if logo_client else 5):
             self.doc.add_paragraph()
-        for texte, taille, couleur, gras in ((e.raison_sociale.upper(), 24, ENCRE, True),
+        if logo_client:
+            q = self.doc.add_paragraph()
+            q.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            q.paragraph_format.space_after = Pt(6)
+            from .visuel import proportions
+
+            ratio = proportions(logo_client)
+            largeur = 5.0 if ratio <= 0.6 else max(2.5, 4.0 / ratio)  # hauteur <= 4 cm
+            q.add_run().add_picture(io.BytesIO(logo_client), width=Cm(largeur))
+        for texte, taille, couleur, gras in ((d.raison_sociale.upper(), 24, ENCRE, True),
                                              (titre_doc, 30, ORANGE, True),
-                                             (p.intitule, 15, GRIS, False),
+                                             (p.intitule if p.intitule.strip().upper() != d.raison_sociale.strip().upper()
+                                              else "", 15, GRIS, False),
                                              (d.annee_document, 16, ENCRE, True)):
             if not texte:
                 continue
@@ -422,13 +494,14 @@ class Redacteur:
             p = ancre.insert_paragraph_before()
             pf = p.paragraph_format
             pf.tab_stops.add_tab_stop(Cm(self.largeur), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.DOTS)
-            pf.space_after = Pt(2 if e.niveau == 2 else 4)
-            pf.space_before = Pt(0 if e.niveau == 2 else 6)
-            if e.niveau == 2:
-                pf.left_indent = Cm(0.7)
+            pf.space_after = Pt(4 if e.niveau == 1 else 1)
+            pf.space_before = Pt(6 if e.niveau == 1 else 0)
+            if e.niveau > 1:
+                pf.left_indent = Cm(0.6 * (e.niveau - 1))
             numero = str(self.pages.get(i, "")) if self.pages is not None else MARQUE_SOMMAIRE
             r = p.add_run(f"{e.titre}\t{numero}")
-            r.font.size = Pt(10 if e.niveau == 1 else 9.5)
+            r.font.size = Pt({1: 10, 2: 9.5, 3: 9}.get(e.niveau, 8.5))
+            r.italic = e.niveau == 4
             r.bold = e.niveau == 1
             if e.niveau == 1:
                 r.font.color.rgb = ORANGE_FONCE
@@ -456,96 +529,6 @@ def _commentaires(R: Redacteur, coms: Dict[str, List[str]], cle: str):
         R.paragraphe(p)
 
 
-def _swot(R: Redacteur, red: Optional[Redaction]):
-    if not red or not any(red.swot.values()):
-        R.a_completer("analyse SWOT")
-        return
-    sw = red.swot
-    largeur = R.largeur / 2
-    t = R.doc.add_table(rows=2, cols=2)
-    t.alignment = WD_TABLE_ALIGNMENT.CENTER
-    _bordures(t)
-    _grille(t, [largeur, largeur])
-    for (ligne, col), (cle, titre, fond) in zip(
-            ((0, 0), (0, 1), (1, 0), (1, 1)),
-            (("forces", "Forces", "E3F1E6"), ("faiblesses", "Faiblesses", "FBE3E1"),
-             ("opportunites", "Opportunités", "E2ECF7"), ("menaces", "Menaces", "FCEBD9"))):
-        c = t.rows[ligne].cells[col]
-        c.width = Cm(largeur)
-        _ombre(c, fond)
-        p = c.paragraphs[0]
-        r = p.add_run(titre)
-        r.bold, r.font.size = True, Pt(10)
-        for x in sw.get(cle, []):
-            q = c.add_paragraph()
-            q.paragraph_format.space_after = Pt(2)
-            q.paragraph_format.left_indent = Cm(0.3)
-            R._texte(q, "• " + x, taille=8.5)
-    R.doc.add_paragraph()
-
-
-def _identite(R: Redacteur, d: DossierBEFA):
-    e = d.entreprise
-    R.titre("Identification de l'entreprise", 3)
-    lignes = [(k, v) for k, v in (
-        ("Raison sociale", e.raison_sociale), ("Sigle", e.sigle), ("Forme juridique", e.forme_juridique),
-        ("Capital social", f"{C.entier(e.capital)} FCFA" if e.capital else ""), ("Date de création", e.date_creation),
-        ("RCCM", e.rccm), ("N° de compte contribuable", e.ncc), ("Régime fiscal", e.regime_fiscal),
-        ("Centre des impôts", e.centre_impots), ("Siège social", e.siege or e.ville), ("Adresse", e.adresse),
-        ("Téléphone", e.telephone), ("E-mail", e.email)) if v]
-    R.tableau_texte(None, lignes, [5.5, R.largeur - 5.5], gras_premiere_colonne=True)
-    if e.activite:
-        R.titre("Nature de l'activité", 3)
-        R.paragraphe(e.activite)
-    if e.objet_social:
-        R.titre("Objet social", 3)
-        R.paragraphe(f"{e.raison_sociale} a pour objet, en République de Côte d'Ivoire et dans les États parties au "
-                     f"Traité OHADA :")
-        R.puces(e.objet_social)
-
-
-def _actionnariat(R: Redacteur, d: DossierBEFA):
-    if not d.actionnaires:
-        R.a_completer("répartition du capital")
-        return
-    capital = d.entreprise.capital or sum(a.montant for a in d.actionnaires)
-    lignes = [(a.nom, a.nationalite, a.nature, C.entier(a.montant),
-               C.pct(a.part(capital)) if a.part(capital) is not None else "") for a in d.actionnaires]
-    lignes.append(("TOTAL", "", "", C.entier(sum(a.montant for a in d.actionnaires)), "100 %"))
-    R.tableau_texte(["Associé / actionnaire", "Nationalité", "Nature", "Capital (FCFA)", "Part"], lignes,
-                    [5.6, 2.6, 3.6, 3.2, R.largeur - 15.0])
-
-
-def _management(R: Redacteur, d: DossierBEFA):
-    if d.gouvernance:
-        R.paragraphe(d.gouvernance)
-    if d.dirigeants:
-        R.tableau_texte(["Nom", "Fonction", "Profil"], [(x.nom, x.fonction, x.profil) for x in d.dirigeants],
-                        [5.0, 4.0, R.largeur - 9.0])
-    if not d.gouvernance and not d.dirigeants:
-        R.a_completer("organes de direction et équipe dirigeante")
-
-
-def _partenaires(R: Redacteur, liste, quoi: str):
-    if not liste:
-        R.a_completer(quoi)
-        return
-    R.tableau_texte(["Nom", "Mode de règlement", "Délai", "Localisation"],
-                    [(x.nom, x.mode_paiement, x.delai, x.localisation) for x in liste],
-                    [6.0, 3.8, 3.6, R.largeur - 13.4])
-
-
-def _produits(R: Redacteur, d: DossierBEFA):
-    if not d.produits:
-        R.a_completer("produits et services")
-        return
-    for x in d.produits:
-        q = R.doc.add_paragraph(style="List Bullet")
-        R._texte(q, x.nom + (" : " if x.description else ""), gras=True)
-        if x.description:
-            R._texte(q, x.description)
-
-
 def _prets(R: Redacteur, proj: Projection, coms):
     _commentaires(R, coms, "financement")
     for pr in proj.entree.prets:
@@ -559,7 +542,7 @@ def _prets(R: Redacteur, proj: Projection, coms):
                    f"Remboursements {C.PERIODICITE.get(pr.periodicite, pr.periodicite)}")]
         if pr.garantie:
             lignes.append(("Garantie", pr.garantie))
-        R.titre(f"{pr.libelle_type} — {pr.libelle}", 3)
+        R.titre(f"{pr.libelle_type} — {pr.libelle}", 4, sommaire=False)
         R.tableau_texte(None, lignes, [4.5, R.largeur - 4.5], gras_premiere_colonne=True)
 
 
@@ -603,49 +586,6 @@ def _hypotheses_ca(R: Redacteur, proj: Projection):
     R.tableau(["Rubriques"] + list(e.annees), lignes, largeur_libelle=5.2, taille=7.5)
 
 
-def _previsions(R: Redacteur, d: DossierBEFA, proj: Projection, coms, nom: str, niveau_base: int = 2):
-    ce = proj.compte
-    R.titre("Hypothèses de chiffre d'affaires", niveau_base + 1)
-    _hypotheses_ca(R, proj)
-    R.titre("Compte d'exploitation prévisionnel", niveau_base + 1)
-    R.tableau(["Rubriques"] + ce.annees, ce.lignes(), largeur_libelle=4.6, taille=7.5,
-              titre=f"{nom} : compte d'exploitation prévisionnel (FCFA)")
-    _commentaires(R, coms, "compte_exploitation")
-    R.figure(graphiques.courbes_annuelles(ce.annees, [("Chiffre d'affaires", ce.chiffre_affaires),
-                                                       ("Résultat net", ce.resultat_net)]),
-             "évolution du chiffre d'affaires et du résultat net (millions FCFA)", 14)
-    R.titre("Plan de financement", niveau_base + 1)
-    R.tableau(["Rubriques"] + proj.plan.colonnes, proj.plan.lignes(), largeur_libelle=4.0, taille=7)
-    _commentaires(R, coms, "plan_financement")
-    R.titre("Ratio de couverture de la dette", niveau_base + 1)
-    R.tableau(["Rubrique"] + proj.couverture.annees, proj.couverture.lignes(), largeur_libelle=4.6, taille=7.5)
-    if any(v is not None for v in proj.couverture.dscr):
-        R.tableau(["Service de la dette"] + proj.couverture.annees, proj.couverture.lignes_service_dette(),
-                  largeur_libelle=4.6, taille=7.5)
-    _commentaires(R, coms, "couverture_dette")
-    if proj.echeanciers:
-        R.titre("Échéancier annuel des emprunts", niveau_base + 1)
-        for nom_pret, agg in proj.echeanciers.items():
-            lignes = [Ligne("Intérêts", agg["interets"]), Ligne("Capital remboursé", agg["amortissements"]),
-                      Ligne("Capital restant dû en fin d'année", agg["capital_fin"], "sous_total")]
-            R.tableau([nom_pret.strip()] + ce.annees, lignes, largeur_libelle=4.6, taille=7.5)
-            if agg["hors_horizon"] > 0.5:
-                R.note(f"Capital restant à rembourser au-delà de la période du plan : {C.entier(agg['hors_horizon'])} FCFA.")
-
-
-def _sources_remboursement(R: Redacteur, proj: Projection, nom: str):
-    ce = proj.compte
-    R.titre("Source principale", 3)
-    R.paragraphe(f"Le remboursement des concours sollicités sera assuré par la capacité d'autofinancement générée "
-                 f"par l'exploitation de {nom}, qui passe de {C.montant(ce.caf[0])} {C.en(ce.annees[0])} à "
-                 f"{C.montant(ce.caf[-1])} {C.en(ce.annees[-1])}.")
-    garanties = [p.garantie for p in proj.entree.prets if p.garantie]
-    R.titre("Sources secondaires", 3)
-    R.paragraphe("En complément : les apports en compte courant des associés et la domiciliation de l'ensemble des "
-                 "recettes de l'entreprise dans les livres de la banque" +
-                 (f", ainsi que les garanties proposées ({'; '.join(garanties)})." if garanties else "."))
-
-
 def _trends(R: Redacteur, d: DossierBEFA, donnees: Optional[trends.DonneesTrends]):
     if not donnees or not donnees.evolution:
         return
@@ -686,176 +626,522 @@ def _bibliographie(R: Redacteur, red: Optional[Redaction]):
         r.font.size, r.font.color.rgb = Pt(8), GRIS
 
 
+def _identite(R: Redacteur, d: DossierBEFA):
+    e = d.entreprise
+    lignes = [(k, v) for k, v in (
+        ("Dénomination sociale", e.raison_sociale), ("Sigle", e.sigle), ("Forme juridique", e.forme_juridique),
+        ("Capital social", f"{C.entier(e.capital)} FCFA" if e.capital else ""), ("Date de création", e.date_creation),
+        ("RCCM", e.rccm), ("N° de compte contribuable", e.ncc), ("Régime fiscal", e.regime_fiscal),
+        ("Centre des impôts", e.centre_impots), ("Siège social", e.siege or e.ville), ("Adresse", e.adresse),
+        ("Téléphone", e.telephone), ("E-mail", e.email),
+        ("Domaine d'activité", e.domaine_activite)) if v]
+    if lignes:
+        R.tableau_texte(None, lignes, [5.5, R.largeur - 5.5], gras_premiere_colonne=True)
+    elif d.startup:
+        R.note("Entreprise en cours de création : les informations d'immatriculation seront communiquées dès "
+               "l'accomplissement des formalités.")
+    if e.objet_social:
+        R.paragraphe(f"{d.raison_sociale} a pour objet, en République de Côte d'Ivoire et dans les États parties au "
+                     "Traité OHADA :")
+        R.puces(e.objet_social)
+
+
+def _actionnariat(R: Redacteur, d: DossierBEFA):
+    if not d.actionnaires:
+        R.a_completer("répartition du capital (associés, apports, parts)")
+        return
+    capital = d.entreprise.capital or sum(a.montant or 0 for a in d.actionnaires)
+    avec_parts = any(a.nombre_parts for a in d.actionnaires)
+    avec_naissance = any(a.date_naissance for a in d.actionnaires)
+    entetes = ["Associé / actionnaire"] + (["Naissance"] if avec_naissance else []) + ["Nationalité"] + \
+        (["Parts / actions"] if avec_parts else []) + ["Montant (FCFA)", "Part"]
+    lignes = []
+    for a in d.actionnaires:
+        part = a.part(capital)
+        lignes.append([a.nom] + ([a.date_naissance] if avec_naissance else []) + [a.nationalite] +
+                      ([C.entier(a.nombre_parts) if a.nombre_parts else ""] if avec_parts else []) +
+                      [C.entier(a.montant) if a.montant else "", C.pct(part) if part is not None else ""])
+    total_parts = sum(a.nombre_parts or 0 for a in d.actionnaires)
+    total_pct = sum(a.part(capital) or 0 for a in d.actionnaires)
+    lignes.append(["TOTAL"] + ([""] if avec_naissance else []) + [""] +
+                  ([C.entier(total_parts) if total_parts else ""] if avec_parts else []) +
+                  [C.entier(sum(a.montant or 0 for a in d.actionnaires)), C.pct(total_pct) if total_pct else ""])
+    fixe = 2.4 * (len(entetes) - 1)
+    R.tableau_texte(entetes, lignes, [R.largeur - fixe] + [2.4] * (len(entetes) - 1))
+
+
+def _management(R: Redacteur, d: DossierBEFA):
+    if d.gouvernance:
+        R.paragraphe(d.gouvernance)
+    if d.dirigeants:
+        if len(d.dirigeants) == 1 and not d.gouvernance:
+            x = d.dirigeants[0]
+            R.paragraphe(f"L'entreprise est gérée quotidiennement par {x.nom}"
+                         f"{', ' + x.fonction if x.fonction else ''}"
+                         f"{' (' + x.qualite + ')' if x.qualite and x.qualite != x.fonction else ''}.")
+        avec_profil = any(x.profil for x in d.dirigeants)
+        entetes = ["Nom et prénoms", "Fonction", "Qualité juridique"] + (["Profil / expérience"] if avec_profil else [])
+        larg = [5.0, 3.8, 3.6] + ([R.largeur - 12.4] if avec_profil else [])
+        if not avec_profil:
+            larg = [R.largeur - 7.4, 3.8, 3.6]
+        R.tableau_texte(entetes, [[x.nom, x.fonction, x.qualite] + ([x.profil] if avec_profil else [])
+                                  for x in d.dirigeants], larg)
+    if not d.gouvernance and not d.dirigeants:
+        R.a_completer("organes de direction et équipe dirigeante")
+
+
+def _partenaires(R: Redacteur, liste, type_: str):
+    """Tableau des clients ou fournisseurs : colonnes affichees selon les donnees disponibles."""
+    if not liste:
+        R.a_completer("principaux clients et modes de règlement" if type_ == "clients" else "principaux fournisseurs")
+        return
+    cols = [("Nom", "nom")]
+    if any(x.secteur for x in liste):
+        cols.append(("Secteur" if type_ == "clients" else "Domaine", "secteur"))
+    if type_ == "fournisseurs" and any(x.nature for x in liste):
+        cols.append(("Biens / services fournis", "nature"))
+    if any(x.montant for x in liste):
+        cols.append(("CA réalisé (FCFA)" if type_ == "clients" else "Achats annuels (FCFA)", "montant"))
+    if any(x.part is not None for x in liste):
+        cols.append(("Part du CA" if type_ == "clients" else "Part des achats", "part"))
+    for lib, attr in (("Mode de règlement", "mode_paiement"), ("Délai", "delai"), ("Localisation", "localisation")):
+        if any(getattr(x, attr) for x in liste):
+            cols.append((lib, attr))
+
+    def val(x, attr):
+        v = getattr(x, attr)
+        if attr == "montant":
+            return C.entier(v) if v else ""
+        if attr == "part":
+            return C.pct(v) if v is not None else ""
+        return v or ""
+
+    lignes = [[val(x, a) for _, a in cols] for x in liste]
+    if any(x.montant for x in liste):
+        tot = sum(x.montant or 0 for x in liste)
+        tot_part = sum(x.part or 0 for x in liste)
+        lignes.append(["TOTAL" if i == 0 else (C.entier(tot) if a == "montant" else
+                                                (C.pct(tot_part) if a == "part" and tot_part else ""))
+                       for i, (_, a) in enumerate(cols)])
+    etroites = {"montant": 3.0, "part": 2.0, "delai": 2.8, "mode_paiement": 3.0, "localisation": 2.6, "secteur": 3.0,
+                "nature": 3.6}
+    fixe = sum(etroites.get(a, 0) for _, a in cols[1:])
+    largeurs = [max(3.5, R.largeur - fixe)] + [etroites.get(a, 3.0) for _, a in cols[1:]]
+    if sum(largeurs) > R.largeur:
+        k = R.largeur / sum(largeurs)
+        largeurs = [l * k for l in largeurs]
+    R.tableau_texte([c for c, _ in cols], lignes, largeurs, taille=8.5)
+
+
+def analyse_portefeuille(liste, type_: str, nom: str) -> List[str]:
+    """Commentaire du programme sur la concentration du portefeuille clients / fournisseurs."""
+    parts = sorted([x for x in liste if x.part is not None], key=lambda x: -x.part)
+    if not parts:
+        return []
+    top = parts[0]
+    top3 = sum(x.part for x in parts[:3])
+    quoi = "chiffre d'affaires" if type_ == "clients" else "achats"
+    out = [f"Le premier {'client' if type_ == 'clients' else 'fournisseur'}, {top.nom}, représente "
+           f"{C.pct(top.part)} des {quoi if type_ == 'fournisseurs' else 'ventes'} de {nom}"
+           + (f" et les trois premiers {C.pct(top3)}." if len(parts) >= 3 else ".")]
+    if type_ == "clients":
+        if top.part >= 0.30:
+            out.append(f"Cette concentration traduit une dépendance commerciale significative vis-à-vis de ce premier "
+                       f"client ({top.nom}), que l'entreprise devra réduire par la diversification de son portefeuille.")
+        else:
+            out.append("Aucun client ne dépasse 30 % du chiffre d'affaires : le portefeuille est diversifié et la "
+                       "dépendance commerciale limitée.")
+    elif top.part >= 0.50:
+        out.append(f"L'approvisionnement dépend fortement de ce premier fournisseur ({top.nom}) : une source "
+                   "alternative sécuriserait l'exploitation.")
+    return out
+
+
+def _produits(R: Redacteur, d: DossierBEFA):
+    if not d.produits:
+        return
+    for x in d.produits:
+        q = R.doc.add_paragraph(style="List Bullet")
+        R._texte(q, x.nom + (" : " if x.description else ""), gras=True)
+        if x.description:
+            R._texte(q, x.description)
+
+
+def _texte_ia(R: Redacteur, red: Optional[Redaction], cle: str, quoi: str):
+    """Corps d'une section redigee par l'IA (sans titre)."""
+    _section_ia(R, red, cle, None, quoi=quoi)
+
+
+def _swot_tableau(R: Redacteur, red: Optional[Redaction]):
+    """SWOT au format du modele : axes / elements identifies / impacts sur le projet."""
+    if not red or not any(red.swot.values()):
+        R.a_completer("analyse SWOT")
+        return
+    t = R.doc.add_table(rows=1, cols=3)
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    _bordures(t)
+    largeurs = [3.2, (R.largeur - 3.2) * 0.45, (R.largeur - 3.2) * 0.55]
+    _grille(t, largeurs)
+    for i, e in enumerate(("Axes stratégiques", "Éléments identifiés", "Impacts sur le projet")):
+        c = t.rows[0].cells[i]
+        _ombre(c, HEX_ORANGE)
+        r = c.paragraphs[0].add_run(e)
+        r.bold, r.font.size, r.font.color.rgb = True, Pt(9), RGBColor(0xFF, 0xFF, 0xFF)
+    R._repeter_entete(t.rows[0])
+    for cle, titre, fond in (("forces", "FORCES", "E3F1E6"), ("faiblesses", "FAIBLESSES", "FBE3E1"),
+                             ("opportunites", "OPPORTUNITÉS", "E2ECF7"), ("menaces", "MENACES", "FCEBD9")):
+        elements = red.swot.get(cle, [])
+        if not elements:
+            continue
+        premiere = None
+        for k, x in enumerate(elements):
+            elem, _, impact = x.partition(" : ")
+            cells = t.add_row().cells
+            if k == 0:
+                premiere = cells[0]
+                r = cells[0].paragraphs[0].add_run(titre)
+                r.bold, r.font.size = True, Pt(9)
+            _ombre(cells[0], fond)
+            for j, texte in ((1, elem), (2, impact)):
+                p = cells[j].paragraphs[0]
+                p.paragraph_format.space_after = Pt(0)
+                R._texte(p, texte.strip(), taille=8.5)
+        if premiere is not None and len(elements) > 1:
+            premiere.merge(t.rows[len(t.rows) - 1].cells[0])
+    R.doc.add_paragraph()
+
+
 def _bilan_ouverture(R: Redacteur, d: DossierBEFA, coms):
+    from .ouverture import MENTION
+
+    b = d.bilan_ouverture
+    if b is None and d.bilan_n is not None:  # bilan d'ouverture reel importe (liasse)
+        h = d.analyse_historique
+        R.tableau(["Postes", h.bilan_n.exercice], [Ligne(l.libelle, l.valeurs[:1], l.style) for l in h.lignes_bilan()],
+                  largeur_libelle=R.largeur - 4.5, taille=8, titre=f"Bilan d'ouverture au {h.bilan_n.exercice} (FCFA)")
+        _commentaires(R, coms, "analyse_bilan")
+        return
+    if b is None:
+        R.a_completer("bilan d'ouverture prévisionnel (étape « Documents comptables »)")
+        return
+    from .historique import AnalyseHistorique, CompteResultatCondense
+
+    h = AnalyseHistorique(b, None, CompteResultatCondense(b.exercice), None)
+    lignes = [Ligne(l.libelle.replace("Emplois stables", "Actif immobilisé"), l.valeurs[:1], l.style)
+              for l in h.lignes_bilan() if l.libelle != "Résultat net"]
+    R.tableau(["Postes", "Montant (FCFA)"], lignes, largeur_libelle=R.largeur - 4.5, taille=8.5,
+              titre="Bilan d'ouverture prévisionnel (FCFA)")
+    R.note(MENTION + ("" if d.bilan_ouverture_valide else " Proposition non encore validée par le consultant."))
+    for p in C.bilan_ouverture(b, d.nom):
+        R.paragraphe(p)
+
+
+def _historique(R: Redacteur, d: DossierBEFA, coms):
     h = d.analyse_historique
     if h is None:
-        R.paragraphe("Entreprise nouvellement créée : le bilan d'ouverture est joint en annexe du présent dossier.")
+        R.a_completer("bilans des trois derniers exercices (étape « Documents comptables »)")
         return
-    R.tableau(["Postes", h.bilan_n.exercice], [Ligne(l.libelle, l.valeurs[:1], l.style) for l in h.lignes_bilan()],
-              largeur_libelle=R.largeur - 4.5, taille=8, titre=f"Bilan d'ouverture au {h.bilan_n.exercice} (FCFA)")
+    R.titre(f"I. ANALYSE DU BILAN {h.bilan_n.exercice}", 2)
+    R.paragraphe(f"Le bilan {h.bilan_n.exercice} de l'entreprise se résume dans le tableau suivant :")
+    R.tableau(["Postes"] + h.colonnes, h.lignes_bilan(), largeur_libelle=5.6, styles_colonnes=["", "", "", "pct"],
+              taille=7.5, titre=f"Analyse du bilan {h.bilan_n.exercice} (FCFA)")
+    R.tableau(["Équilibre financier"] + h.colonnes, h.lignes_structure(), largeur_libelle=5.6,
+              styles_colonnes=["", "", "", "pct"], taille=7.5)
     _commentaires(R, coms, "analyse_bilan")
+    R.titre("II. ANALYSE DU COMPTE DE RÉSULTAT", 2)
+    R.paragraphe(f"Le compte de résultat {h.cr_n.exercice} se résume dans le tableau ci-dessous :")
+    R.tableau(["Intitulés"] + h.colonnes, h.lignes_compte_resultat(), largeur_libelle=5.6,
+              styles_colonnes=["", "", "", "pct"], taille=7.5,
+              titre=f"Analyse du compte de résultat {h.cr_n.exercice} (FCFA)")
+    _commentaires(R, coms, "analyse_compte_resultat")
+    if d.bilan_n2 is not None or d.cr_n2 is not None:
+        from .historique import lignes_evolution
+
+        cols, lignes = lignes_evolution([d.bilan_n, d.bilan_n1, d.bilan_n2], [d.cr_n, d.cr_n1, d.cr_n2])
+        if lignes:
+            R.titre("III. ÉVOLUTION SUR LES TROIS DERNIERS EXERCICES", 2)
+            R.tableau(["Agrégats"] + cols, lignes, largeur_libelle=5.6,
+                      styles_colonnes=[""] * (len(cols) - 1) + ["pct"], taille=8,
+                      titre="Évolution des principaux agrégats (FCFA)")
+            for p in C.evolution(cols, lignes, d.nom):
+                R.paragraphe(p)
 
 
-def construire_nouveau_projet(R: Redacteur, d: DossierBEFA, red, proj, donnees_trends, coms):
-    e, p = d.entreprise, d.projet
-    nom = e.sigle or e.raison_sociale
-    _section_ia(R, red, "introduction", "INTRODUCTION", 1)
+def _repartition(R: Redacteur, proj: Projection):
+    """Repartition des charges de l'investissement entre le promoteur et la banque (champ `financement`)."""
+    invs = proj.entree.investissements
+    promoteur = [i for i in invs if (i.financement or "").lower() in ("apport", "promoteur", "fonds propres")]
+    banque = [i for i in invs if (i.financement or "").lower() in ("emprunt", "banque", "credit", "crédit")]
+    if not (promoteur or banque):
+        R.paragraphe("L'investissement est financé globalement selon le schéma de financement présenté ci-dessus, "
+                     "sans affectation de postes à une source de financement particulière.")
+        return
+    for titre, liste in (("L'investissement à la charge du promoteur", promoteur),
+                         ("L'investissement sollicité à la banque", banque)):
+        if not liste:
+            continue
+        R.titre(titre, 4, sommaire=False)
+        lignes = [Ligne(i.libelle, [i.montant]) for i in liste]
+        lignes.append(Ligne("Total", [sum(i.montant for i in liste)], "total"))
+        R.tableau(["Désignation", "Montant (FCFA)"], lignes, largeur_libelle=R.largeur - 4.5, taille=9)
 
-    R.titre(f"PARTIE 1 : PRÉSENTATION DE {e.raison_sociale.upper()}", 1)
-    R.titre("I. Présentation de l'entreprise", 2)
-    _identite(R, d)
-    R.titre("Géographie de l'actionnariat", 3)
-    _actionnariat(R, d)
-    R.titre("II. Management", 2)
-    _management(R, d)
-    R.titre("III. Produits", 2)
-    _produits(R, d)
-    R.titre("IV. Les clients", 2)
-    _partenaires(R, d.clients, "principaux clients et modes de règlement")
-    R.titre("V. Les fournisseurs", 2)
-    _partenaires(R, d.fournisseurs, "principaux fournisseurs")
-    R.titre("VI. Pool bancaire", 2)
-    R.paragraphe(d.pool_bancaire) if d.pool_bancaire else R.a_completer("relations bancaires")
 
-    R.titre("PARTIE 2 : PRÉSENTATION DE LA REQUÊTE", 1)
-    R.titre("1. Concours sollicités et caractéristiques des prêts", 2)
-    if proj and proj.entree.prets:
-        _prets(R, proj, coms)
+def _caracteristiques(R: Redacteur, d: DossierBEFA, proj: Optional[Projection], red: Optional[Redaction]):
+    p = d.projet
+    lignes = [("Secteur d'activité", p.secteur + (f" — {p.sous_secteur}" if p.sous_secteur else "")),
+              ("Nature du besoin", p.objet or p.intitule), ("Promoteur", d.raison_sociale),
+              ("Localisation", p.localisation or d.entreprise.ville)]
+    if proj is not None:
+        total = proj.cout_total_investissements
+        lignes.append(("Coût total du projet", f"{C.entier(total)} FCFA"))
+        if proj.total_apports:
+            lignes.append(("Apport du promoteur", f"{C.entier(proj.total_apports)} FCFA"
+                           + (f" soit {C.pct(proj.total_apports / total)}" if total else "")))
+        for pr in proj.entree.prets:
+            differe = " et ".join(x for x in (
+                f"{pr.differe_total_mois} mois de différé total" if pr.differe_total_mois else "",
+                f"{pr.differe_partiel_mois} mois de différé partiel" if pr.differe_partiel_mois else "") if x)
+            taux = f"{pr.taux_annuel * 100:.2f}".rstrip("0").rstrip(".").replace(".", ",") + " %"
+            lignes += [(f"Financement sollicité ({pr.libelle_type})", f"{C.entier(pr.montant)} FCFA"),
+                       ("Taux", taux), ("Durée", f"{pr.duree_mois} mois" + (f" avec {differe}" if differe else ""))]
+            if pr.garantie:
+                lignes.append(("Garantie", pr.garantie))
+    s = red.section("impact_besoin") if red else None
+    if s and s.puces:
+        lignes.append(("Impact attendu", "; ".join(x.split(" : ")[0].rstrip(" ;.") for x in s.puces[:4])))
+    R.tableau_texte(None, [(k, v) for k, v in lignes if v], [5.0, R.largeur - 5.0], gras_premiere_colonne=True)
+
+
+MODE_DECAISSEMENT = [
+    "Les tirages sur la ligne de crédit se feront selon le mode opératoire suivant :",
+    "Les décaissements seront faits à partir des comptes suivants :",
+]
+
+
+def _mode_decaissement(R: Redacteur):
+    R.paragraphe(MODE_DECAISSEMENT[0])
+    R.puces([MODE_DECAISSEMENT[1] + " débit du compte « crédit moyen terme », crédit du compte courant de "
+             "l'entreprise ;",
+             "Les règlements des charges se feront par chèque de banque ou par virement direct aux fournisseurs, sur "
+             "présentation des factures pro forma ou de tout document justifiant les décaissements et des références "
+             "bancaires des bénéficiaires ;",
+             "Les décaissements en espèces éventuels pour diverses prestations seront communiqués à la banque "
+             "préalablement aux tirages."])
+
+
+def _etats_previsionnels(R: Redacteur, d: DossierBEFA, proj: Projection, coms):
+    ce = proj.compte
+    nom = d.nom
+    R.sous_titre("Compte d'exploitation prévisionnel")
+    if d.startup:
+        R.paragraphe("Les états qui suivent sont des PRÉVISIONS établies à partir des hypothèses du projet ; "
+                     "l'entreprise ne dispose pas encore d'historique comptable.")
+    R.titre("Hypothèses de chiffre d'affaires", 4, sommaire=False)
+    _hypotheses_ca(R, proj)
+    R.tableau(["Rubriques"] + ce.annees, ce.lignes(), largeur_libelle=4.6, taille=7.5,
+              titre=f"{nom} : compte d'exploitation prévisionnel (FCFA)")
+    _commentaires(R, coms, "compte_exploitation")
+    R.figure(graphiques.courbes_annuelles(ce.annees, [("Chiffre d'affaires", ce.chiffre_affaires),
+                                                       ("Résultat net", ce.resultat_net)]),
+             "évolution du chiffre d'affaires et du résultat net (millions FCFA)", 14)
+    R.sous_titre("Plan de financement sur la durée de l'emprunt")
+    R.paragraphe("Du compte d'exploitation prévisionnel ci-dessus se dégage le plan de financement suivant :")
+    R.tableau(["Rubriques"] + proj.plan.colonnes, proj.plan.lignes(), largeur_libelle=4.0, taille=7)
+    _commentaires(R, coms, "plan_financement")
+    R.sous_titre("Ratio de couverture")
+    R.tableau(["Rubrique"] + proj.couverture.annees, proj.couverture.lignes(), largeur_libelle=4.6, taille=7.5)
+    if any(v is not None for v in proj.couverture.dscr):
+        R.tableau(["Service de la dette"] + proj.couverture.annees, proj.couverture.lignes_service_dette(),
+                  largeur_libelle=4.6, taille=7.5)
+    _commentaires(R, coms, "couverture_dette")
+    if proj.entree.prets:
+        R.sous_titre("Mode opératoire de décaissement")
+        _mode_decaissement(R)
+
+
+def _source_remboursement(R: Redacteur, proj: Optional[Projection], d: DossierBEFA):
+    R.titre("III. SOURCE DE REMBOURSEMENT", 2)
+    R.sous_titre("Source principale")
+    if proj is not None:
+        ce = proj.compte
+        R.paragraphe(f"Les flux générés par l'activité de {d.nom} constitueront la source principale de remboursement "
+                     f"du concours sollicité : la capacité d'autofinancement prévisionnelle passe de "
+                     f"{C.montant(ce.caf[0])} {C.en(ce.annees[0])} à {C.montant(ce.caf[-1])} {C.en(ce.annees[-1])}.")
     else:
-        R.a_completer("concours sollicités")
-    R.titre("2. Définition du projet", 2)
-    R.paragraphe(p.objet or p.intitule)
+        R.paragraphe("Les flux générés par l'activité constitueront la source de remboursement du concours sollicité.")
+    R.sous_titre("Source secondaire")
+    garanties = [p.garantie for p in proj.entree.prets if p.garantie] if proj is not None else []
+    R.paragraphe("Les garanties présentées constituent les secondes sources de remboursement du concours financier "
+                 "sollicité. Il s'agit notamment de :")
+    R.puces([f"Domiciliation irrévocable des revenus de {d.nom} dans les livres de la banque ;"] +
+            [f"{g} ;" for g in garanties] + ["Délégation d'assurance."])
+
+
+def _annexes(R: Redacteur, d: DossierBEFA, proj: Optional[Projection]):
+    tableaux = [t for t in (d.compte_exploitation_importe, d.plan_tresorerie) if t and t.lignes]
+    echeanciers = proj.echeanciers if proj is not None else {}
+    if not (tableaux or echeanciers):
+        return
+    R.paysage(True)
+    R._lettre = 0
+    R.titre("ANNEXES", 1, saut=False)
+    for t in tableaux:
+        R.titre(t.titre or "Tableau importé", 2)
+        n = len(t.periodes)
+        avec_total = any(l.total is not None for l in t.lignes)
+        entetes = ["Rubriques"] + t.periodes + (["TOTAL"] if avec_total else [])
+        lignes = [Ligne(l.libelle, list(l.valeurs[:n]) + [None] * (n - len(l.valeurs[:n])) +
+                        ([l.total] if avec_total else []), l.style) for l in t.lignes]
+        taille = 6 if len(entetes) > 12 else 7
+        R.tableau(entetes, lignes, largeur_libelle=4.6, taille=taille, largeur_totale=R.largeur_section)
+        R.note(f"Source : document importé par le client ({t.fichier or 'fichier'}), lu automatiquement puis vérifié "
+               f"par le consultant. {'Données prévisionnelles.' if t.nature == 'previsionnel' else 'Données réalisées.'}")
+    if echeanciers:
+        R.titre("Échéancier annuel des emprunts", 2)
+        for nom_pret, agg in echeanciers.items():
+            lignes = [Ligne("Intérêts", agg["interets"]), Ligne("Capital remboursé", agg["amortissements"]),
+                      Ligne("Capital restant dû en fin d'année", agg["capital_fin"], "sous_total")]
+            R.tableau([nom_pret.strip()] + proj.compte.annees, lignes, largeur_libelle=5.5, taille=8,
+                      largeur_totale=R.largeur_section)
+            if agg["hors_horizon"] > 0.5:
+                R.note(f"Capital restant à rembourser au-delà de la période du plan : {C.entier(agg['hors_horizon'])} FCFA.")
+
+
+def construire_plan(R: Redacteur, d: DossierBEFA, red, proj, donnees_trends, coms):
+    """Plan du modele de reference « Dossier de credit 1 - O'IVOIRE »."""
+    e, p = d.entreprise, d.projet
+    nom = d.nom
+
+    # PREMIERE PARTIE : PRESENTATION
+    R.page_partie("PREMIÈRE PARTIE : PRÉSENTATION")
+    R.titre(f"I. PRÉSENTATION DE {d.raison_sociale.upper()}", 2)
+    R.sous_titre("Genèse du projet et présentation du promoteur" if d.startup else "Historique de la création")
+    _texte_ia(R, red, "historique", "historique de la création" if not d.startup else "genèse du projet")
+    if e.historique:
+        R.paragraphe(e.historique)
+    _identite(R, d)
+    R.sous_titre("Géographie de l'actionnariat")
+    _actionnariat(R, d)
+    R.sous_titre("Le management de l'entreprise")
+    _management(R, d)
+    R.titre("II. ACTIVITÉS ET PRODUITS", 2)
+    R.sous_titre("Présentation de l'activité")
+    _texte_ia(R, red, "presentation_activite", "présentation de l'activité")
+    _produits(R, d)
+    R.sous_titre("Clientèle, fournisseurs et leurs modes de règlement")
+    R.titre("Clientèle", 4)
+    _texte_ia(R, red, "clientele", "description de la clientèle")
+    _partenaires(R, d.clients, "clients")
+    for t in analyse_portefeuille(d.clients, "clients", nom):
+        R.paragraphe(t)
+    R.titre("Fournisseurs", 4)
+    _texte_ia(R, red, "fournisseurs", "description des fournisseurs")
+    _partenaires(R, d.fournisseurs, "fournisseurs")
+    for t in analyse_portefeuille(d.fournisseurs, "fournisseurs", nom):
+        R.paragraphe(t)
+    R.titre("III. POOL BANCAIRE", 2)
+    if d.pool_bancaire:
+        R.paragraphe(d.pool_bancaire)
+    elif d.startup:
+        R.paragraphe(f"{nom}, en cours de création, n'entretient pas encore de relation bancaire établie.")
+    else:
+        R.a_completer("relations bancaires actuelles")
+    R.paragraphe("Au regard de ses ambitions de développement et de ses besoins d'investissement, le promoteur se "
+                 "déclare pleinement disposé à domicilier l'ensemble de ses flux et revenus dans les livres de "
+                 "l'établissement financier qui consentira le financement sollicité.")
+
+    # DEUXIEME PARTIE : ETUDE FINANCIERE
+    R.page_partie("DEUXIÈME PARTIE : ÉTUDE FINANCIÈRE")
+    if d.startup:
+        R.titre("I. BILAN D'OUVERTURE PRÉVISIONNEL", 2)
+        _bilan_ouverture(R, d, coms)
+    else:
+        _historique(R, d, coms)
+
+    # TROISIEME PARTIE : PROJET ET PROJECTION
+    R.page_partie("TROISIÈME PARTIE : PROJET ET PROJECTION")
+    R.titre("I. PRÉSENTATION DU BESOIN", 2)
+    R.sous_titre("Contexte")
+    _texte_ia(R, red, "contexte_besoin", "contexte du besoin")
+    if p.contexte_besoin:
+        R.paragraphe(p.contexte_besoin)
+    R.sous_titre("Budget global du projet")
     if p.description:
         R.paragraphe(p.description)
-
-    R.titre("PARTIE 3 : ENVIRONNEMENT ET JUSTIFICATION DU PROJET", 1)
-    _section_ia(R, red, "cadre_reglementaire", "1. Cadre institutionnel et réglementaire")
-    _section_ia(R, red, "justification", "2. Justification du projet")
-
-    R.titre("PARTIE 4 : LE PROJET", 1)
-    R.titre("1. Objet et objectifs du projet", 2)
-    if p.objet:
-        R.paragraphe(p.objet)
-    if p.objectifs:
-        R.paragraphe("Objectifs spécifiques :")
-        R.puces(p.objectifs)
-    R.titre("2. Localisation et description technique", 2)
-    if p.localisation:
-        R.paragraphe(f"Localisation : {p.localisation}.")
-    R.paragraphe(p.description) if p.description else R.a_completer("description technique du projet")
-    if p.phases:
-        R.titre("Planning de réalisation", 3)
-        R.puces(p.phases)
-    _section_ia(R, red, "marche", "3. Analyse du marché")
-    _trends(R, d, donnees_trends)
-
-    R.titre("PARTIE 5 : ORGANISATION ET GESTION DU PROJET", 1)
-    _section_ia(R, red, "execution", "1. Exécution du projet")
-    R.titre("2. Gestion du projet", 2)
-    _management(R, d)
-
-    R.titre("PARTIE 6 : SITUATION FINANCIÈRE DE LA SOCIÉTÉ", 1)
-    _bilan_ouverture(R, d, coms)
-
-    R.titre("PARTIE 7 : ANALYSES PRÉVISIONNELLES DU PROJET", 1)
+    if proj is not None:
+        R.paragraphe(f"Le coût total du projet est estimé à {C.entier(proj.cout_total_investissements)} FCFA ; il est "
+                     "financé selon le schéma ci-dessous.")
+        _investissements(R, proj)
+        R.sous_titre("Répartition des charges de l'investissement")
+        _repartition(R, proj)
+    else:
+        R.a_completer("budget du projet (étape « Données financières »)")
+    R.sous_titre("Besoin de financement")
+    _texte_ia(R, red, "besoin_financement", "besoin de financement")
+    if proj is not None and proj.entree.prets:
+        _prets(R, proj, coms)
+    R.sous_titre("Impact du besoin sur les activités de l'entreprise")
+    _texte_ia(R, red, "impact_besoin", "impacts attendus du financement")
+    R.sous_titre("Caractéristiques du besoin")
+    _caracteristiques(R, d, proj, red)
+    R.titre("II. ÉTATS FINANCIERS PRÉVISIONNELS", 2)
     if proj is None:
         R.a_completer("hypothèses financières (investissements, chiffre d'affaires, charges, financements)")
     else:
-        R.titre("I. Coûts du projet et besoins de financement", 2)
-        _investissements(R, proj)
-        R.titre("II. États financiers prévisionnels", 2)
-        _previsions(R, d, proj, coms, nom)
-        R.titre("III. Sources de remboursement", 2)
-        _sources_remboursement(R, proj, nom)
-    _section_ia(R, red, "strategie", "IV. Vision stratégique et plan de progrès")
+        _etats_previsionnels(R, d, proj, coms)
+    _source_remboursement(R, proj, d)
 
-    R.titre("PARTIE 8 : RISQUES, ANALYSE SWOT ET PERSPECTIVES", 1)
-    _section_ia(R, red, "risques", "I. Risques du projet")
-    R.titre("II. Analyse SWOT", 2)
-    _swot(R, red)
-    _section_ia(R, red, "perspectives", "III. Perspectives de développement")
-    _section_ia(R, red, "impact", "IV. Impact environnemental et social")
-
-    _section_ia(R, red, "conclusion", "CONCLUSION GÉNÉRALE", 1)
-
-
-def construire_entreprise_existante(R: Redacteur, d: DossierBEFA, red, proj, donnees_trends, coms):
-    e, p = d.entreprise, d.projet
-    nom = e.sigle or e.raison_sociale
-    R.titre("PREMIÈRE PARTIE : PRÉSENTATION", 1)
-    R.titre(f"I. Présentation de {e.raison_sociale}", 2)
-    _identite(R, d)
-    R.titre("Géographie de l'actionnariat", 3)
-    _actionnariat(R, d)
-    R.titre("Le management de l'entreprise", 3)
-    _management(R, d)
-    _section_ia(R, red, "presentation_activite", "II. Activités et produits")
-    _produits(R, d)
-    R.titre("Clientèle", 3)
-    _partenaires(R, d.clients, "principaux clients et modes de règlement")
-    R.titre("Fournisseurs", 3)
-    _partenaires(R, d.fournisseurs, "principaux fournisseurs")
-    R.titre("III. Pool bancaire", 2)
-    R.paragraphe(d.pool_bancaire) if d.pool_bancaire else R.a_completer("relations bancaires")
-
-    R.titre("DEUXIÈME PARTIE : ÉTUDE FINANCIÈRE", 1)
-    h = d.analyse_historique
-    if h is None:
-        R.a_completer("liasses fiscales des derniers exercices")
-    else:
-        R.titre(f"I. Analyse du bilan {h.bilan_n.exercice}", 2)
-        _commentaires(R, coms, "analyse_bilan")
-        R.tableau(["Postes"] + h.colonnes, h.lignes_bilan(), largeur_libelle=5.6, styles_colonnes=["", "", "", "pct"],
-                  taille=7.5, titre=f"Analyse du bilan {h.bilan_n.exercice} (FCFA)")
-        R.tableau(["Équilibre financier"] + h.colonnes, h.lignes_structure(), largeur_libelle=5.6,
-                  styles_colonnes=["", "", "", "pct"], taille=7.5)
-        R.titre("II. Analyse du compte de résultat", 2)
-        _commentaires(R, coms, "analyse_compte_resultat")
-        R.tableau(["Intitulés"] + h.colonnes, h.lignes_compte_resultat(), largeur_libelle=5.6,
-                  styles_colonnes=["", "", "", "pct"], taille=7.5,
-                  titre=f"Analyse du compte de résultat {h.cr_n.exercice} (FCFA)")
-
-    R.titre("TROISIÈME PARTIE : PROJET ET PROJECTION", 1)
-    R.titre("I. Présentation du besoin", 2)
-    _section_ia(R, red, "contexte_besoin", "Contexte", 3)
-    if proj is not None:
-        R.titre("Budget et plan de financement du projet", 3)
-        _investissements(R, proj)
-        R.titre("Besoin de financement", 3)
-        _prets(R, proj, coms)
-    _section_ia(R, red, "impact_besoin", "Impact du besoin sur les activités de l'entreprise", 3)
-    if proj is not None:
-        R.titre("II. États financiers prévisionnels", 2)
-        _previsions(R, d, proj, coms, nom)
-        R.titre("III. Source de remboursement", 2)
-        _sources_remboursement(R, proj, nom)
-
-    R.titre("QUATRIÈME PARTIE : ÉTUDE DE MARCHÉ", 1)
-    _section_ia(R, red, "contexte_secteur", "A. Contexte général du secteur")
-    _section_ia(R, red, "contexte_zone", "B. Contexte spécifique de la zone d'activité")
-    _section_ia(R, red, "marche", "C. Analyse du marché")
+    # QUATRIEME PARTIE : ETUDE DE MARCHE
+    R.page_partie("QUATRIÈME PARTIE : ÉTUDE DE MARCHÉ")
+    secteur = (p.sous_secteur or p.secteur or "").split(" - ")[0].upper()
+    R.titre(f"A. CONTEXTE ET ANALYSE GÉNÉRALE DU SECTEUR{' : ' + secteur if secteur else ''}", 2)
+    R.titre("I. CONTEXTE GÉNÉRAL DU SECTEUR", 3)
+    R.titre("1. Contexte mondial du secteur", 4)
+    _texte_ia(R, red, "contexte_mondial", "contexte mondial du secteur")
+    R.titre("2. Contexte africain du secteur", 4)
+    _texte_ia(R, red, "contexte_africain", "contexte africain du secteur")
+    R.titre("3. Contexte et marché en Côte d'Ivoire", 4)
+    _texte_ia(R, red, "contexte_national", "contexte ivoirien du secteur")
+    zone = (p.localisation or e.ville or "zone d'activité").split(",")[0].strip().upper()
+    R.titre(f"II. CONTEXTE ET ANALYSE SPÉCIFIQUE : {zone}", 3)
+    _texte_ia(R, red, "contexte_zone", "contexte de la zone d'activité")
+    R.titre("B. ANALYSE DU MARCHÉ", 2)
+    _texte_ia(R, red, "analyse_demande", "analyse de la demande")
     _trends(R, d, donnees_trends)
-    R.titre("D. Analyse SWOT synthétique", 2)
-    _swot(R, red)
-    _section_ia(R, red, "conclusion_marche", "E. Conclusion et perspectives")
+    R.titre("C. ANALYSE DES PRIX", 2)
+    _texte_ia(R, red, "analyse_prix", "analyse des prix")
+    R.titre("D. ANALYSE DE LA CONCURRENCE", 2)
+    R.titre("1) Concurrence locale ou concurrence directe", 3)
+    _texte_ia(R, red, "concurrence_directe", "concurrence directe")
+    R.titre("2) Concurrence régionale et nationale", 3)
+    _texte_ia(R, red, "concurrence_nationale", "concurrence régionale et nationale")
+    R.titre("3) Opportunité concurrentielle", 3)
+    _texte_ia(R, red, "opportunite_concurrentielle", "opportunité concurrentielle")
+    R.titre("E. ANALYSE SWOT SYNTHÉTIQUE", 2)
+    _swot_tableau(R, red)
+    R.titre("F. CONCLUSION ET PERSPECTIVES", 2)
+    _texte_ia(R, red, "conclusion_marche", "conclusion de l'étude de marché")
 
     _section_ia(R, red, "conclusion", "CONCLUSION GÉNÉRALE", 1)
 
 
 def construire(d: DossierBEFA, red: Optional[Redaction], proj: Optional[Projection],
                donnees_trends: Optional[trends.DonneesTrends], pages: Optional[Dict[int, int]] = None) -> Redacteur:
+    from .visuel import VisuelError, logo_png
+
     R = Redacteur(pages)
     R.renvois = {s.id: i + 1 for i, s in enumerate(red.sources)} if red else {}
     coms = red.commentaires_financiers if red and red.commentaires_financiers else commentaires_financiers(d, proj)
-    titre_doc = "BUSINESS PLAN" if d.variante == "nouveau_projet" else "DOSSIER DE CRÉDIT"
+    try:
+        logo = logo_png(d.identite_visuelle.logo)
+    except VisuelError:
+        logo = None
     R.entete_pied()
-    R.page_de_garde(d, titre_doc)
+    R.page_de_garde(d, "BUSINESS PLAN" if d.startup else "DOSSIER DE CRÉDIT", logo)
     R.emplacement_sommaire()
-    if d.variante == "nouveau_projet":
-        construire_nouveau_projet(R, d, red, proj, donnees_trends, coms)
-    else:
-        construire_entreprise_existante(R, d, red, proj, donnees_trends, coms)
+    construire_plan(R, d, red, proj, donnees_trends, coms)
     _bibliographie(R, red)
+    _annexes(R, d, proj)
     R.remplir_sommaire()
     return R
 

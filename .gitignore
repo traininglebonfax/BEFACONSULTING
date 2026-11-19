@@ -15,3 +15,5 @@ dash_full.txt
 sorties/
 # Documents clients d origine (confidentiels, non versionnes)
 Model Business Plan/
+# Donnees de fonctionnement (dossiers clients, referentiels modifies) : confidentielles
+donnees/

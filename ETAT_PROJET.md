@@ -1,5 +1,60 @@
 # Etat du projet — a reprendre ici
 
+## PHASE 3 (19/11/2026) : constitution intelligente du dossier de financement — FAIT, tests verts
+Cahier des charges colle par l'utilisateur le 19/11 (profils StartUP / PME-ETI-GE, extraction documentaire,
+plan O'IVOIRE, courriers bancaires, autres documents). Cles internes INCHANGEES (`nouveau_projet` = StartUP,
+`entreprise_existante` = PME ; ETI, GE ; alias `startup` / `pme_eti_ge` acceptes) -> anciens dossiers .json lisibles.
+Regle d'or maintenue : chiffres calcules par le programme ; l'IA extrait (recopie) et redige.
+
+Nouveaux modules (`befa/`) :
+- `secteurs.py` : 24 secteurs + sous-secteurs + reperes (indicateurs, risques) injectes dans recherche et redaction.
+- `extraction.py` : RCCM (obligatoire) + statuts -> identite / dirigeants / associes (parts, %), provenance par champ,
+  `informations_absentes`, controles programme (somme des %, apports vs capital) ; CE et plan de tresorerie
+  (PDF, Excel, image, Word, CSV) -> tableau par periode + controles (totaux, soldes) + `proposition_projection`.
+  `reparer_pdf` : le RCCM fourni commence par un BOM (refuse avant) -> corrige.
+- `partenaires.py` : Excel clients / fournisseurs SANS IA (synonymes d'en-tetes, apostrophes/accents ignores),
+  parts calculees (base = CA du dernier exercice si connu), doublons, depassement 100 %, dependance > 30 %.
+  Modele vierge : `GET /api/befa/partenaires/modele`.
+- `ouverture.py` : bilan d'ouverture PREVISIONNEL startup, equilibre par construction (besoin non couvert ->
+  tresorerie passive + alerte), presente comme estimation dans le document.
+- `liasse.py` : `lire_liasse_fichier` (PDF/Excel/image) + `fusionner` (3 exercices ; colonne N prioritaire ;
+  alerte exercices non consecutifs ou liasses d'entreprises differentes). `historique.lignes_evolution` (TCAM).
+- `referentiels.py` : banques (28, denominations seules, `a_verifier`) et modeles (30 documents A-E), JSON dans
+  `donnees/` (BEFA_DONNEES), initialises depuis `data/referentiels/`. Page `web/admin.html`.
+- `courriers.py` : 1 courrier par banque (texte programme, modifiable), papier a en-tete Word (gabarit) / image
+  (pleine page en arriere-plan ou bandeau) / PDF (converti en image par LibreOffice) / a defaut logo + coordonnees
+  + mentions legales ; Word + PDF + ZIP. Gabarit Word sans police explicite -> Arial (accents mal rendus sinon).
+- `autres_documents.py` : redaction IA (JSON impose, « [A completer : ...] », mention juridique) + tableaux
+  calcules (echeancier, budget, plan de financement, tresorerie).
+- `stockage.py` : `donnees/dossiers/<id>/` (dossier.json, sources/ + extraction, documents/<version>/) ; rien
+  n'est ecrase ; identifiants controles. `visuel.py` : logo / en-tete (data URL).
+- `backend/befa_api_v3.py` (routes, cf. docstring) ; `backend/securite.py` : HTTP Basic si BEFA_MOT_DE_PASSE
+  (+ BEFA_UTILISATEUR, defaut « befa ») ; pages HTML en no-cache.
+- `document.py` : plan O'IVOIRE pour les DEUX profils (pages de partie, a) b) c), sommaire 4 niveaux, SWOT en
+  tableau axes/elements/impacts, caracteristiques du besoin, mode operatoire, source secondaire, evolution
+  3 exercices, annexes paysage CE / tresorerie importes + echeancier, logo client en page de garde).
+  `redaction.py` : 18 sections ; `ANCIENNES_CLES` garde exploitables les redactions COREAL deja enregistrees.
+- Formulaire `web/index.html` reecrit (memes 8 etapes) ; sauvegarde serveur automatique + liste des dossiers ;
+  historique des versions ; resultats de generation conserves a l'ecran.
+
+Tests : 131 verts dont 36 nouveaux (`tests/test_befa_evolution.py`). Essais REELS (API) le 19/11 :
+- RCCM LEBONFAX reel : 19 s, aucun champ invente (NCC, associes absents listes ; mandataire exclu).
+- CE + plan de tresorerie (annexes O'IVOIRE p.26-27) : 24 s ; le programme a detecte 2 erreurs DU MODELE
+  (« Autres reparations » total 600 000 au lieu de 300 000 ; total DECAISSEMENTS faux).
+- Liasses ETTS 2025 + ouverture COREAL lues en parallele depuis le navigateur (~50 s), controles OK.
+- Contrat de maintenance (IA) : 21 articles, 25 informations « a completer », 7 pages.
+- Chrome : scenarios StartUP (aucune saisie Entreprise -> BP 16 p.) et PME (RCCM, Excel, logo, liasses, CE,
+  tresorerie, BP 19 p., 3 courriers + ZIP, contrat, versions), zero erreur console.
+
+Reste a faire / a valider par BEFA :
+- Completer adresses / destinataires des banques (administration) : non inventes.
+- Faire relire les modeles de documents juridiques par un juriste ; mise en page des courriers et du BP.
+- Statuts reels non disponibles pour un essai reel d'extraction des associes (teste en simule).
+- Pas de chiffrement des fichiers sur disque ni de comptes utilisateurs individuels (mot de passe unique) :
+  en production, HTTPS (proxy inverse) + sauvegarde du dossier `donnees/`.
+- Commit : a faire sur demande de l'utilisateur.
+
+
 ## PHASE 2 (nov. 2026) : personnalisation BEFA Consulting — Business Plan PDF
 
 Objectif valide avec l'utilisateur le 14/11/2026 : produire un Business Plan **PDF** au format du cabinet BEFA
@@ -94,6 +149,15 @@ sources encodes en URL ("G%C3%B4h") decodes.
 Wikipedia exclue de la recherche web a la demande de l'utilisateur (`blocked_domains` de `OUTIL_RECHERCHE`,
 befa/redaction.py ; verifie par un appel reel : parametre accepte par la variante 20250305). Pour exclure
 d'autres sites, ajouter leur domaine a cette liste.
+
+## Environnement de test / verification avant demo client (17/11/2026)
+Projet recopie sur un nouveau poste : Python 3.14 et LibreOffice absents, venv casse. Reinstalle :
+Python 3.12.10 (= Dockerfile) et LibreOffice 26.8.3 via winget, venv recree (ancien conserve en
+`.venv_ancien/`, supprimable). Les SDK utilisent desormais `httpx2` (et non `httpx`).
+- `verifier_demo.bat` (ou `python -m scripts.verifier_demo`) : environnement, cle API (appel test),
+  serveur reel, pages + exemples + apercu + Trends, PDF/Word COREAL et O'IVOIRE SANS IA (~1 min).
+- `verifier_demo.bat --ia` : + import liasse ETTS + redaction IA avec recherche web + PDF final (~5 min, credit API).
+- Sorties a relire : `sorties/verification_demo/`. Resultat 17/11 : 20/20 OK, 95 tests verts.
 
 ## Reste a faire (phase 2)
 - Faire valider par BEFA la mise en page du PDF (`sorties/essai_reel/Business_Plan_COREAL_essai_reel.pdf`).

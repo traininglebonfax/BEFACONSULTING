@@ -10,6 +10,7 @@
   --orange:#F27F24; --orange-fonce:#B85A12; --orange-pale:#FDF0E4; --gris:#9F999B;
   --encre:#1F2328; --encre-2:#5B6168; --ligne:#E3E1E2; --fond:#F6F5F4; --carte:#FFFFFF;
   --vert:#2E7D32; --vert-pale:#E8F5E9; --rouge:#B42318; --rouge-pale:#FDECEA; --ambre:#8A5A00; --ambre-pale:#FFF4E0;
+  --bleu:#1F4E79; --bleu-pale:#EEF3F8; --violet:#6B3FA0; --violet-pale:#F3EEFA;
   --rayon:10px;
 }
 *{box-sizing:border-box}
@@ -19,6 +20,7 @@ header img{height:38px}
 header h1{font-size:17px;margin:0;font-weight:600}
 header .actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 header .actions select{width:auto}
+#etat-serveur{font-size:12px;color:var(--encre-2)}
 a.btn{text-decoration:none;display:inline-block}
 .app{display:grid;grid-template-columns:250px 1fr;gap:20px;padding:20px;max-width:1500px;margin:0 auto}
 nav.etapes{position:sticky;top:80px;align-self:start;background:var(--carte);border-radius:var(--rayon);padding:8px;border:1px solid var(--ligne)}
@@ -28,6 +30,7 @@ nav.etapes button.actif{background:var(--orange-pale);color:var(--orange-fonce);
 nav.etapes .num{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;background:var(--fond);border:1px solid var(--ligne);flex:none}
 nav.etapes button.ok .num{background:var(--vert);color:#fff;border-color:var(--vert)}
 nav.etapes button.actif .num{background:var(--orange);color:#fff;border-color:var(--orange)}
+nav .profil{font-size:12px;color:var(--encre-2);padding:6px 12px 10px;border-bottom:1px solid var(--ligne);margin-bottom:4px}
 main{min-width:0}
 .carte{background:var(--carte);border:1px solid var(--ligne);border-radius:var(--rayon);padding:20px 22px;margin-bottom:16px}
 h2{margin:0 0 4px;font-size:20px}
@@ -39,6 +42,7 @@ p.aide{margin:0 0 14px;color:var(--encre-2)}
 label{font-size:12.5px;color:var(--encre-2);font-weight:600}
 input,select,textarea{font:inherit;padding:7px 9px;border:1px solid #CFCBCC;border-radius:7px;background:#fff;color:var(--encre);width:100%}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--orange);outline-offset:0;border-color:var(--orange)}
+input[type=file]{padding:5px;width:auto;max-width:100%}
 textarea{min-height:70px;resize:vertical}
 input.num{text-align:right;font-variant-numeric:tabular-nums}
 .btn{font:inherit;border:1px solid #CFCBCC;background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;color:var(--encre);white-space:nowrap}
@@ -59,6 +63,9 @@ table.apercu td{padding:4px 8px;border-bottom:1px solid var(--ligne);text-align:
 table.apercu tr.total td{background:var(--orange-pale);font-weight:700}
 table.apercu tr.sous_total td{background:#F1F0F0;font-weight:600}
 table.apercu tr.detail td:first-child{padding-left:18px;font-style:italic}
+table.saisie td input{min-width:92px;padding:4px 6px;font-size:12.5px}
+table.saisie td:first-child input{min-width:200px}
+table.saisie td select{min-width:150px;padding:4px 6px;font-size:12.5px}
 .choix{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .choix button{text-align:left;border:2px solid var(--ligne);background:#fff;border-radius:var(--rayon);padding:18px;cursor:pointer;font:inherit}
 .choix button.actif{border-color:var(--orange);background:var(--orange-pale)}
@@ -67,10 +74,9 @@ table.apercu tr.detail td:first-child{padding-left:18px;font-style:italic}
 .alerte.err{background:var(--rouge-pale);border-color:var(--rouge);color:var(--rouge)}
 .alerte.att{background:var(--ambre-pale);border-color:#F0B429;color:var(--ambre)}
 .alerte.ok{background:var(--vert-pale);border-color:var(--vert);color:var(--vert)}
-.alerte.info{background:#EEF3F8;border-color:#1F6FB2;color:#1F4E79}
+.alerte.info{background:var(--bleu-pale);border-color:#1F6FB2;color:var(--bleu)}
 .alerte ul{margin:4px 0 0;padding-left:18px}
 .deux{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.annees{display:grid;gap:4px}
 .pied-etape{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
 .charge{border:1px solid var(--ligne);border-radius:8px;padding:10px;margin-bottom:10px;background:#FCFCFB}
 .charge .entete{display:grid;grid-template-columns:2fr 1.2fr 1.2fr auto;gap:8px;align-items:end;margin-bottom:6px}
@@ -82,13 +88,28 @@ table.apercu tr.detail td:first-child{padding-left:18px;font-style:italic}
 .section-red{border-top:1px solid var(--ligne);padding-top:10px;margin-top:10px}
 .sources li{margin-bottom:4px;font-size:12.5px}
 .badge{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:20px;background:var(--fond);border:1px solid var(--ligne);color:var(--encre-2)}
+.badge.oblig{background:var(--rouge-pale);border-color:#F3B5AE;color:var(--rouge)}
+.badge.fac{background:var(--bleu-pale);border-color:#BCD3EA;color:var(--bleu)}
+.badge.ia{background:var(--violet-pale);border-color:#D4C2EC;color:var(--violet)}
+.badge.calc{background:var(--vert-pale);border-color:#B9DDBB;color:var(--vert)}
+.badge.est{background:var(--ambre-pale);border-color:#F2D28B;color:var(--ambre)}
 img.graph{max-width:100%;border:1px solid var(--ligne);border-radius:8px;margin:6px 0}
+img.vignette{max-height:90px;max-width:220px;border:1px solid var(--ligne);border-radius:6px;padding:4px;background:#fff}
 .bilan-total{font-weight:600;margin-top:6px}
 .cache{display:none}
+.depot{border:1px dashed #CFCBCC;border-radius:8px;padding:12px;background:#FCFCFB;margin-bottom:10px}
+.depot .titre{font-weight:600;margin-bottom:6px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.banques{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 14px;max-height:300px;overflow:auto;border:1px solid var(--ligne);border-radius:8px;padding:8px}
+.banques label{display:flex;gap:6px;align-items:flex-start;font-weight:400;color:var(--encre);font-size:13px}
+.banques input{width:auto;margin-top:3px}
+.courrier{border:1px solid var(--ligne);border-radius:8px;padding:12px;margin-bottom:12px;background:#FCFCFB}
+.case{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--encre);font-weight:400}
+.case input{width:auto}
 @media (max-width:900px){
   .app{grid-template-columns:1fr;padding:12px}
   nav.etapes{position:static;display:flex;overflow-x:auto;gap:4px}
   nav.etapes button{width:auto;white-space:nowrap}
+  nav .profil{display:none}
   .deux{grid-template-columns:1fr}
   .charge .entete{grid-template-columns:1fr 1fr}
 }
@@ -99,14 +120,17 @@ img.graph{max-width:100%;border:1px solid var(--ligne);border-radius:8px;margin:
   <img src="/assets/branding/logo_befa.png" alt="BEFA Consulting">
   <h1>Business Plan — générateur BEFA</h1>
   <div class="actions">
+    <span id="etat-serveur"></span>
     <select id="exemple" class="btn" aria-label="Charger un exemple">
       <option value="">Charger un exemple…</option>
-      <option value="coreal">Nouveau projet — COREAL FOOD</option>
-      <option value="oivoire">Entreprise existante — O'IVOIRE</option>
+      <option value="coreal">StartUP — COREAL FOOD</option>
+      <option value="oivoire">PME ; ETI, GE — O'IVOIRE</option>
     </select>
-    <button class="btn" id="ouvrir">Ouvrir un dossier</button>
-    <button class="btn" id="enregistrer">Enregistrer le dossier</button>
+    <select id="dossiers-serveur" class="btn" aria-label="Dossiers enregistrés"><option value="">Dossiers enregistrés…</option></select>
+    <button class="btn" id="ouvrir">Ouvrir (.json)</button>
+    <button class="btn" id="enregistrer">Exporter (.json)</button>
     <button class="btn" id="nouveau">Nouveau dossier</button>
+    <a class="btn" href="/admin.html" target="_blank" rel="noopener">Administration</a>
     <input type="file" id="fichier-dossier" accept=".json,application/json" class="cache">
   </div>
 </header>
@@ -120,26 +144,35 @@ img.graph{max-width:100%;border:1px solid var(--ligne);border-radius:8px;margin:
 // ======================================================================
 // Etat : D = dossier au format attendu par le serveur (befa.dossier),
 // RED = redaction IA (relue / corrigee), UI = etat de l'interface.
-// Les cles commencant par "_" ne sont jamais envoyees au serveur.
+// Les cles commencant par "_" ne sont jamais envoyees au serveur de calcul
+// (elles sont conservees dans la sauvegarde du dossier).
+// Profils : "nouveau_projet" = STARTUP ; "entreprise_existante" = PME, ETI, GE.
 // ======================================================================
 const CLE_STOCKAGE = "befa_dossier_v1";
 let D, RED = null, UI = {etape: 0};
-let TRENDS_RES = null, LIASSE_RES = null, PROJ_RES = null;
+let TRENDS_RES = null, LIASSE_RES = null, PROJ_RES = null, OUVERTURE_RES = null;
+let REF = {secteurs: [], banques: [], modeles: []};
+const PROFILS = {nouveau_projet: "StartUP", entreprise_existante: "PME ; ETI, GE"};
 
 function dossierVide() {
   return {
     variante: "", annee_document: String(new Date().getFullYear()),
     entreprise: {raison_sociale: "", sigle: "", forme_juridique: "", capital: null, date_creation: "", rccm: "", ncc: "",
       regime_fiscal: "", centre_impots: "", adresse: "", siege: "", ville: "", telephone: "", email: "",
-      objet_social: [], activite: ""},
+      objet_social: [], activite: "", domaine_activite: "", historique: ""},
     actionnaires: [], dirigeants: [], gouvernance: "", produits: [], clients: [], fournisseurs: [], pool_bancaire: "",
-    projet: {intitule: "", secteur: "", localisation: "", zone_marche: "Côte d'Ivoire", objet: "", description: "",
-      objectifs: [], contexte_besoin: "", phases: [], emplois_directs: null, emplois_indirects: null, concurrents: [],
-      mots_cles_marche: [], notes_consultant: ""},
+    projet: {intitule: "", secteur: "", secteur_code: "", sous_secteur: "", localisation: "", zone_marche: "Côte d'Ivoire",
+      objet: "", description: "", objectifs: [], contexte_besoin: "", phases: [], emplois_directs: null,
+      emplois_indirects: null, concurrents: [], mots_cles_marche: [], notes_consultant: ""},
     projection: projectionVide(),
-    bilan_n: null, bilan_n1: null, cr_n: null, cr_n1: null,
+    bilan_n: null, bilan_n1: null, bilan_n2: null, cr_n: null, cr_n1: null, cr_n2: null,
+    bilan_ouverture: null, bilan_ouverture_valide: false,
+    compte_exploitation_importe: null, plan_tresorerie: null,
+    identite_visuelle: {logo: "", entete: "", entete_nom: ""},
     trends_faits: [], trends_source: "",
-    _trends_csv: [], _liasse_validee: false,
+    _trends_csv: [], _liasse_validee: false, _identite: null, _identite_validee: false, _partenaires: null,
+    _ouverture: {stocks_initiaux: 0, creances_initiales: 0, dettes_initiales: 0},
+    _courriers: [], _banques_choisies: [], _document: null, _id: "",
   };
 }
 function projectionVide() {
@@ -147,6 +180,8 @@ function projectionVide() {
     investissements: [], prets: [], apports: [], taux_is: 0.25,
     jours_clients: 0, jours_stocks: 0, jours_fournisseurs: 0, tresorerie_initiale: 0};
 }
+const startup = () => D.variante === "nouveau_projet";
+const pme = () => D.variante === "entreprise_existante";
 
 // ---------------------------------------------------------------- outils
 const $ = s => document.querySelector(s);
@@ -175,19 +210,54 @@ async function api(url, options = {}) {
   if (!r.ok) throw new Error((corps && corps.detail) || `Erreur ${r.status}`);
   return corps;
 }
+const postJson = (url, corps) => api(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(corps)});
+function lireDataUrl(f) {
+  return new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => ko(r.error); r.readAsDataURL(f); });
+}
+function attente(id, texte) {
+  const debut = Date.now(), el = document.getElementById(id);
+  if (el) el.innerHTML = `<p class="attente"><span class="roue"></span>${esc(texte)} <span class="s"></span></p>`;
+  const m = setInterval(() => { const s = document.querySelector(`#${id} .s`); if (s) s.textContent = Math.round((Date.now() - debut) / 1000) + " s"; }, 1000);
+  return () => clearInterval(m);
+}
+function erreur(id, e) { const el = document.getElementById(id); if (el) el.innerHTML = `<div class="alerte err">${esc(e.message || e)}</div>`; }
+function listeAlertes(titre, alertes, classe = "att") {
+  return alertes && alertes.length ? `<div class="alerte ${classe}"><strong>${esc(titre)}</strong><ul>${alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>` : "";
+}
+
+// ---------------------------------------------------------------- sauvegarde
+// 1) navigateur (localStorage, peut etre plein ou indisponible) ; 2) serveur (sauvegarde automatique, versions).
+let minuteurServeur = null;
 function sauver() {
-  try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify({D, RED, UI})); } catch (_) { /* stockage indisponible */ }
+  try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify({D, RED, UI})); } catch (_) { /* stockage plein ou indisponible : le serveur prend le relais */ }
+  clearTimeout(minuteurServeur);
+  minuteurServeur = setTimeout(sauverServeur, 1500);
+}
+async function idDossier() {
+  if (!D._id) { try { D._id = (await api("/api/befa/dossiers", {method: "POST"})).id; setTimeout(listerDossiersServeur, 3000); } catch (_) { return ""; } }
+  return D._id;
+}
+async function sauverServeur() {
+  if (!D.variante && !D.entreprise.raison_sociale && !D.projet.intitule) return;  // dossier vide : rien a conserver
+  const id = await idDossier(); if (!id) return;
+  try {
+    const r = await api(`/api/befa/dossiers/${id}`, {method: "PUT", headers: {"Content-Type": "application/json"}, body: JSON.stringify({D, RED})});
+    $("#etat-serveur").textContent = "Enregistré sur le serveur à " + r.enregistre_le.slice(11, 16);
+  } catch (e) { $("#etat-serveur").textContent = "⚠ Sauvegarde serveur impossible"; }
 }
 function charger() {
   try { const s = JSON.parse(localStorage.getItem(CLE_STOCKAGE) || "null"); if (s && s.D) { D = s.D; RED = s.RED; UI = s.UI || {etape: 0}; return; } } catch (_) {}
   D = dossierVide();
 }
 function normaliser() {
-  // Rend le dossier editable : series annuelles en tableaux, champs absents crees.
   const vide = dossierVide();
   for (const k of Object.keys(vide)) if (D[k] === undefined) D[k] = vide[k];
   D.entreprise = Object.assign(vide.entreprise, D.entreprise);
   D.projet = Object.assign(vide.projet, D.projet);
+  D.identite_visuelle = Object.assign(vide.identite_visuelle, D.identite_visuelle || {});
+  D._ouverture = Object.assign(vide._ouverture, D._ouverture || {});
+  if (D.variante === "startup") D.variante = "nouveau_projet";
+  if (D.variante === "pme_eti_ge") D.variante = "entreprise_existante";
   D.projection = Object.assign(projectionVide(), D.projection || {});
   const p = D.projection, l = p.annees.length;
   for (const x of p.produits) {
@@ -210,17 +280,19 @@ function champ(libelle, chemin, opts = {}) {
   const t = opts.type || "text", v = lire(chemin, opts.obj || D);
   let val = v ?? "";
   if (t === "lines") val = (v || []).join("\n");
+  if (t === "paras") val = (v || []).join("\n\n");
   if (t === "pct" && v != null) val = +(v * 100).toFixed(4);
-  const attrs = `data-p="${esc(chemin)}" data-t="${t}" ${opts.red ? "data-red" : ""} id="f-${esc(chemin)}"`;
+  const attrs = `data-p="${esc(chemin)}" data-t="${t}" ${opts.red ? "data-red" : ""} ${opts.rerendu ? "data-rerendu" : ""} id="f-${esc(chemin)}"`;
   let ctrl;
-  if (t === "textarea" || t === "lines")
-    ctrl = `<textarea ${attrs} rows="${opts.rows || 3}" placeholder="${esc(opts.ph || (t === "lines" ? "Un élément par ligne" : ""))}">${esc(val)}</textarea>`;
+  if (t === "textarea" || t === "lines" || t === "paras")
+    ctrl = `<textarea ${attrs} rows="${opts.rows || 3}" placeholder="${esc(opts.ph || (t === "lines" ? "Un élément par ligne" : t === "paras" ? "Paragraphes séparés par une ligne vide" : ""))}">${esc(val)}</textarea>`;
   else if (t === "select")
-    ctrl = `<select ${attrs}>${opts.options.map(([o, lib]) => `<option value="${esc(o)}" ${String(v) === String(o) ? "selected" : ""}>${esc(lib)}</option>`).join("")}</select>`;
+    ctrl = `<select ${attrs}>${opts.options.map(([o, lib]) => `<option value="${esc(o)}" ${String(v ?? "") === String(o) ? "selected" : ""}>${esc(lib)}</option>`).join("")}</select>`;
   else
     ctrl = `<input ${attrs} ${["num", "pct", "int"].includes(t) ? 'class="num" inputmode="decimal"' : ""} value="${esc(val)}" placeholder="${esc(opts.ph || "")}">`;
   if (!libelle) return ctrl;
-  return `<div class="champ ${opts.large ? "large" : ""}"><label for="f-${esc(chemin)}">${esc(libelle)}${opts.requis ? " *" : ""}</label>${ctrl}</div>`;
+  const marque = opts.origine ? ` <span class="badge ia" title="Information extraite automatiquement">${esc(opts.origine)}</span>` : (opts.absent ? ` <span class="badge est">non renseigné</span>` : "");
+  return `<div class="champ ${opts.large ? "large" : ""}"><label for="f-${esc(chemin)}">${esc(libelle)}${opts.requis ? " *" : ""}${marque}</label>${ctrl}</div>`;
 }
 function valeurChamp(el) {
   const t = el.dataset.t, s = el.value;
@@ -230,18 +302,19 @@ function valeurChamp(el) {
     return t === "pct" ? x / 100 : t === "int" ? Math.round(x) : x;
   }
   if (t === "lines") return s.split("\n").map(x => x.trim()).filter(Boolean);
+  if (t === "paras") return s.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean);
   if (t === "bool") return el.checked;
   return s;
 }
 document.addEventListener("input", e => {
-  const el = e.target; if (!el.dataset || !el.dataset.p) return;
+  const el = e.target; if (!el.dataset || !el.dataset.p || el.dataset.t === "bool") return;
   if (el.dataset.red !== undefined) ecrireRedaction(el); else ecrire(el.dataset.p, valeurChamp(el));
   sauver(); apresSaisie(el);
 });
 document.addEventListener("change", e => {
   const el = e.target;
   if (el.dataset && el.dataset.t === "bool") { ecrire(el.dataset.p, el.checked); sauver(); afficher(); }
-  else if (el.tagName === "SELECT" && el.dataset.p && el.dataset.rerendu !== undefined) afficher();
+  else if (el.dataset && el.dataset.p && el.dataset.rerendu !== undefined) { sauver(); afficher(); }
 });
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-add],[data-del]"); if (!b) return;
@@ -251,35 +324,36 @@ document.addEventListener("click", e => {
 });
 function liste(titre, chemin, colonnes, modele, aide = "") {
   const lignes = lire(chemin) || [];
-  return `<h3>${esc(titre)}</h3>${aide ? `<p class="aide">${esc(aide)}</p>` : ""}
+  return `${titre ? `<h3>${esc(titre)}</h3>` : ""}${aide ? `<p class="aide">${esc(aide)}</p>` : ""}
   <div class="defile"><table class="liste"><thead><tr>${colonnes.map(c => `<th>${esc(c[0])}</th>`).join("")}<th></th></tr></thead><tbody>
-  ${lignes.map((_, i) => `<tr>${colonnes.map(c => `<td style="min-width:${c[3] || 120}px">${champ("", `${chemin}.${i}.${c[1]}`, {type: c[2] || "text"})}</td>`).join("")}
+  ${lignes.map((_, i) => `<tr>${colonnes.map(c => `<td style="min-width:${c[3] || 120}px">${champ("", `${chemin}.${i}.${c[1]}`, {type: c[2] || "text", options: c[4]})}</td>`).join("")}
     <td><button class="btn sup" data-del="${chemin}.${i}" title="Supprimer">×</button></td></tr>`).join("")}
   </tbody></table></div>
   <button class="btn petit" data-add="${chemin}" data-modele='${esc(JSON.stringify(modele))}'>+ Ajouter</button>`;
 }
 
 // ======================================================================
-// Etapes
+// Etapes (les regles dependent du profil StartUP / PME, ETI, GE)
 // ======================================================================
 const ETAPES = [
   {titre: "Type de dossier", rendu: etapeType, ok: () => !!D.variante},
-  {titre: "Entreprise", rendu: etapeEntreprise, ok: () => !!D.entreprise.raison_sociale.trim()},
+  {titre: "Entreprise", rendu: etapeEntreprise, ok: () => startup() ? true : !!(D.entreprise.raison_sociale.trim() && (D._identite || D.entreprise.rccm))},
   {titre: "Projet", rendu: etapeProjet, ok: () => !!(D.projet.intitule.trim() && D.projet.secteur.trim())},
-  {titre: "Documents comptables", rendu: etapeLiasse, ok: () => D.variante === "nouveau_projet" ? true : !!(D.bilan_n && D._liasse_validee)},
+  {titre: "Documents comptables", rendu: etapeLiasse, ok: () => startup() ? !!(D.bilan_ouverture && D.bilan_ouverture_valide) || !!D.bilan_n : !!(D.bilan_n && D._liasse_validee)},
   {titre: "Google Trends", rendu: etapeTrends, ok: () => (D.trends_faits || []).length > 0},
   {titre: "Données financières", rendu: etapeFinances, ok: () => PROJ_RES && !PROJ_RES.erreurs.length},
   {titre: "Rédaction IA", rendu: etapeRedaction, ok: () => !!RED},
-  {titre: "Génération du document", rendu: etapeGeneration, ok: () => false},
+  {titre: "Génération des documents", rendu: etapeGeneration, ok: () => false},
 ];
 function majNav() {
-  $("#nav").innerHTML = ETAPES.map((e, i) =>
+  $("#nav").innerHTML = (D.variante ? `<div class="profil">Profil : <strong>${esc(PROFILS[D.variante])}</strong></div>` : "") + ETAPES.map((e, i) =>
     `<button class="${i === UI.etape ? "actif" : ""} ${e.ok() ? "ok" : ""}" data-etape="${i}"><span class="num">${e.ok() && i !== UI.etape ? "✓" : i + 1}</span>${esc(e.titre)}</button>`).join("");
 }
 function afficher() {
   majNav();
   $("#contenu").innerHTML = ETAPES[UI.etape].rendu() + navigation();
   if (UI.etape === 5) previsualiser(0);
+  if (UI.etape === 3) setTimeout(majTotauxBilan, 0);
 }
 $("#nav").addEventListener("click", e => { const b = e.target.closest("[data-etape]"); if (b) { UI.etape = +b.dataset.etape; sauver(); afficher(); window.scrollTo(0, 0); } });
 function navigation() {
@@ -296,51 +370,168 @@ function apresSaisie(el) {
 // ---------------------------------------------------------------- 1. type
 function etapeType() {
   const c = (v, titre, texte) => `<button class="${D.variante === v ? "actif" : ""}" onclick="choisirVariante('${v}')"><strong>${titre}</strong>${texte}</button>`;
-  return `<div class="carte"><h2>Type de dossier</h2><p class="aide">Le plan du document suit le modèle BEFA correspondant.</p>
+  return `<div class="carte"><h2>Type de dossier</h2><p class="aide">Le profil choisi adapte les étapes suivantes (documents demandés, champs obligatoires) et la rédaction du Business Plan, qui suit dans les deux cas le plan du modèle BEFA « Dossier de crédit O'IVOIRE ».</p>
   <div class="choix">
-  ${c("nouveau_projet", "Nouveau projet", "Création d'une activité ou d'une unité (modèle COREAL FOOD) : présentation, requête, environnement, marché, organisation, bilan d'ouverture, prévisions sur 5 à 6 ans, risques, SWOT.")}
-  ${c("entreprise_existante", "Entreprise existante — dossier de crédit", "Financement d'un besoin d'une entreprise en activité (modèle O'IVOIRE) : analyse des bilans N / N-1, besoin, projections, étude de marché.")}
+  ${c("nouveau_projet", "StartUP", "Entreprise en création ou projet entrepreneurial, sans historique comptable. Aucun champ obligatoire sur la page Entreprise ; bilan d'ouverture proposé automatiquement ; prévisions construites à partir des hypothèses du projet.")}
+  ${c("entreprise_existante", "PME ; ETI, GE", "Entreprise existante sollicitant un financement. Le RCCM est le seul document obligatoire de la page Entreprise ; import des statuts, des trois derniers bilans, du compte d'exploitation et du plan de trésorerie, avec extraction automatique.")}
   </div>
-  ${champ("Année du document", "annee_document", {ph: "2026"})}</div>`;
+  <div class="grille" style="margin-top:14px">${champ("Année du document", "annee_document", {ph: "2026"})}</div></div>`;
 }
 function choisirVariante(v) { D.variante = v; sauver(); afficher(); }
 
 // ---------------------------------------------------------------- 2. entreprise
+function origine(c) { const p = (D._identite && D._identite.provenance) || []; const x = p.find(o => o.champ === c); return x ? x.document : ""; }
+function absent(c) { return !!(D._identite && !lire("entreprise." + c)); }
 function etapeEntreprise() {
-  const e = "entreprise.";
-  return `<div class="carte"><h2>Entreprise</h2><p class="aide">Identité de la société cliente, telle qu'elle apparaîtra dans la partie « Présentation ».</p>
-  <div class="grille">
-    ${champ("Raison sociale", e + "raison_sociale", {requis: true})}${champ("Sigle", e + "sigle")}
-    ${champ("Forme juridique", e + "forme_juridique", {ph: "SA, SARL, SAS…"})}${champ("Capital social (FCFA)", e + "capital", {type: "num"})}
-    ${champ("Date de création", e + "date_creation", {ph: "JJ/MM/AAAA"})}${champ("RCCM", e + "rccm")}
-    ${champ("N° compte contribuable (NCC)", e + "ncc")}${champ("Régime fiscal", e + "regime_fiscal")}
-    ${champ("Centre des impôts", e + "centre_impots")}${champ("Ville", e + "ville")}
-    ${champ("Siège social", e + "siege")}${champ("Adresse postale", e + "adresse")}
-    ${champ("Téléphone", e + "telephone")}${champ("E-mail", e + "email")}
-    ${champ("Nature de l'activité", e + "activite", {type: "textarea", large: true})}
-    ${champ("Objet social", e + "objet_social", {type: "lines", large: true, rows: 4})}
+  const e = "entreprise.", st = startup();
+  const ch = (lib, c, o = {}) => champ(lib, e + c, {...o, origine: origine(c), absent: D._identite && !origine(c) && absent(c)});
+  let h = `<div class="carte"><h2>Entreprise</h2>`;
+  if (!D.variante) h += `<div class="alerte att">Choisissez d'abord le type de dossier (étape 1).</div>`;
+  h += st ? `<div class="alerte info"><strong>StartUP :</strong> aucun champ de cette page n'est obligatoire. Renseignez ce qui est connu ; les champs vides ne bloquent pas la génération. Vous pouvez importer le RCCM et les statuts si la société est déjà constituée.</div>`
+          : `<p class="aide">Importez le RCCM (obligatoire) et les statuts (facultatif) : l'IA extrait automatiquement l'identification, les dirigeants et la répartition du capital. Vérifiez puis corrigez les champs pré-remplis.</p>`;
+  h += `<div class="deux">
+    <div class="depot"><div class="titre">RCCM ${st ? '<span class="badge fac">facultatif</span>' : '<span class="badge oblig">obligatoire</span>'}</div>
+      <input type="file" id="f-rccm" accept=".pdf,image/*,.docx">${D._identite ? `<div class="aide" style="margin-top:4px">Importé : ${esc((D._identite.fichiers || []).filter(f => f.type === "rccm").map(f => f.nom).join(", "))}</div>` : ""}</div>
+    <div class="depot"><div class="titre">Statuts de l'entreprise <span class="badge fac">facultatif</span></div>
+      <input type="file" id="f-statuts" accept=".pdf,image/*,.docx">${D._identite ? `<div class="aide" style="margin-top:4px">${esc((D._identite.fichiers || []).filter(f => f.type === "statuts").map(f => f.nom).join(", ") || "Aucun statut importé")}</div>` : ""}</div>
   </div>
-  ${liste("Actionnariat", "actionnaires", [["Nom", "nom", "text", 200], ["Nationalité", "nationalite"], ["Nature", "nature", "text", 150], ["Montant (FCFA)", "montant", "num"]], {nom: "", montant: 0, nationalite: "Ivoirienne", nature: "Personne physique"})}
-  ${liste("Dirigeants", "dirigeants", [["Nom", "nom", "text", 200], ["Fonction", "fonction"], ["Profil / expérience", "profil", "text", 260]], {nom: "", fonction: "", profil: ""})}
+  <button class="btn principal" onclick="extraireIdentite()">Extraire les informations</button> <span class="aide">30 à 90 s ; rien n'est inventé : une information absente reste « non renseignée ».</span>
+  <div id="identite-etat"></div>`;
+  const I = D._identite;
+  if (I) {
+    h += listeAlertes("Contrôles à vérifier :", I.alertes) + listeAlertes("Calculs effectués par le programme :", I.calculs, "info");
+    if ((I.informations_absentes || []).length) h += `<div class="alerte info"><strong>Non trouvé dans les documents (laissé vide) :</strong> ${I.informations_absentes.map(esc).join(" ; ")}</div>`;
+    if (I.remarques) h += `<div class="alerte info"><strong>Note de lecture :</strong> ${esc(I.remarques)}</div>`;
+    h += `<label class="case" style="margin:8px 0"><input type="checkbox" data-p="_identite_validee" data-t="bool" ${D._identite_validee ? "checked" : ""}> J'ai vérifié et corrigé les informations extraites.</label>`;
+  }
+  h += `<h3>Identification de l'entreprise</h3><div class="grille">
+    ${ch("Dénomination sociale", "raison_sociale", {requis: !st})}${ch("Sigle", "sigle")}
+    ${ch("Forme juridique", "forme_juridique", {ph: "SA, SARL, SAS…"})}${ch("Capital social (FCFA)", "capital", {type: "num"})}
+    ${ch("Date de création", "date_creation", {ph: "JJ/MM/AAAA"})}${ch("N° RCCM", "rccm")}
+    ${ch("N° d'identification fiscale (NCC)", "ncc")}${champ("Régime fiscal", e + "regime_fiscal")}
+    ${champ("Centre des impôts", e + "centre_impots")}${ch("Ville", "ville")}
+    ${ch("Siège social", "siege")}${ch("Adresse", "adresse")}
+    ${ch("Téléphone", "telephone")}${ch("E-mail", "email")}
+    ${ch("Domaine d'activité", "domaine_activite")}
+    ${ch("Nature de l'activité", "activite", {type: "textarea", large: true})}
+    ${ch("Objet social", "objet_social", {type: "lines", large: true, rows: 4})}
+    ${champ(st ? "Genèse du projet (facultatif)" : "Historique de la création (facultatif)", e + "historique", {type: "textarea", large: true, ph: "Dates clés, évolutions marquantes…"})}
+  </div>
+  ${liste("Associés et actionnaires", "actionnaires", [["Nom", "nom", "text", 200], ["Nationalité", "nationalite"], ["Nature", "nature", "text", 140], ["Parts / actions", "nombre_parts", "num", 100], ["Apport (FCFA)", "montant", "num"], ["Part du capital (%)", "pourcentage", "pct", 90]], {nom: "", montant: 0, nationalite: "Ivoirienne", nature: "Personne physique", nombre_parts: null, pourcentage: null})}
+  ${repartitionCapital()}
+  ${liste("Dirigeants", "dirigeants", [["Nom et prénoms", "nom", "text", 200], ["Fonction", "fonction"], ["Qualité juridique", "qualite"], ["Profil / expérience", "profil", "text", 240]], {nom: "", fonction: "", qualite: "", profil: ""})}
   <div class="grille" style="margin-top:12px">${champ("Gouvernance (organes de gestion)", "gouvernance", {type: "textarea", large: true})}</div>
   ${liste("Produits et services", "produits", [["Nom", "nom", "text", 200], ["Description", "description", "text", 380]], {nom: "", description: ""})}
-  ${liste("Principaux clients", "clients", [["Nom", "nom", "text", 200], ["Mode de règlement", "mode_paiement"], ["Délai", "delai"], ["Localisation", "localisation"]], {nom: "", mode_paiement: "", delai: "", localisation: ""})}
-  ${liste("Principaux fournisseurs", "fournisseurs", [["Nom", "nom", "text", 200], ["Mode de règlement", "mode_paiement"], ["Délai", "delai"], ["Localisation", "localisation"]], {nom: "", mode_paiement: "", delai: "", localisation: ""})}
-  <div class="grille" style="margin-top:12px">${champ("Pool bancaire / relations bancaires", "pool_bancaire", {type: "textarea", large: true})}</div>
   </div>`;
+  h += cartePartenaires() + carteVisuel();
+  h += `<div class="carte"><div class="grille">${champ("Pool bancaire / relations bancaires actuelles", "pool_bancaire", {type: "textarea", large: true})}</div></div>`;
+  return h;
 }
+function repartitionCapital() {
+  const a = D.actionnaires || []; if (!a.length) return "";
+  const cap = D.entreprise.capital || a.reduce((s, x) => s + (+x.montant || 0), 0);
+  const tot = a.reduce((s, x) => s + (x.pourcentage != null ? x.pourcentage : cap ? (+x.montant || 0) / cap : 0), 0);
+  const ok = Math.abs(tot - 1) < 0.005;
+  return `<p class="aide">Répartition du capital : <strong style="color:var(--${ok ? "vert" : "rouge"})">${(tot * 100).toFixed(1)} %</strong>${ok ? " ✓" : " — le total doit faire 100 %"}</p>`;
+}
+async function extraireIdentite() {
+  const rccm = $("#f-rccm").files[0], statuts = $("#f-statuts").files[0];
+  if (!rccm) { erreur("identite-etat", "Choisissez d'abord le fichier du RCCM (le RCCM est le document obligatoire)."); return; }
+  const fin = attente("identite-etat", "Lecture du RCCM" + (statuts ? " et des statuts" : "") + " par l'IA…");
+  try {
+    const fd = new FormData(); fd.append("rccm", rccm); if (statuts) fd.append("statuts", statuts); fd.append("dossier_id", await idDossier());
+    const r = await api("/api/befa/identite", {method: "POST", body: fd});
+    appliquerIdentite(r); D._identite = r; D._identite_validee = false; sauver(); afficher();
+  } catch (e) { erreur("identite-etat", e); } finally { fin(); }
+}
+function appliquerIdentite(r) {
+  // Les valeurs extraites remplacent les champs vides ; un champ deja saisi n'est remplace que si le document le renseigne.
+  const e = r.entreprise || {};
+  const norme = t => String(t || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (e.raison_sociale && D.entreprise.raison_sociale && norme(e.raison_sociale) !== norme(D.entreprise.raison_sociale)) {
+    // RCCM d'une autre societe : on repart d'une identite vierge (aucun melange entre deux entreprises)
+    D.entreprise = Object.assign(dossierVide().entreprise, {});
+    D.dirigeants = []; D.actionnaires = [];
+  }
+  for (const [k, v] of Object.entries(e)) {
+    if (v === null || v === "" || (Array.isArray(v) && !v.length)) continue;
+    D.entreprise[k] = v;
+  }
+  if ((r.dirigeants || []).length) D.dirigeants = r.dirigeants.map(x => ({nom: x.nom, fonction: x.fonction, qualite: x.qualite, profil: "", nationalite: x.nationalite, date_naissance: x.date_naissance, adresse: x.adresse}));
+  if ((r.associes || []).length) D.actionnaires = r.associes.map(x => ({nom: x.nom, nationalite: x.nationalite, nature: x.nature, montant: x.montant || 0, nombre_parts: x.nombre_parts, pourcentage: x.pourcentage, date_naissance: x.date_naissance, qualite: x.qualite}));
+}
+
+// --- clients et fournisseurs (Excel)
+function cartePartenaires() {
+  const P = D._partenaires || {};
+  const ref = D.cr_n && D.cr_n.chiffre_affaires;
+  let h = `<div class="carte"><h2>Clients et fournisseurs</h2>
+  <p class="aide">Importez un fichier Excel contenant la liste des principaux clients et fournisseurs (une feuille « Clients » et une feuille « Fournisseurs », ou une feuille par fichier). Les colonnes sont reconnues automatiquement, les parts en % sont calculées à partir des montants${ref ? ` (base : chiffre d'affaires ${esc(D.cr_n.exercice)} de ${fr(ref)} FCFA)` : ""}. <span class="badge fac">facultatif</span></p>
+  <p><a class="btn petit" href="/api/befa/partenaires/modele">⬇ Télécharger le modèle Excel</a></p>
+  <div class="depot"><input type="file" id="f-partenaires" accept=".xlsx,.xlsm,.csv">
+    <select id="type-partenaires" style="width:auto"><option value="auto">Feuilles Clients / Fournisseurs</option><option value="clients">Liste de clients</option><option value="fournisseurs">Liste de fournisseurs</option></select>
+    <button class="btn principal" onclick="importerPartenaires()">Importer</button><div id="partenaires-etat"></div></div>`;
+  for (const t of ["clients", "fournisseurs"]) if (P[t]) h += listeAlertes(`${t === "clients" ? "Clients" : "Fournisseurs"} — contrôles :`, P[t].alertes) + listeAlertes(`${t === "clients" ? "Clients" : "Fournisseurs"} — informations :`, P[t].infos, "info");
+  h += liste("Principaux clients", "clients", [["Nom du client", "nom", "text", 190], ["Secteur d'activité", "secteur", "text", 140], ["CA réalisé (FCFA)", "montant", "num", 120], ["Part du CA (%)", "part", "pct", 80], ["Mode de paiement", "mode_paiement"], ["Délai", "delai", "text", 100]], {nom: "", secteur: "", montant: null, part: null, mode_paiement: "", delai: "", localisation: ""});
+  h += liste("Principaux fournisseurs", "fournisseurs", [["Nom du fournisseur", "nom", "text", 190], ["Domaine d'activité", "secteur", "text", 130], ["Biens / services fournis", "nature", "text", 170], ["Achats annuels (FCFA)", "montant", "num", 120], ["Part des achats (%)", "part", "pct", 80], ["Mode de règlement", "mode_paiement"], ["Délai", "delai", "text", 100]], {nom: "", secteur: "", nature: "", montant: null, part: null, mode_paiement: "", delai: "", localisation: ""});
+  return h + `</div>`;
+}
+async function importerPartenaires() {
+  const f = $("#f-partenaires").files[0]; if (!f) { erreur("partenaires-etat", "Choisissez un fichier Excel."); return; }
+  const fin = attente("partenaires-etat", "Lecture du fichier…");
+  try {
+    const fd = new FormData(); fd.append("fichier", f); fd.append("type", $("#type-partenaires").value); fd.append("dossier_id", await idDossier());
+    if (D.cr_n && D.cr_n.chiffre_affaires) fd.append("total_reference", D.cr_n.chiffre_affaires);
+    const r = await api("/api/befa/partenaires", {method: "POST", body: fd});
+    D._partenaires = D._partenaires || {};
+    for (const t of ["clients", "fournisseurs"]) if (r[t]) {
+      D[t] = r[t].lignes.map(x => ({nom: x.nom, secteur: x.secteur || "", nature: x.nature || "", montant: x.montant, part: x.part, mode_paiement: x.mode_paiement || "", delai: x.delai || "", localisation: x.localisation || ""}));
+      D._partenaires[t] = r[t];
+    }
+    sauver(); afficher();
+  } catch (e) { erreur("partenaires-etat", e); } finally { fin(); }
+}
+
+// --- identite visuelle
+function carteVisuel() {
+  const v = D.identite_visuelle;
+  const apercuEntete = !v.entete ? "" : v.entete.startsWith("data:image/") ? `<img class="vignette" src="${v.entete}" alt="Papier à en-tête">` : `<span class="badge">${esc(v.entete_nom || "document importé")}</span>`;
+  return `<div class="carte"><h2>Identité visuelle</h2><p class="aide">Le logo figure en première page du Business Plan, à côté de la dénomination sociale ; le papier à en-tête (image, Word ou PDF) sert de support aux courriers bancaires. <span class="badge fac">facultatif</span></p>
+  <div class="deux">
+    <div class="depot"><div class="titre">Logo de l'entreprise</div>${v.logo ? `<img class="vignette" src="${v.logo}" alt="Logo"><br>` : ""}
+      <input type="file" accept="image/*" onchange="importerVisuel(this, 'logo')"> ${v.logo ? `<button class="btn petit" onclick="retirerVisuel('logo')">Retirer</button>` : ""}</div>
+    <div class="depot"><div class="titre">Papier à en-tête</div>${apercuEntete}<br>
+      <input type="file" accept="image/*,.docx,.pdf" onchange="importerVisuel(this, 'entete')"> ${v.entete ? `<button class="btn petit" onclick="retirerVisuel('entete')">Retirer</button>` : ""}
+      <div class="aide">Word (.docx) recommandé : en-tête et pied de page sont repris à l'identique.</div></div>
+  </div><div id="visuel-etat"></div></div>`;
+}
+async function importerVisuel(input, cle) {
+  const f = input.files[0]; if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { erreur("visuel-etat", "Fichier trop volumineux (5 Mo maximum)."); return; }
+  try {
+    let url = await lireDataUrl(f);
+    if (f.name.toLowerCase().endsWith(".docx")) url = url.replace(/^data:[^;]*;/, "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;");
+    D.identite_visuelle[cle] = url; if (cle === "entete") D.identite_visuelle.entete_nom = f.name;
+    sauver(); afficher();
+  } catch (e) { erreur("visuel-etat", e); }
+}
+function retirerVisuel(cle) { D.identite_visuelle[cle] = ""; if (cle === "entete") D.identite_visuelle.entete_nom = ""; sauver(); afficher(); }
 
 // ---------------------------------------------------------------- 3. projet
 function etapeProjet() {
-  const p = "projet.", existante = D.variante === "entreprise_existante";
-  return `<div class="carte"><h2>Projet</h2><p class="aide">Ces informations guident la recherche documentaire et la rédaction de l'IA : plus elles sont précises, meilleur est le texte.</p>
+  const p = "projet.", s = REF.secteurs.find(x => x.code === D.projet.secteur_code);
+  const opts = [["", "— Choisir un secteur —"]].concat(REF.secteurs.map(x => [x.code, x.libelle]));
+  const sous = s && s.sous_secteurs.length ? [["", "— Sous-secteur (facultatif) —"]].concat(s.sous_secteurs.map(x => [x, x])) : null;
+  return `<div class="carte"><h2>Projet</h2><p class="aide">Le secteur choisi oriente l'analyse du marché, de la concurrence, les indicateurs sectoriels, les risques et les recommandations rédigés par l'IA.</p>
   <div class="grille">
-    ${champ("Intitulé du projet", p + "intitule", {requis: true, ph: "Huilerie industrielle de 30 t/h"})}
-    ${champ("Secteur d'activité", p + "secteur", {requis: true, ph: "Transformation agro-industrielle - huile de palme"})}
+    ${champ("Intitulé du projet", p + "intitule", {requis: true, ph: "Acquisition d'une foreuse industrielle"})}
+    <div class="champ"><label for="secteur-code">Secteur d'activité *</label><select id="secteur-code" onchange="choisirSecteur(this.value)">${opts.map(([v, l]) => `<option value="${esc(v)}" ${v === (D.projet.secteur_code || "") ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></div>
+    ${sous ? `<div class="champ"><label for="sous-secteur">Sous-secteur</label><select id="sous-secteur" onchange="choisirSousSecteur(this.value)">${sous.map(([v, l]) => `<option value="${esc(v)}" ${v === D.projet.sous_secteur ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></div>` : ""}
+    ${champ("Secteur tel qu'il apparaîtra dans le document", p + "secteur", {ph: "Rempli par la liste ; vous pouvez le préciser"})}
     ${champ("Localisation", p + "localisation", {ph: "Ville, région"})}${champ("Marché visé", p + "zone_marche")}
     ${champ("Objet du projet", p + "objet", {type: "textarea", large: true})}
     ${champ("Description technique", p + "description", {type: "textarea", large: true, rows: 4})}
-    ${existante ? champ("Contexte du besoin (pourquoi ce financement maintenant)", p + "contexte_besoin", {type: "textarea", large: true}) : ""}
+    ${champ(startup() ? "Contexte et justification de la création" : "Contexte du besoin (pourquoi ce financement maintenant)", p + "contexte_besoin", {type: "textarea", large: true})}
     ${champ("Objectifs", p + "objectifs", {type: "lines", large: true, rows: 4})}
     ${champ("Phases / planning de réalisation", p + "phases", {type: "lines", large: true})}
     ${champ("Emplois directs créés", p + "emplois_directs", {type: "int"})}${champ("Emplois indirects", p + "emplois_indirects", {type: "int"})}
@@ -348,8 +539,18 @@ function etapeProjet() {
     ${champ("Informations complémentaires pour la rédaction", p + "notes_consultant", {type: "textarea", large: true, ph: "Contexte, atouts, contraintes… tout ce que l'IA doit savoir."})}
   </div></div>`;
 }
+function choisirSecteur(code) {
+  const s = REF.secteurs.find(x => x.code === code);
+  D.projet.secteur_code = code; D.projet.sous_secteur = ""; D.projet.secteur = s ? s.libelle : "";
+  sauver(); afficher();
+}
+function choisirSousSecteur(v) {
+  const s = REF.secteurs.find(x => x.code === D.projet.secteur_code);
+  D.projet.sous_secteur = v; D.projet.secteur = s ? s.libelle : D.projet.secteur;
+  sauver(); afficher();
+}
 
-// ---------------------------------------------------------------- 4. liasse
+// ---------------------------------------------------------------- 4. documents comptables
 const CHAMPS_BILAN = [
   ["Stocks", "stocks"], ["Fournisseurs, avances versées", "avances_fournisseurs"], ["Créances clients", "creances_clients"],
   ["Autres créances", "autres_creances"], ["Trésorerie actif", "tresorerie_actif"],
@@ -374,7 +575,7 @@ function totauxBilan(b) {
   return {actif, passif};
 }
 function majTotauxBilan() {
-  for (const k of ["bilan_n", "bilan_n1"]) {
+  for (const k of ["bilan_n", "bilan_n1", "bilan_n2", "bilan_ouverture"]) {
     const el = document.getElementById("tot-" + k), t = totauxBilan(D[k]); if (!el || !t) continue;
     const ecart = t.actif - t.passif;
     el.innerHTML = `Total actif ${fr(t.actif)} — total passif ${fr(t.passif)} : ` +
@@ -384,7 +585,7 @@ function majTotauxBilan() {
 function formulaireBilan(cle, titre) {
   const b = D[cle]; if (!b) return "";
   return `<h3>${esc(titre)} ${esc(b.exercice || "")}</h3>
-  ${liste("Immobilisations", cle + ".immobilisations", [["Poste", "libelle", "text", 260], ["Brut", "brut", "num"], ["Amortissements", "amortissements", "num"]], {libelle: "", brut: 0, amortissements: 0})}
+  ${liste("", cle + ".immobilisations", [["Immobilisation", "libelle", "text", 260], ["Brut", "brut", "num"], ["Amortissements", "amortissements", "num"]], {libelle: "", brut: 0, amortissements: 0})}
   <div class="grille">${CHAMPS_BILAN.map(c => champ(c[0], `${cle}.${c[1]}`, {type: "num"})).join("")}</div>
   <div class="bilan-total" id="tot-${cle}"></div>`;
 }
@@ -393,55 +594,91 @@ function formulaireCR(cle, titre) {
   return `<h3>${esc(titre)} ${esc(c.exercice || "")}</h3><div class="grille">${CHAMPS_CR.map(x => champ(x[0], `${cle}.${x[1]}`, {type: "num"})).join("")}</div>`;
 }
 function etapeLiasse() {
-  const nouveau = D.variante === "nouveau_projet";
+  return startup() ? etapeOuverture() : etapeBilans();
+}
+function etapeBilans() {
   let h = `<div class="carte"><h2>Documents comptables</h2>
-  <p class="aide">${nouveau ? "Facultatif pour un nouveau projet : importez le bilan d'ouverture s'il existe." : "Importez la liasse fiscale SYSCOHADA du dernier exercice (PDF DGI). Les chiffres N et N-1 sont lus par l'IA puis contrôlés contre les totaux de la liasse."}</p>
-  <input type="file" id="liasse" accept="application/pdf,.pdf"> <button class="btn principal" onclick="importerLiasse()">Lire la liasse</button>
-  <div id="liasse-etat"></div>`;
-  if (LIASSE_RES) {
-    const r = LIASSE_RES;
-    h += r.alertes.length ? `<div class="alerte att"><strong>À vérifier :</strong><ul>${r.alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>`
-      : `<div class="alerte ok">Contrôles automatiques : tous les totaux recalculés concordent avec la liasse (pages lues : ${r.pages_lues.join(", ")}).</div>`;
-    if (r.note_ia) h += `<div class="alerte info"><strong>Note de lecture de l'IA (non vérifiée) :</strong> ${esc(r.note_ia)}</div>`;
-    h += `<p><button class="btn petit" onclick="reprendreIdentite()">Reprendre l'identité lue (${esc(r.entreprise.raison_sociale || "")}) dans le dossier</button></p>`;
+  <p class="aide">Importez les <strong>trois derniers bilans comptables</strong> disponibles (liasses SYSCOHADA, au format PDF ou Excel). Une liasse contient aussi l'exercice précédent : deux liasses suffisent souvent à couvrir trois exercices. Les chiffres sont lus par l'IA puis contrôlés contre les totaux imprimés.</p>
+  <div class="depot"><div class="titre">Bilans des trois derniers exercices <span class="badge oblig">au moins le dernier</span></div>
+    <input type="file" id="liasses" accept=".pdf,.xlsx,.xlsm,.csv,image/*" multiple> <button class="btn principal" onclick="importerLiasses()">Lire les bilans</button>
+    <div class="aide">1 à 3 fichiers, lus en parallèle (30 à 60 s).</div><div id="liasse-etat"></div></div>`;
+  const r = LIASSE_RES || D._liasses;
+  if (r) {
+    h += `<p>Exercices retenus : ${r.exercices.map(e => `<span class="badge calc">${esc(e)}</span>`).join(" ")}</p>`;
+    for (const f of r.fichiers) {
+      if (f.erreur) h += `<div class="alerte err"><strong>${esc(f.fichier)} :</strong> ${esc(f.erreur)}</div>`;
+      else h += f.alertes.length ? listeAlertes(`${f.fichier} (exercices ${f.exercices.join(", ")}) — à vérifier :`, f.alertes)
+        : `<div class="alerte ok">${esc(f.fichier)} (exercices ${esc(f.exercices.join(", "))}) : tous les totaux recalculés concordent avec la liasse.</div>`;
+      if (f.note_ia) h += `<div class="alerte info"><strong>Note de lecture (non vérifiée) :</strong> ${esc(f.note_ia)}</div>`;
+    }
+    h += listeAlertes("Rapprochement des exercices :", r.alertes);
+    if (r.entreprise && r.entreprise.raison_sociale) h += `<p><button class="btn petit" onclick="reprendreIdentite()">Compléter l'identité avec la liasse (${esc(r.entreprise.raison_sociale)})</button></p>`;
   }
   h += `</div>`;
   if (D.bilan_n) {
-    h += `<div class="carte"><h2>Validation des chiffres</h2><p class="aide">Corrigez si nécessaire ; ces montants alimentent l'étude financière du document.</p>
-    ${formulaireBilan("bilan_n", "Bilan")}${formulaireBilan("bilan_n1", "Bilan")}${formulaireCR("cr_n", "Compte de résultat")}${formulaireCR("cr_n1", "Compte de résultat")}
-    <h3>Validation</h3><label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--encre)">
-      <input type="checkbox" data-p="_liasse_validee" data-t="bool" style="width:auto" ${D._liasse_validee ? "checked" : ""}> J'ai vérifié ces chiffres avec la liasse originale.</label>
+    h += `<div class="carte"><h2>Validation des chiffres</h2><p class="aide">Données organisées par exercice ; corrigez si nécessaire. Elles alimentent l'étude financière (analyse N / N-1 et évolution sur trois exercices). <span class="badge calc">données réelles</span></p>
+    ${["bilan_n", "bilan_n1", "bilan_n2"].map(k => formulaireBilan(k, "Bilan")).join("")}${["cr_n", "cr_n1", "cr_n2"].map(k => formulaireCR(k, "Compte de résultat")).join("")}
+    <h3>Validation</h3><label class="case"><input type="checkbox" data-p="_liasse_validee" data-t="bool" ${D._liasse_validee ? "checked" : ""}> J'ai vérifié ces chiffres avec les liasses originales.</label>
     <p><button class="btn petit" onclick="effacerLiasse()">Retirer les données comptables</button></p></div>`;
-    setTimeout(majTotauxBilan, 0);
   }
   return h;
 }
-async function importerLiasse() {
-  const f = $("#liasse").files[0]; if (!f) { $("#liasse-etat").innerHTML = `<div class="alerte err">Choisissez d'abord un fichier PDF.</div>`; return; }
-  const debut = Date.now(), minuteur = setInterval(() => { const s = $("#liasse-etat .s"); if (s) s.textContent = Math.round((Date.now() - debut) / 1000) + " s"; }, 1000);
-  $("#liasse-etat").innerHTML = `<p class="attente"><span class="roue"></span>Lecture de la liasse par l'IA (30 à 60 s)… <span class="s"></span></p>`;
+async function importerLiasses() {
+  const fichiers = [...$("#liasses").files];
+  if (!fichiers.length) { erreur("liasse-etat", "Choisissez de 1 à 3 fichiers."); return; }
+  if (fichiers.length > 3) { erreur("liasse-etat", "Trois fichiers au maximum (les trois derniers bilans)."); return; }
+  const fin = attente("liasse-etat", "Lecture des bilans par l'IA…");
   try {
-    const fd = new FormData(); fd.append("fichier", f);
-    LIASSE_RES = await api("/api/befa/liasse", {method: "POST", body: fd});
-    D.bilan_n = LIASSE_RES.bilan_n; D.bilan_n1 = LIASSE_RES.bilan_n1; D.cr_n = LIASSE_RES.compte_resultat_n; D.cr_n1 = LIASSE_RES.compte_resultat_n1;
-    D._liasse_validee = false; sauver(); afficher();
-  } catch (e) { $("#liasse-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
-  finally { clearInterval(minuteur); }
+    const fd = new FormData(); for (const f of fichiers) fd.append("fichiers", f); fd.append("dossier_id", await idDossier());
+    LIASSE_RES = await api("/api/befa/liasses", {method: "POST", body: fd});
+    for (const k of ["bilan_n", "bilan_n1", "bilan_n2", "cr_n", "cr_n1", "cr_n2"]) D[k] = LIASSE_RES[k];
+    D._liasses = LIASSE_RES; D._liasse_validee = false; sauver(); afficher();
+  } catch (e) { erreur("liasse-etat", e); } finally { fin(); }
 }
 function reprendreIdentite() {
-  const e = LIASSE_RES.entreprise;
-  if (e.raison_sociale && !D.entreprise.raison_sociale) D.entreprise.raison_sociale = e.raison_sociale;
-  if (e.sigle && !D.entreprise.sigle) D.entreprise.sigle = e.sigle;
-  if (e.ncc && !D.entreprise.ncc) D.entreprise.ncc = e.ncc;
-  if (e.adresse && !D.entreprise.adresse) D.entreprise.adresse = e.adresse;
+  const e = (LIASSE_RES || D._liasses).entreprise;
+  for (const k of ["raison_sociale", "sigle", "ncc", "adresse"]) if (e[k] && !D.entreprise[k]) D.entreprise[k] = e[k];
   sauver(); afficher();
 }
-function effacerLiasse() { D.bilan_n = D.bilan_n1 = D.cr_n = D.cr_n1 = null; D._liasse_validee = false; LIASSE_RES = null; sauver(); afficher(); }
+function effacerLiasse() { for (const k of ["bilan_n", "bilan_n1", "bilan_n2", "cr_n", "cr_n1", "cr_n2"]) D[k] = null; D._liasse_validee = false; D._liasses = null; LIASSE_RES = null; sauver(); afficher(); }
+
+// --- startup : bilan d'ouverture previsionnel
+function etapeOuverture() {
+  const p = D.projection, vide = !(p.investissements.length || p.apports.length || p.prets.length);
+  let h = `<div class="carte"><h2>Bilan d'ouverture prévisionnel</h2>
+  <p class="aide">Une StartUP n'a pas d'historique comptable : aucun bilan antérieur n'est demandé. Le programme propose un bilan d'ouverture équilibré à partir des investissements, des apports des promoteurs, du capital envisagé et des emprunts sollicités (étape « Données financières »). Modifiez les montants puis validez. <span class="badge est">estimation prévisionnelle</span></p>
+  ${vide ? `<div class="alerte att">Aucun investissement, apport ni emprunt saisi : renseignez-les d'abord dans <a href="#" onclick="aller(5);return false">Données financières</a>, puis revenez ici.</div>` : ""}
+  <div class="grille">${champ("Capital social envisagé (FCFA)", "entreprise.capital", {type: "num"})}${champ("Stocks initiaux (FCFA)", "_ouverture.stocks_initiaux", {type: "num"})}
+    ${champ("Créances initiales (FCFA)", "_ouverture.creances_initiales", {type: "num"})}${champ("Dettes initiales — fournisseurs (FCFA)", "_ouverture.dettes_initiales", {type: "num"})}</div>
+  <p style="margin-top:12px"><button class="btn principal" onclick="proposerOuverture()">${D.bilan_ouverture ? "Recalculer la proposition" : "Proposer le bilan d'ouverture"}</button></p><div id="ouverture-etat"></div>`;
+  const r = OUVERTURE_RES || D._ouverture_res;
+  if (r) h += listeAlertes("À vérifier :", r.alertes) + `<div class="alerte info"><strong>Hypothèses retenues :</strong><ul>${r.hypotheses.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`;
+  h += `</div>`;
+  if (D.bilan_ouverture) {
+    h += `<div class="carte"><h2>Bilan d'ouverture — modification et validation</h2><p class="aide">${esc((r && r.mention) || "Estimation prévisionnelle : ce bilan n'est pas un bilan comptable historique.")}</p>
+    ${formulaireBilan("bilan_ouverture", "Bilan")}
+    <h3>Validation</h3><label class="case"><input type="checkbox" data-p="bilan_ouverture_valide" data-t="bool" ${D.bilan_ouverture_valide ? "checked" : ""}> Je valide ce bilan d'ouverture pour l'intégrer au Business Plan.</label>
+    <p><button class="btn petit" onclick="D.bilan_ouverture=null;D.bilan_ouverture_valide=false;D._ouverture_res=null;OUVERTURE_RES=null;sauver();afficher()">Retirer le bilan d'ouverture</button></p></div>`;
+  }
+  h += `<div class="carte"><h3 style="margin-top:0">Bilan d'ouverture réel (facultatif)</h3><p class="aide">Si un bilan d'ouverture a déjà été établi par un comptable (liasse SYSCOHADA), vous pouvez l'importer : il remplace la proposition.</p>
+    <input type="file" id="liasses" accept=".pdf,.xlsx,image/*"> <button class="btn" onclick="importerLiasses()">Lire le bilan</button><div id="liasse-etat"></div>
+    ${D.bilan_n ? formulaireBilan("bilan_n", "Bilan importé") + `<label class="case"><input type="checkbox" data-p="_liasse_validee" data-t="bool" ${D._liasse_validee ? "checked" : ""}> Chiffres vérifiés.</label> <button class="btn petit" onclick="effacerLiasse()">Retirer</button>` : ""}</div>`;
+  return h;
+}
+async function proposerOuverture() {
+  const fin = attente("ouverture-etat", "Calcul…");
+  try {
+    const o = D._ouverture;
+    OUVERTURE_RES = await postJson("/api/befa/bilan-ouverture", {projection: projectionPourServeur(), capital: D.entreprise.capital,
+      stocks_initiaux: o.stocks_initiaux, creances_initiales: o.creances_initiales, dettes_initiales: o.dettes_initiales});
+    D.bilan_ouverture = OUVERTURE_RES.bilan; D.bilan_ouverture_valide = false; D._ouverture_res = OUVERTURE_RES; sauver(); afficher();
+  } catch (e) { erreur("ouverture-etat", e); } finally { fin(); }
+}
 
 // ---------------------------------------------------------------- 5. trends
 function etapeTrends() {
   let h = `<div class="carte"><h2>Google Trends</h2>
-  <p class="aide">Sur <a href="https://trends.google.com" target="_blank" rel="noopener">trends.google.com</a> : saisissez les mots-clés du projet, choisissez <strong>Côte d'Ivoire</strong> et <strong>5 dernières années</strong>, puis cliquez sur l'icône <strong>Télécharger (⬇)</strong> de chaque encadré : « Évolution de l'intérêt » (obligatoire), « Intérêt par sous-région », « Requêtes associées ». Déposez ici les fichiers CSV obtenus. Étape facultative.</p>
+  <p class="aide">Sur <a href="https://trends.google.com" target="_blank" rel="noopener">trends.google.com</a> : saisissez les mots-clés du projet, choisissez <strong>Côte d'Ivoire</strong> et <strong>5 dernières années</strong>, puis cliquez sur l'icône <strong>Télécharger (⬇)</strong> de chaque encadré : « Évolution de l'intérêt » (obligatoire), « Intérêt par sous-région », « Requêtes associées ». Déposez ici les fichiers CSV obtenus. <span class="badge fac">facultatif</span></p>
   <input type="file" id="trends" accept=".csv,text/csv" multiple> <button class="btn principal" onclick="importerTrends()">Analyser</button>
   <div id="trends-etat"></div>`;
   if ((D._trends_csv || []).length) h += `<p><span class="badge">Fichiers retenus : ${D._trends_csv.map(f => esc(f.nom)).join(", ")}</span> <button class="btn petit" onclick="effacerTrends()">Retirer</button></p>`;
@@ -462,18 +699,23 @@ async function analyserTrends(fichiers) {
   D.trends_faits = TRENDS_RES.faits; D.trends_source = TRENDS_RES.source;
 }
 async function importerTrends() {
-  const fichiers = [...$("#trends").files]; if (!fichiers.length) { $("#trends-etat").innerHTML = `<div class="alerte err">Choisissez au moins un fichier CSV.</div>`; return; }
+  const fichiers = [...$("#trends").files]; if (!fichiers.length) { erreur("trends-etat", "Choisissez au moins un fichier CSV."); return; }
   try {
     const lus = await Promise.all(fichiers.map(async f => ({nom: f.name, texte: await f.text()})));
     await analyserTrends(lus);
     D._trends_csv = lus; sauver(); afficher();
-  } catch (e) { $("#trends-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
+  } catch (e) { erreur("trends-etat", e); }
 }
 function effacerTrends() { D._trends_csv = []; D.trends_faits = []; D.trends_source = ""; TRENDS_RES = null; sauver(); afficher(); }
 
 // ---------------------------------------------------------------- 6. finances
 const RUBRIQUES = [["achats_matieres", "Achats de matières premières"], ["autres_achats", "Autres achats"], ["transport", "Transport"],
   ["services_exterieurs", "Services extérieurs"], ["impots_taxes", "Impôts et taxes"], ["salaires", "Salaires"]];
+const CATEGORIES = {
+  compte_exploitation: [["chiffre_affaires", "Chiffre d'affaires"], ["achats_matieres", "Achats matières / marchandises"], ["autres_achats", "Autres achats"], ["transport", "Transport"], ["services_exterieurs", "Services extérieurs"], ["impots_taxes", "Impôts et taxes"], ["salaires", "Salaires et charges"], ["dotations", "Dotations"], ["frais_financiers", "Frais financiers"], ["impot_benefice", "Impôt sur le bénéfice"], ["sous_total", "Sous-total / solde"], ["autre", "Autre"]],
+  plan_tresorerie: [["solde_initial", "Solde initial"], ["encaissement", "Encaissement"], ["decaissement", "Décaissement"], ["total_encaissements", "Total encaissements"], ["total_decaissements", "Total décaissements"], ["solde_final", "Solde final"], ["sous_total", "Sous-total"], ["autre", "Autre"]],
+};
+const CLE_TABLEAU = {compte_exploitation: "compte_exploitation_importe", plan_tresorerie: "plan_tresorerie"};
 function ligneAnnees(libelle, chemin, type = "num") {
   return `<div class="ligne-annees" style="grid-template-columns:150px repeat(${n()},minmax(90px,1fr))"><span>${esc(libelle)}</span>
     ${D.projection.annees.map((_, a) => champ("", `${chemin}.${a}`, {type})).join("")}</div>`;
@@ -481,17 +723,56 @@ function ligneAnnees(libelle, chemin, type = "num") {
 function enteteAnnees() {
   return `<div class="ligne-annees" style="grid-template-columns:150px repeat(${n()},minmax(90px,1fr))"><span></span>${D.projection.annees.map(a => `<span style="text-align:right">${esc(a)}</span>`).join("")}</div>`;
 }
+function carteImports() {
+  let h = `<div class="carte"><h2>Importer les documents financiers</h2>
+  <p class="aide">${startup() ? "Facultatif pour une StartUP : les prévisions peuvent être construites directement à partir des hypothèses du projet (formulaire ci-dessous). Si un compte d'exploitation ou un plan de trésorerie prévisionnel existe déjà, importez-le." : "Importez le compte d'exploitation et le plan de trésorerie (PDF, Excel ou image) : l'IA lit les rubriques et les montants par période, le programme contrôle les totaux et les soldes."}</p>
+  <div class="deux">${["compte_exploitation", "plan_tresorerie"].map(nat => `<div class="depot"><div class="titre">${nat === "compte_exploitation" ? "Compte d'exploitation" : "Plan de trésorerie"} <span class="badge fac">facultatif</span></div>
+    <input type="file" id="f-${nat}" accept=".pdf,.xlsx,.xlsm,.csv,image/*"> <button class="btn principal" onclick="importerTableau('${nat}')">Lire</button><div id="etat-${nat}"></div></div>`).join("")}</div></div>`;
+  for (const nat of ["compte_exploitation", "plan_tresorerie"]) {
+    const t = D[CLE_TABLEAU[nat]]; if (!t) continue;
+    const cle = CLE_TABLEAU[nat], info = (D._tableaux || {})[nat] || {};
+    h += `<div class="carte"><h2>${esc(t.titre)} <span class="badge ia">lu par l'IA</span> <span class="badge ${t.nature === "historique" ? "calc" : "est"}">${t.nature === "historique" ? "réalisé" : "prévisionnel"}</span></h2>
+    <p class="aide">Fichier : ${esc(t.fichier)} — ${t.periodes.length} période(s). Corrigez si nécessaire : ce tableau est reproduit en annexe du Business Plan.</p>
+    ${listeAlertes("Incohérences et données manquantes :", info.alertes)}${info.remarques ? `<div class="alerte info">${esc(info.remarques)}</div>` : ""}
+    <div class="defile"><table class="liste saisie"><thead><tr><th>Rubrique</th><th>Catégorie</th>${t.periodes.map((p, j) => `<th>${champ("", `${cle}.periodes.${j}`)}</th>`).join("")}<th>Total</th><th></th></tr></thead><tbody>
+    ${t.lignes.map((l, i) => `<tr><td>${champ("", `${cle}.lignes.${i}.libelle`)}</td><td>${champ("", `${cle}.lignes.${i}.categorie`, {type: "select", options: CATEGORIES[nat]})}</td>
+      ${t.periodes.map((_, j) => `<td>${champ("", `${cle}.lignes.${i}.valeurs.${j}`, {type: "num"})}</td>`).join("")}<td>${champ("", `${cle}.lignes.${i}.total`, {type: "num"})}</td>
+      <td><button class="btn sup" data-del="${cle}.lignes.${i}" title="Supprimer">×</button></td></tr>`).join("")}</tbody></table></div>
+    ${nat === "compte_exploitation" ? `<button class="btn" onclick="reprendreCompte()">Pré-remplir les prévisions (année 1) avec ce compte</button> ` : ""}
+    <button class="btn petit" onclick="D.${cle}=null;sauver();afficher()">Retirer ce tableau</button></div>`;
+  }
+  return h;
+}
+async function importerTableau(nat) {
+  const f = $("#f-" + nat).files[0]; if (!f) { erreur("etat-" + nat, "Choisissez un fichier."); return; }
+  const fin = attente("etat-" + nat, "Lecture par l'IA…");
+  try {
+    const fd = new FormData(); fd.append("fichier", f); fd.append("nature", nat); fd.append("dossier_id", await idDossier());
+    const r = await api("/api/befa/tableau", {method: "POST", body: fd});
+    D[CLE_TABLEAU[nat]] = {titre: r.titre, periodes: r.periodes, lignes: r.lignes.map(l => ({libelle: l.libelle, categorie: l.categorie, valeurs: l.valeurs, total: l.total, style: l.style})), fichier: r.fichier, nature: r.nature};
+    D._tableaux = D._tableaux || {}; D._tableaux[nat] = {alertes: r.alertes, remarques: r.remarques, proposition: r.proposition_projection};
+    sauver(); afficher();
+  } catch (e) { erreur("etat-" + nat, e); } finally { fin(); }
+}
+function reprendreCompte() {
+  const prop = ((D._tableaux || {}).compte_exploitation || {}).proposition; if (!prop) return;
+  if ((D.projection.produits.length || D.projection.charges.length) && !window.confirm("Remplacer les produits et charges déjà saisis par ceux du compte d'exploitation importé ?")) return;
+  const l = n();
+  D.projection.produits = prop.produits.map(x => ({libelle: x.libelle, unite: "", montants: serie(x.montant_annuel, l)}));
+  D.projection.charges = prop.charges.map(x => ({libelle: x.libelle, rubrique: x.rubrique, montants: serie(x.montant_annuel, l)}));
+  if (prop.autres.dotations && pme()) D.projection.dotations_existantes = serie(prop.autres.dotations, l);
+  sauver(); afficher();
+}
 function etapeFinances() {
-  const p = D.projection, existante = D.variante === "entreprise_existante";
+  const p = D.projection, existante = pme();
   const rangs = p.annees[0] && p.annees[0].toLowerCase().startsWith("année");
-  let h = `<div class="carte"><h2>Données financières</h2><p class="aide">Tous les chiffres du document sont calculés à partir de ces saisies (aucun chiffre n'est produit par l'IA). L'aperçu en bas de page se met à jour à chaque modification.</p>
+  let h = carteImports() + `<div class="carte"><h2>Données financières prévisionnelles</h2><p class="aide">Tous les chiffres du document sont calculés à partir de ces saisies (aucun chiffre n'est produit par l'IA). ${startup() ? "StartUP : ce sont des <strong>hypothèses prévisionnelles</strong>, présentées comme telles dans le document." : ""} L'aperçu en bas de page se met à jour à chaque modification.</p>
   <div class="grille">
     <div class="champ"><label>Nombre d'années de prévision</label><input class="num" id="nb-annees" value="${p.annees.length}" onchange="redimensionner()"></div>
     <div class="champ"><label>Libellé des colonnes</label><select id="type-annees" onchange="redimensionner()"><option value="rang" ${rangs ? "selected" : ""}>Année 1, Année 2…</option><option value="millesime" ${rangs ? "" : "selected"}>Millésimes (2026, 2027…)</option></select></div>
     <div class="champ"><label>Première année (millésime)</label><input class="num" id="annee-debut" value="${rangs ? new Date().getFullYear() : esc(p.annees[0])}" onchange="redimensionner()"></div>
     ${champ("Taux d'impôt sur les sociétés (%)", "projection.taux_is", {type: "pct"})}
   </div>
-
   <h3>Produits et services vendus</h3>`;
   p.produits.forEach((x, i) => {
     const mode = x.montants != null ? "montants" : "quantites";
@@ -502,7 +783,6 @@ function etapeFinances() {
         ligneAnnees("Quantités", `projection.produits.${i}.quantites`) + ligneAnnees("Prix unitaire (FCFA)", `projection.produits.${i}.prix_unitaire`)}</div>`;
   });
   h += `<button class="btn petit" onclick="ajouterProduit()">+ Ajouter un produit</button>
-
   <h3>Charges d'exploitation</h3>`;
   p.charges.forEach((c, i) => {
     const mode = c.montants != null ? "montants" : c.quantites != null ? "quantites" : "pct";
@@ -515,10 +795,8 @@ function etapeFinances() {
         ligneAnnees("Quantités", `projection.charges.${i}.quantites`) + ligneAnnees("Coût unitaire (FCFA)", `projection.charges.${i}.cout_unitaire`))}</div>`;
   });
   h += `<button class="btn petit" onclick="ajouterCharge()">+ Ajouter une charge</button>
-
-  ${liste("Investissements", "projection.investissements", [["Libellé", "libelle", "text", 260], ["Montant (FCFA)", "montant", "num"], ["Année (0 = avant démarrage)", "annee", "int", 90], ["Amortissement (ans, vide = non amortissable)", "duree_amortissement_ans", "num", 110]], {libelle: "", montant: 0, annee: 0, duree_amortissement_ans: 5})}
-  ${liste("Apports et fonds propres", "projection.apports", [["Libellé", "libelle", "text", 260], ["Montant (FCFA)", "montant", "num"], ["Année", "annee", "int", 90]], {libelle: "Apport du promoteur", montant: 0, annee: 0})}
-
+  ${liste("Investissements", "projection.investissements", [["Libellé", "libelle", "text", 240], ["Montant (FCFA)", "montant", "num"], ["Année (0 = avant démarrage)", "annee", "int", 90], ["Amortissement (ans, vide = non amortissable)", "duree_amortissement_ans", "num", 110], ["Financé par", "financement", "select", 130, [["", "Global"], ["apport", "Promoteur"], ["emprunt", "Banque"]]]], {libelle: "", montant: 0, annee: 0, duree_amortissement_ans: 5, financement: ""})}
+  ${liste("Apports et fonds propres", "projection.apports", [["Libellé", "libelle", "text", 240], ["Montant (FCFA)", "montant", "num"], ["Année", "annee", "int", 90], ["Nature", "nature", "select", 150, [["apport", "Apport en capital"], ["compte courant", "Compte courant d'associés"], ["subvention", "Subvention"]]]], {libelle: "Apport du promoteur", montant: 0, annee: 0, nature: "apport"})}
   <h3>Concours bancaires sollicités</h3>`;
   p.prets.forEach((x, i) => {
     const b = `projection.prets.${i}.`;
@@ -532,7 +810,6 @@ function etapeFinances() {
     </div><button class="btn petit" data-del="projection.prets.${i}" style="margin-top:8px">Supprimer ce prêt</button></div>`;
   });
   h += `<button class="btn petit" onclick="ajouterPret()">+ Ajouter un prêt</button>
-
   <h3>Besoin en fonds de roulement${existante ? " et données de l'entreprise existante" : ""}</h3>
   <div class="grille">${champ("Délai clients (jours de CA)", "projection.jours_clients", {type: "num"})}${champ("Stocks (jours d'achats)", "projection.jours_stocks", {type: "num"})}
     ${champ("Délai fournisseurs (jours d'achats)", "projection.jours_fournisseurs", {type: "num"})}${champ("Trésorerie initiale (FCFA)", "projection.tresorerie_initiale", {type: "num"})}</div>`;
@@ -543,7 +820,6 @@ function etapeFinances() {
   h += `</div><div class="carte" id="apercu-fin"><h2>Aperçu des états prévisionnels</h2><p class="attente"><span class="roue"></span>Calcul…</p></div>`;
   return h;
 }
-// le select "in_fine" stocke une chaine : conversion avant envoi
 function projectionPourServeur() {
   const p = pourServeur(D.projection);
   for (const x of p.prets) x.in_fine = x.in_fine === true || x.in_fine === "true";
@@ -574,10 +850,8 @@ let minuteurApercu = null;
 function previsualiser(delai) {
   clearTimeout(minuteurApercu);
   minuteurApercu = setTimeout(async () => {
-    try {
-      PROJ_RES = await api("/api/befa/projection", {method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({projection: projectionPourServeur(), nom: D.entreprise.sigle || D.entreprise.raison_sociale})});
-    } catch (e) { PROJ_RES = {erreurs: [e.message]}; }
+    try { PROJ_RES = await postJson("/api/befa/projection", {projection: projectionPourServeur(), nom: D.entreprise.sigle || D.entreprise.raison_sociale || D.projet.intitule}); }
+    catch (e) { PROJ_RES = {erreurs: [e.message]}; }
     const el = $("#apercu-fin"); if (el) el.innerHTML = rendreApercu();
     majNav();
   }, delai);
@@ -591,7 +865,7 @@ function rendreApercu() {
   if (!r) return "";
   if (r.erreurs.length) return `<h2>Aperçu des états prévisionnels</h2><div class="alerte att"><strong>Saisie à compléter :</strong><ul>${r.erreurs.map(e => `<li>${esc(e)}</li>`).join("")}</ul></div>`;
   const s = r.synthese;
-  return `<h2>Aperçu des états prévisionnels</h2>
+  return `<h2>Aperçu des états prévisionnels <span class="badge calc">calculé par le programme</span></h2>
   <p><span class="badge">Investissements : ${fr(s.cout_investissements)} FCFA</span> <span class="badge">Apports : ${fr(s.apports)} FCFA</span> <span class="badge">Prêts : ${fr(s.prets)} FCFA</span></p>
   <h3>Compte d'exploitation prévisionnel</h3>${tableauApercu(r.annees, r.compte)}<p class="aide">${r.commentaires.compte_exploitation.map(esc).join(" ")}</p>
   <h3>Plan de financement</h3>${tableauApercu(r.plan.colonnes, r.plan.lignes)}<p class="aide">${r.commentaires.plan_financement.map(esc).join(" ")}</p>
@@ -599,6 +873,7 @@ function rendreApercu() {
 }
 
 // ---------------------------------------------------------------- 7. redaction
+const AVEC_PUCES = ["presentation_activite", "besoin_financement", "impact_besoin", "contexte_mondial", "contexte_africain", "contexte_national", "contexte_zone", "analyse_demande", "analyse_prix", "concurrence_directe", "concurrence_nationale", "opportunite_concurrentielle"];
 function ecrireRedaction(el) {
   const [type, i, champ_] = el.dataset.p.split(".");
   if (type === "section") RED.sections[+i][champ_] = champ_ === "paragraphes" ? el.value.split(/\n\s*\n/).map(x => x.trim()).filter(Boolean) : el.value.split("\n").map(x => x.trim()).filter(Boolean);
@@ -606,18 +881,18 @@ function ecrireRedaction(el) {
 }
 function etapeRedaction() {
   let h = `<div class="carte"><h2>Rédaction par l'IA</h2>
-  <p class="aide">L'IA recherche des statistiques sectorielles sur le web (seules les affirmations rattachées à une page consultée sont retenues), puis rédige les parties narratives à partir de votre saisie. Les commentaires des tableaux financiers sont écrits par le programme. Comptez 3 à 5 minutes.</p>
-  <label style="display:flex;gap:8px;align-items:center;font-size:14px;color:var(--encre);margin-bottom:10px"><input type="checkbox" id="recherche-web" style="width:auto" checked> Recherche web de statistiques sourcées</label>
+  <p class="aide">L'IA recherche des statistiques sectorielles sur le web (seules les affirmations rattachées à une page consultée sont retenues), puis rédige les parties narratives selon le plan BEFA, adaptées au profil ${esc(PROFILS[D.variante] || "")} et au secteur choisi. Les commentaires des tableaux financiers sont écrits par le programme. Comptez 3 à 5 minutes.</p>
+  <label class="case" style="margin-bottom:10px"><input type="checkbox" id="recherche-web" checked> Recherche web de statistiques sourcées</label>
   <button class="btn principal" onclick="lancerRedaction()">${RED ? "Relancer la rédaction (remplace le texte actuel)" : "Lancer la rédaction"}</button>
   ${RED ? ` <button class="btn" onclick="if(confirmerSuppression())effacerRedaction()">Supprimer la rédaction</button>` : ""}
   <div id="red-etat"></div></div>`;
   if (!RED) return h + `<div class="carte"><p class="aide">Sans rédaction, le document est généré avec des encarts « À compléter par le consultant » à la place des parties narratives.</p></div>`;
-  if (RED.alertes.length) h += `<div class="carte"><div class="alerte att"><strong>Points à vérifier :</strong><ul>${RED.alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div></div>`;
+  if (RED.alertes.length) h += `<div class="carte">${listeAlertes("Points à vérifier :", RED.alertes)}</div>`;
   h += `<div class="carte"><h2>Relecture</h2><p class="aide">Modifiez librement le texte. Paragraphes séparés par une ligne vide ; une puce par ligne. Les renvois [S1], [S2]… deviennent des appels de note vers la page « Sources ».</p>
   ${RED.sections.map((s, i) => `<div class="section-red"><h3>${esc(s.titre)}</h3>
     <textarea data-p="section.${i}.paragraphes" data-red rows="${Math.min(18, 3 + s.paragraphes.join(" ").length / 110 | 0)}">${esc(s.paragraphes.join("\n\n"))}</textarea>
-    ${s.puces.length || ["risques", "impact_besoin", "execution", "strategie"].includes(s.cle) ? `<label style="margin-top:6px;display:block">Puces</label><textarea data-p="section.${i}.puces" data-red rows="${Math.max(3, s.puces.length + 1)}">${esc(s.puces.join("\n"))}</textarea>` : ""}</div>`).join("")}
-  <div class="section-red"><h3>Analyse SWOT</h3><div class="deux">
+    ${s.puces.length || AVEC_PUCES.includes(s.cle) ? `<label style="margin-top:6px;display:block">Puces</label><textarea data-p="section.${i}.puces" data-red rows="${Math.max(3, s.puces.length + 1)}">${esc(s.puces.join("\n"))}</textarea>` : ""}</div>`).join("")}
+  <div class="section-red"><h3>Analyse SWOT</h3><p class="aide">Une ligne par élément, au format « Élément identifié : impact sur le projet ».</p><div class="deux">
     ${[["forces", "Forces"], ["faiblesses", "Faiblesses"], ["opportunites", "Opportunités"], ["menaces", "Menaces"]].map(([k, l]) => `<div class="champ"><label>${l}</label><textarea data-p="swot.${k}" data-red rows="6">${esc((RED.swot[k] || []).join("\n"))}</textarea></div>`).join("")}
   </div></div></div>`;
   if (RED.sources.length) h += `<div class="carte"><h2>Sources citées (${RED.sources.length})</h2><ol class="sources">${RED.sources.map(s => `<li><strong>[${esc(s.id)}]</strong> ${esc(s.titre)} — <a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.url)}</a></li>`).join("")}</ol>
@@ -626,80 +901,212 @@ function etapeRedaction() {
 }
 function confirmerSuppression() { return window.confirm("Supprimer le texte rédigé ?"); }
 function effacerRedaction() { RED = null; sauver(); afficher(); }
+function corpsServeur() {
+  const corps = pourServeur(); corps.projection = D.projection.produits.length ? projectionPourServeur() : null;
+  if (startup() && !D.bilan_ouverture_valide && corps.bilan_ouverture) corps.bilan_ouverture_valide = false;
+  return corps;
+}
 async function lancerRedaction() {
-  const debut = Date.now(), minuteur = setInterval(() => { const s = $("#red-etat .s"); if (s) s.textContent = Math.round((Date.now() - debut) / 1000) + " s"; }, 1000);
-  $("#red-etat").innerHTML = `<p class="attente"><span class="roue"></span>Recherche documentaire et rédaction en cours… <span class="s"></span></p>`;
+  const fin = attente("red-etat", "Recherche documentaire et rédaction en cours…");
   try {
-    const corps = pourServeur(); corps.projection = PROJ_RES && !PROJ_RES.erreurs.length ? projectionPourServeur() : null;
-    RED = await api(`/api/befa/redaction?recherche_web=${$("#recherche-web").checked}`, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(corps)});
+    const corps = corpsServeur(); if (!(PROJ_RES && !PROJ_RES.erreurs.length)) corps.projection = null;
+    RED = await postJson(`/api/befa/redaction?recherche_web=${$("#recherche-web").checked}`, corps);
     sauver(); afficher();
-  } catch (e) { $("#red-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
-  finally { clearInterval(minuteur); }
+  } catch (e) { erreur("red-etat", e); } finally { fin(); }
 }
 
 // ---------------------------------------------------------------- 8. generation
 function etapeGeneration() {
   const verifs = [
-    [!!D.variante, "Type de dossier choisi"],
-    [!!D.entreprise.raison_sociale.trim(), "Raison sociale renseignée"],
-    [!!(D.projet.intitule.trim() && D.projet.secteur.trim()), "Intitulé et secteur du projet renseignés"],
-    [D.variante !== "entreprise_existante" || !!D.bilan_n, "Liasse du dernier exercice importée (entreprise existante)"],
-    [!D.bilan_n || D._liasse_validee, "Chiffres comptables vérifiés par le consultant"],
-    [PROJ_RES ? !PROJ_RES.erreurs.length : D.projection.produits.length > 0, "Données financières complètes"],
+    [!!D.variante, "Type de dossier choisi", true],
+    [startup() || !!D.entreprise.raison_sociale.trim(), startup() ? "Entreprise : aucun champ obligatoire (StartUP)" : "Dénomination sociale renseignée (RCCM)", true],
+    [!!(D.projet.intitule.trim() && D.projet.secteur.trim()), "Intitulé et secteur du projet renseignés", true],
+    [!pme() || !!D.bilan_n, "Bilan du dernier exercice importé (PME ; ETI, GE)", true],
+    [!pme() || !D._identite || D._identite_validee, "Informations extraites du RCCM / des statuts vérifiées", false],
+    [!D.bilan_n || D._liasse_validee, "Chiffres comptables vérifiés par le consultant", false],
+    [!startup() || !D.bilan_ouverture || D.bilan_ouverture_valide, "Bilan d'ouverture prévisionnel validé", false],
+    [PROJ_RES ? !PROJ_RES.erreurs.length : D.projection.produits.length > 0, "Données financières complètes", false],
   ];
-  const facultatifs = [[(D.trends_faits || []).length > 0, "Données Google Trends"], [!!RED, "Rédaction IA relue"]];
-  const bloquant = verifs.slice(0, 4).some(v => !v[0]);
-  return `<div class="carte"><h2>Génération du document</h2>
+  const facultatifs = [[(D.trends_faits || []).length > 0, "Données Google Trends"], [!!RED, "Rédaction IA relue"], [!!D.identite_visuelle.logo, "Logo de l'entreprise"]];
+  const bloquant = verifs.filter(v => v[2]).some(v => !v[0]);
+  return `<div class="carte"><h2>Business Plan</h2>
   <ul style="list-style:none;padding:0">${verifs.map(([ok, l]) => `<li>${ok ? "✅" : "⚠️"} ${esc(l)}</li>`).join("")}
   ${facultatifs.map(([ok, l]) => `<li>${ok ? "✅" : "○"} ${esc(l)} <span class="badge">facultatif</span></li>`).join("")}</ul>
   <button class="btn principal" onclick="generer()" ${bloquant ? "disabled" : ""}>Générer le Business Plan (PDF + Word)</button>
-  <div id="gen-etat"></div></div>`;
+  <div id="gen-etat">${resultat("bp")}</div></div>
+  ${carteCourriers()}${carteAutresDocuments()}${carteVersions()}`;
 }
 async function generer() {
-  $("#gen-etat").innerHTML = `<p class="attente"><span class="roue"></span>Mise en page et conversion PDF (15 à 40 s)…</p>`;
+  const fin = attente("gen-etat", "Mise en page et conversion PDF (15 à 40 s)…");
   try {
-    const corps = pourServeur(); corps.projection = D.projection.produits.length ? projectionPourServeur() : null;
     const fd = new FormData();
-    fd.append("dossier", JSON.stringify(corps));
+    fd.append("dossier", JSON.stringify(corpsServeur()));
     if (RED) fd.append("redaction", JSON.stringify(RED));
     for (const f of D._trends_csv || []) fd.append("fichiers_trends", new Blob([f.texte], {type: "text/csv"}), f.nom);
+    fd.append("dossier_id", await idDossier());
     const r = await api("/api/befa/generer", {method: "POST", body: fd});
-    $("#gen-etat").innerHTML = `<div class="alerte ok">Document généré : ${r.pages} pages${r.sommaire_complet ? "" : " (sommaire incomplet)"}.</div>
-      <p><a class="btn principal" href="${r.pdf}" target="_blank" rel="noopener">Télécharger le PDF</a> <a class="btn" href="${r.docx}">Télécharger le Word (.docx)</a></p>
-      ${r.alertes.length ? `<div class="alerte att"><strong>Points à vérifier :</strong><ul>${r.alertes.map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>` : ""}`;
-  } catch (e) { $("#gen-etat").innerHTML = `<div class="alerte err">${esc(e.message)}</div>`; }
+    fin();
+    memoriser("bp", `<div class="alerte ok">Document généré : ${r.pages} pages${r.sommaire_complet ? "" : " (sommaire incomplet)"}${r.version ? " — version conservée sur le serveur" : ""}.</div>
+      <p><a class="btn principal" href="${r.pdf}" target="_blank" rel="noopener">Télécharger le PDF</a> <a class="btn" href="${r.docx}">Télécharger le Word (.docx)</a>
+      <a class="btn" href="#courriers" onclick="document.getElementById('courriers').scrollIntoView();return false">Demandes de financement →</a></p>
+      ${listeAlertes("Points à vérifier :", r.alertes)}`);
+    majVersions();
+  } catch (e) { fin(); erreur("gen-etat", e); }
+}
+
+// Derniers resultats de generation : restent affiches quand la page est redessinee (session en cours)
+const RESULTATS = {};
+const IDS_RESULTAT = {bp: "gen-etat", courriers: "courriers-fichiers", document: "doc-fichiers"};
+function memoriser(cle, html) { RESULTATS[cle] = html; const el = document.getElementById(IDS_RESULTAT[cle]); if (el) el.innerHTML = html; }
+function resultat(cle) { return RESULTATS[cle] || ""; }
+
+// --- demandes de financement bancaires
+function carteCourriers() {
+  const choisies = new Set(D._banques_choisies || []);
+  let h = `<div class="carte" id="courriers"><h2>Demandes de financement bancaires</h2>
+  <p class="aide">Sélectionnez une ou plusieurs banques : un courrier <strong>distinct et personnalisé</strong> est préparé pour chacune, au nom de ${esc(D.entreprise.raison_sociale || "l'entreprise")}, sur ${D.identite_visuelle.entete ? "son papier à en-tête" : "une présentation intégrant son logo et ses coordonnées (aucun papier à en-tête importé)"}. Les banques sont gérées dans l'<a href="/admin.html" target="_blank" rel="noopener">administration</a>.</p>
+  <input type="search" placeholder="Rechercher une banque…" oninput="filtrerBanques(this.value)" style="max-width:320px;margin-bottom:8px">
+  <div class="banques" id="liste-banques">${REF.banques.map(b => `<label data-nom="${esc((b.denomination + " " + b.sigle).toLowerCase())}"><input type="checkbox" value="${esc(b.id)}" ${choisies.has(b.id) ? "checked" : ""} onchange="choisirBanque(this)"> <span>${esc(b.denomination)}${b.sigle ? ` (${esc(b.sigle)})` : ""}${b.a_verifier ? ' <span class="badge est">coordonnées à compléter</span>' : ""}</span></label>`).join("")}</div>
+  <p style="margin-top:10px"><button class="btn principal" onclick="preparerCourriers()">GÉNÉRER LES DEMANDES DE FINANCEMENT</button> <span class="aide">${choisies.size} banque(s) sélectionnée(s)</span></p>
+  <div id="courriers-etat"></div>`;
+  const C = D._courriers || [];
+  if (C.length) {
+    h += `<h3>Relecture avant téléchargement (${C.length} courrier${C.length > 1 ? "s" : ""})</h3><p class="aide">Chaque courrier est modifiable ; paragraphes séparés par une ligne vide.</p>`;
+    C.forEach((c, i) => {
+      h += `<div class="courrier"><strong>${esc(c.banque)}</strong>${c.a_verifier ? ' <span class="badge est">adresse de la banque à compléter</span>' : ""}
+      <div class="grille" style="margin-top:8px">${champ("Lieu et date", `_courriers.${i}.lieu_date`)}${champ("À l'attention de", `_courriers.${i}.attention`)}
+        ${champ("Destinataire (une ligne par élément)", `_courriers.${i}.destinataire`, {type: "lines", rows: 4})}${champ("Pièces jointes", `_courriers.${i}.pieces_jointes`)}
+        ${champ("Objet", `_courriers.${i}.objet`, {large: true})}${champ("Corps du courrier", `_courriers.${i}.corps`, {type: "paras", large: true, rows: 14})}
+        ${champ("Signataire", `_courriers.${i}.signataire`)}${champ("Fonction", `_courriers.${i}.fonction`)}</div></div>`;
+    });
+    h += `<button class="btn principal" onclick="genererCourriers()">Produire les courriers (Word + PDF)</button> <button class="btn" onclick="D._courriers=[];sauver();afficher()">Abandonner</button><div id="courriers-fichiers">${resultat("courriers")}</div>`;
+  }
+  return h + `</div>`;
+}
+function filtrerBanques(t) { t = t.toLowerCase(); document.querySelectorAll("#liste-banques label").forEach(l => l.style.display = l.dataset.nom.includes(t) ? "" : "none"); }
+function choisirBanque(cb) {
+  const s = new Set(D._banques_choisies || []); cb.checked ? s.add(cb.value) : s.delete(cb.value);
+  D._banques_choisies = [...s]; sauver();
+}
+async function preparerCourriers() {
+  if (!(D._banques_choisies || []).length) { erreur("courriers-etat", "Sélectionnez au moins une banque."); return; }
+  const fin = attente("courriers-etat", "Préparation des courriers…");
+  try {
+    const r = await postJson("/api/befa/courriers/preparer", {dossier: corpsServeur(), banques: D._banques_choisies});
+    D._courriers = r.courriers; delete RESULTATS.courriers; sauver(); afficher();
+    document.getElementById("courriers").scrollIntoView();
+  } catch (e) { fin(); erreur("courriers-etat", e); }
+}
+async function genererCourriers() {
+  const fin = attente("courriers-fichiers", "Mise en page et conversion PDF de chaque courrier…");
+  try {
+    const r = await postJson("/api/befa/courriers/generer", {dossier: corpsServeur(), courriers: D._courriers, dossier_id: await idDossier()});
+    fin();
+    memoriser("courriers", `<div class="alerte ok">${r.courriers.length} courrier(s) produit(s)${r.version ? " — version conservée sur le serveur" : ""}.</div>
+      <table class="liste"><tbody>${r.courriers.map(c => `<tr><td>${esc(c.banque)}</td><td><a class="btn petit" href="${c.docx}">Word</a> ${c.pdf ? `<a class="btn petit" href="${c.pdf}" target="_blank" rel="noopener">PDF</a>` : ""}</td></tr>`).join("")}</tbody></table>
+      <p><a class="btn principal" href="${r.zip}">Télécharger tous les courriers (ZIP)</a></p>${listeAlertes("À noter :", r.alertes)}`);
+    majVersions();
+  } catch (e) { fin(); erreur("courriers-fichiers", e); }
+}
+
+// --- autres documents
+function carteAutresDocuments() {
+  const cats = [...new Set(REF.modeles.map(m => m.categorie))];
+  const doc = D._document;
+  let h = `<div class="carte" id="autres"><h2>Autres documents à générer</h2>
+  <p class="aide">Contrats, actes, lettres et documents de pilotage pré-remplis avec les informations du dossier. Les informations manquantes sont signalées « [À compléter] » ; les documents juridiques sont des <strong>projets à faire valider par un professionnel</strong> avant signature. La liste est gérée dans l'<a href="/admin.html" target="_blank" rel="noopener">administration</a>.</p>
+  <div class="grille"><div class="champ large"><label for="modele-doc">AUTRES DOCUMENTS À GÉNÉRER</label><select id="modele-doc"><option value="">— Choisir un document —</option>
+    ${cats.map(c => `<optgroup label="${esc(c)}">${REF.modeles.filter(m => m.categorie === c).map(m => `<option value="${esc(m.id)}" ${doc && doc.modele_id === m.id ? "selected" : ""}>${esc(m.titre)}${m.juridique ? " (projet juridique)" : ""}</option>`).join("")}</optgroup>`).join("")}</select></div>
+    <div class="champ large"><label for="precisions-doc">Précisions (facultatif)</label><textarea id="precisions-doc" rows="2" placeholder="Ex. : contrat avec la société X pour la maintenance de la foreuse, durée 12 mois…"></textarea></div></div>
+  <p><button class="btn principal" onclick="preparerDocument()">GÉNÉRER</button></p><div id="doc-etat"></div>`;
+  if (doc) {
+    h += `<h3>${esc(doc.titre)} <span class="badge ia">rédigé par l'IA</span></h3><div class="alerte ${doc.juridique ? "att" : "info"}">${esc(doc.avertissement)}</div>
+    ${(doc.informations_manquantes || []).length ? `<div class="alerte att"><strong>Informations à compléter :</strong> ${doc.informations_manquantes.map(esc).join(" ; ")}</div>` : ""}
+    <div class="grille">${champ("Titre", "_document.titre", {large: true})}</div>
+    ${doc.sections.map((s, i) => `<div class="section-red">${champ("Intitulé de la section", `_document.sections.${i}.titre`)}${champ("", `_document.sections.${i}.paragraphes`, {type: "paras", rows: Math.min(14, 3 + s.paragraphes.join(" ").length / 120 | 0)})}
+      ${s.puces.length ? `<label>Puces</label>${champ("", `_document.sections.${i}.puces`, {type: "lines", rows: s.puces.length + 1})}` : ""}</div>`).join("")}
+    ${(doc.tableaux || []).map(t => `<p><span class="badge calc">tableau calculé par le programme</span> ${esc(t.titre)} (${t.lignes.length} lignes)</p>`).join("")}
+    <p><button class="btn principal" onclick="genererDocument()">Produire le document (Word + PDF)</button></p><div id="doc-fichiers">${resultat("document")}</div>`;
+  }
+  return h + `</div>`;
+}
+async function preparerDocument() {
+  const id = $("#modele-doc").value; if (!id) { erreur("doc-etat", "Choisissez un document dans la liste."); return; }
+  const fin = attente("doc-etat", "Rédaction du document par l'IA (30 à 120 s selon sa longueur)…");
+  try {
+    delete RESULTATS.document;
+    D._document = await postJson("/api/befa/documents/preparer", {dossier: corpsServeur(), modele_id: id, precisions: $("#precisions-doc").value});
+    sauver(); afficher(); document.getElementById("autres").scrollIntoView();
+  } catch (e) { fin(); erreur("doc-etat", e); }
+}
+async function genererDocument() {
+  const fin = attente("doc-fichiers", "Mise en page…");
+  try {
+    const r = await postJson("/api/befa/documents/generer", {dossier: corpsServeur(), contenu: D._document, dossier_id: await idDossier()});
+    fin();
+    memoriser("document", `<div class="alerte ok">Document produit${r.version ? " — version conservée sur le serveur" : ""}.</div><p><a class="btn principal" href="${r.docx}">Télécharger le Word</a> ${r.pdf ? `<a class="btn" href="${r.pdf}" target="_blank" rel="noopener">Télécharger le PDF</a>` : ""}</p>${listeAlertes("À noter :", r.alertes)}`);
+    majVersions();
+  } catch (e) { fin(); erreur("doc-fichiers", e); }
+}
+
+// --- versions conservees
+function carteVersions() { setTimeout(majVersions, 0); return `<div class="carte"><h2>Historique du dossier</h2><p class="aide">Chaque génération et chaque document importé sont conservés sur le serveur : retrouvez ici les versions précédentes.</p><div id="versions">…</div></div>`; }
+async function majVersions() {
+  const el = $("#versions"); if (!el || !D._id) { if (el) el.innerHTML = `<p class="aide">Aucune version enregistrée.</p>`; return; }
+  try {
+    const r = await api(`/api/befa/dossiers/${D._id}/versions`);
+    el.innerHTML = (r.versions.length ? `<table class="liste"><thead><tr><th>Date</th><th>Type</th><th>Fichiers</th></tr></thead><tbody>${r.versions.map(v => `<tr><td>${esc((v.cree_le || "").replace("T", " "))}</td><td>${esc(v.type || "")}</td><td>${v.fichiers.map(f => `<a href="/api/befa/dossiers/${D._id}/versions/${esc(v.version)}/${encodeURIComponent(f)}">${esc(f)}</a>`).join("<br>")}</td></tr>`).join("")}</tbody></table>` : `<p class="aide">Aucun document généré pour l'instant.</p>`)
+      + (r.sources.length ? `<p class="aide">${r.sources.length} document(s) source(s) conservé(s) avec leur extraction.</p>` : "");
+  } catch (_) { el.innerHTML = `<p class="aide">Historique indisponible.</p>`; }
 }
 
 // ======================================================================
-// En-tete : exemples, ouverture / enregistrement
+// En-tete : exemples, dossiers du serveur, ouverture / export
 // ======================================================================
 async function demarrer(dossier, red = null) {
-  D = dossier; RED = red; TRENDS_RES = LIASSE_RES = PROJ_RES = null; normaliser();
+  D = dossier; RED = red; TRENDS_RES = LIASSE_RES = PROJ_RES = OUVERTURE_RES = null; normaliser();
   if ((D._trends_csv || []).length) { try { await analyserTrends(D._trends_csv); } catch (_) {} }
-  UI.etape = 0; sauver(); afficher();
+  UI.etape = 0; sauver(); afficher(); listerDossiersServeur();
 }
 $("#exemple").addEventListener("change", async e => {
   const nom = e.target.value; e.target.value = ""; if (!nom) return;
-  try { const d = await api(`/api/befa/exemples/${nom}`); d._liasse_validee = !!d.bilan_n; await demarrer(d); }
+  try { const d = await api(`/api/befa/exemples/${nom}`); d._liasse_validee = !!d.bilan_n; d._id = ""; await demarrer(d); }
   catch (err) { alert(err.message); }
 });
-$("#nouveau").addEventListener("click", () => { if (window.confirm("Commencer un nouveau dossier ? Le dossier en cours sera effacé de ce navigateur (enregistrez-le d'abord si besoin).")) demarrer(dossierVide()); });
+async function listerDossiersServeur() {
+  try {
+    const l = await api("/api/befa/dossiers");
+    $("#dossiers-serveur").innerHTML = `<option value="">Dossiers enregistrés (${l.length})…</option>` + l.map(x => `<option value="${esc(x.id)}">${esc(x.nom)} — ${esc(PROFILS[x.variante] || "")} — ${esc((x.enregistre_le || "").slice(0, 16).replace("T", " "))}</option>`).join("");
+  } catch (_) {}
+}
+$("#dossiers-serveur").addEventListener("change", async e => {
+  const id = e.target.value; e.target.value = ""; if (!id) return;
+  try { const s = await api(`/api/befa/dossiers/${id}`); const d = s.D || s; d._id = id; await demarrer(d, s.RED || null); }
+  catch (err) { alert(err.message); }
+});
+$("#nouveau").addEventListener("click", () => { if (window.confirm("Commencer un nouveau dossier ? Le dossier en cours reste enregistré sur le serveur (menu « Dossiers enregistrés »).")) demarrer(dossierVide()); });
 $("#enregistrer").addEventListener("click", () => {
-  const nom = (D.entreprise.sigle || D.entreprise.raison_sociale || "dossier").replace(/[^\w-]+/g, "_");
+  const nom = (D.entreprise.sigle || D.entreprise.raison_sociale || D.projet.intitule || "dossier").replace(/[^\w-]+/g, "_");
   const blob = new Blob([JSON.stringify({...D, _redaction: RED}, null, 1)], {type: "application/json"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `dossier_BEFA_${nom}.json`; a.click(); URL.revokeObjectURL(a.href);
 });
 $("#ouvrir").addEventListener("click", () => $("#fichier-dossier").click());
 $("#fichier-dossier").addEventListener("change", async e => {
   const f = e.target.files[0]; e.target.value = ""; if (!f) return;
-  try { const d = JSON.parse(await f.text()); const red = d._redaction || null; delete d._redaction; await demarrer(d, red); }
+  try { const d = JSON.parse(await f.text()); const red = d._redaction || null; delete d._redaction; d._id = ""; await demarrer(d, red); }
   catch (err) { alert("Fichier de dossier illisible : " + err.message); }
 });
 
-charger(); normaliser();
-if ((D._trends_csv || []).length) analyserTrends(D._trends_csv).then(() => { if (UI.etape === 4) afficher(); }).catch(() => {});
-afficher();
-if (UI.etape !== 5 && D.projection.produits.length) previsualiser(0);  // statut de l'etape "Donnees financieres"
+(async function init() {
+  charger(); normaliser();
+  try { REF = await api("/api/befa/referentiels"); } catch (_) { /* referentiels indisponibles : listes vides */ }
+  if (!D.projet.secteur_code && D.projet.secteur) {
+    const s = REF.secteurs.find(x => D.projet.secteur.toLowerCase().includes(x.libelle.toLowerCase())); if (s) D.projet.secteur_code = s.code;
+  }
+  if ((D._trends_csv || []).length) analyserTrends(D._trends_csv).then(() => { if (UI.etape === 4) afficher(); }).catch(() => {});
+  afficher(); listerDossiersServeur();
+  if (UI.etape !== 5 && D.projection.produits.length) previsualiser(0);  // statut de l'etape "Donnees financieres"
+})();
 </script>
 </body>
 </html>

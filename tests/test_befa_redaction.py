@@ -150,29 +150,30 @@ def test_assemblage_redaction_reelle():
     d.trends_faits, d.trends_source = trends.faits(t), trends.source(t)  # comme lors de l'appel reel
     p = calculer_projection(d.projection)
     red = R.assembler(d, fixture("redaction_coreal_brut.json"), recherche_reelle(), R.commentaires_financiers(d, p), p)
-    assert [s.titre for s in red.sections][:3] == ["Introduction", "Cadre institutionnel et réglementaire",
-                                                   "Justification du projet"]
-    assert len(red.sections) == 10 and all(s.paragraphes or s.puces for s in red.sections)
-    assert len(red.section("risques").puces) >= 8
+    # plan O'IVOIRE (18 sections) ; la redaction reelle de la version precedente (plan COREAL) reste exploitable
+    assert len(red.sections) == len(R.SECTIONS["nouveau_projet"]) == 18
+    assert [s.titre for s in red.sections][:2] == ["Historique de la création", "Présentation de l'activité"]
+    for cle in ("contexte_national", "contexte_besoin", "analyse_demande", "conclusion_marche", "conclusion"):
+        assert red.section(cle).paragraphes, cle  # reprises des anciennes cles introduction, justification...
     assert all(len(v) >= 4 for v in red.swot.values())
-    assert red.alertes == []
+    assert all("non rédigée" in a for a in red.alertes)  # aucune alerte de chiffre ou de renvoi
 
 
 def test_assemblage_controles():
     d = dossier()
     rech = Recherche([Fait("La CI produit 575 000 t.", ["S1"])], [Source("S1", "USDA", "https://usda.gov")])
     brut = {
-        "sections": [{"cle": "introduction", "paragraphes": [
+        "sections": [{"cle": "contexte_national", "paragraphes": [
             "La Côte d'Ivoire produit 575 000 tonnes [S1][S9].", "Le marché pèse 950 milliards FCFA."], "puces": []}],
         "swot": {"forces": ["Site proche des planteurs"], "faiblesses": [], "opportunites": [], "menaces": []},
     }
     red = R.assembler(d, brut, rech, {}, None)
-    intro = red.section("introduction")
+    intro = red.section("contexte_national")
     assert intro.paragraphes[0] == "La Côte d'Ivoire produit 575 000 tonnes [S1]."
     assert [s.id for s in red.sources] == ["S1"]
     assert any("[S9] inconnu" in a for a in red.alertes)
     assert any("950 milliards" in a for a in red.alertes)
-    assert sum("non rédigée" in a for a in red.alertes) == 9  # 9 autres sections manquantes
+    assert sum("non rédigée" in a for a in red.alertes) == 17  # 17 autres sections manquantes
 
 
 def test_rediger_sans_reseau(monkeypatch):
@@ -192,21 +193,26 @@ def test_rediger_sans_reseau(monkeypatch):
     red = R.rediger(d, p)
     assert red.alertes[0].startswith("Recherche web indisponible (réseau coupé)")
     assert appels[0]["effort"] == "high" and appels[0]["schema"]["required"] == ["sections", "swot"]
-    assert len(red.sections) == 10
+    assert len(red.sections) == 18
 
 
 def test_dossier_validation():
     d = dossier()
     assert d.validate() == []
+    d.entreprise.raison_sociale = ""
+    assert d.validate() == []  # STARTUP : aucun champ de la page Entreprise n'est obligatoire
     d.variante = "entreprise_existante"
-    assert any("liasse" in e for e in d.validate())
+    erreurs = d.validate()
+    assert any("raison sociale" in e for e in erreurs) and any("bilan" in e for e in erreurs)
     d.variante = "autre"
-    assert any("Variante inconnue" in e for e in d.validate())
+    assert any("Type de dossier inconnu" in e for e in d.validate())
 
 
 def test_plan_entreprise_existante():
     cles = [c for c, _, _ in R.SECTIONS["entreprise_existante"]]
-    assert cles[0] == "presentation_activite" and cles[-1] == "conclusion"
+    assert cles[0] == "historique" and cles[-1] == "conclusion"
+    assert [c for c, _, _ in R.SECTIONS["nouveau_projet"]] == cles  # meme plan, consignes adaptees
+    assert R.SECTIONS["nouveau_projet"][0][2] != R.SECTIONS["entreprise_existante"][0][2]
     assert R._schema("entreprise_existante")["properties"]["sections"]["items"]["properties"]["cle"]["enum"] == cles
 
 
@@ -222,8 +228,11 @@ def test_route_redaction(monkeypatch):
     r = TestClient(app).post("/api/befa/redaction", json=corps)
     assert r.status_code == 200, r.text
     d = r.json()
-    assert len(d["sections"]) == 10 and "compte_exploitation" in d["commentaires_financiers"]
+    assert len(d["sections"]) == 18 and "compte_exploitation" in d["commentaires_financiers"]
     corps["entreprise"]["raison_sociale"] = ""
+    r = TestClient(app).post("/api/befa/redaction", json=corps)
+    assert r.status_code == 200  # STARTUP : raison sociale facultative
+    corps["variante"] = "entreprise_existante"
     r = TestClient(app).post("/api/befa/redaction", json=corps)
     assert r.status_code == 422 and "raison sociale" in r.json()["detail"]
 

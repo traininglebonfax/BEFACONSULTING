@@ -1,0 +1,254 @@
+[
+ {
+  "denomination": "Société Générale Côte d'Ivoire",
+  "sigle": "SGCI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "NSIA Banque Côte d'Ivoire",
+  "sigle": "NSIA Banque",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Ecobank Côte d'Ivoire",
+  "sigle": "Ecobank CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Banque Atlantique Côte d'Ivoire",
+  "sigle": "BACI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Société Ivoirienne de Banque",
+  "sigle": "SIB",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Banque Internationale pour le Commerce et l'Industrie de la Côte d'Ivoire",
+  "sigle": "BICICI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Coris Bank International Côte d'Ivoire",
+  "sigle": "CBI-CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Bank Of Africa Côte d'Ivoire",
+  "sigle": "BOA-CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Banque Nationale d'Investissement",
+  "sigle": "BNI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Orabank Côte d'Ivoire",
+  "sigle": "Orabank CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "AFG Bank Côte d'Ivoire",
+  "sigle": "AFG Bank CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "United Bank for Africa Côte d'Ivoire",
+  "sigle": "UBA CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Banque Populaire de Côte d'Ivoire",
+  "sigle": "BPCI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Bridge Bank Group Côte d'Ivoire",
+  "sigle": "BBG-CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Versus Bank",
+  "sigle": "Versus Bank",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Stanbic Bank Côte d'Ivoire",
+  "sigle": "Stanbic CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Standard Chartered Bank Côte d'Ivoire",
+  "sigle": "SCB CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Citibank Côte d'Ivoire",
+  "sigle": "Citi CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Banque de l'Union Côte d'Ivoire",
+  "sigle": "BDU-CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Guaranty Trust Bank Côte d'Ivoire",
+  "sigle": "GTBank CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Access Bank Côte d'Ivoire",
+  "sigle": "Access Bank CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Afriland First Bank Côte d'Ivoire",
+  "sigle": "Afriland CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "BSIC Côte d'Ivoire",
+  "sigle": "BSIC CI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Mansa Bank",
+  "sigle": "Mansa Bank",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Banque de l'Habitat de Côte d'Ivoire",
+  "sigle": "BHCI",
+  "type": "Banque",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Advans Côte d'Ivoire",
+  "sigle": "Advans CI",
+  "type": "Établissement de microfinance",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "Baobab Côte d'Ivoire",
+  "sigle": "Baobab CI",
+  "type": "Établissement de microfinance",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ },
+ {
+  "denomination": "COFINA Côte d'Ivoire",
+  "sigle": "COFINA CI",
+  "type": "Établissement de microfinance",
+  "titre_destinataire": "Monsieur le Directeur Général",
+  "ville": "Abidjan",
+  "a_verifier": true,
+  "notes": "Adresse, destinataire et contacts à compléter par BEFA Consulting."
+ }
+]

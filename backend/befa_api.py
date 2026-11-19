@@ -31,13 +31,19 @@ def _dict(obj) -> Optional[dict]:
 
 @router.post("/liasse")
 async def importer_liasse(fichier: UploadFile = File(...)):
+    from befa.extraction import ExtractionError, est_pdf, extension, reparer_pdf
+    from befa.liasse import lire_liasse_fichier
+
     contenu = await fichier.read()
-    if not contenu.startswith(b"%PDF"):
-        raise HTTPException(status_code=422, detail="Le fichier doit être un PDF (liasse fiscale SYSCOHADA).")
+    nom = fichier.filename or "liasse.pdf"
+    if not est_pdf(contenu) and extension(nom) not in ("xlsx", "xlsm", "csv", "png", "jpg", "jpeg"):
+        raise HTTPException(status_code=422, detail="Le fichier doit être un PDF ou un fichier Excel (liasse SYSCOHADA).")
     if len(contenu) > TAILLE_MAX:
         raise HTTPException(status_code=413, detail="Fichier trop volumineux (30 Mo maximum).")
     try:
-        lue = lire_liasse(contenu, fichier.filename or "liasse.pdf")
+        lue = lire_liasse(reparer_pdf(contenu), nom) if est_pdf(contenu) else lire_liasse_fichier(contenu, nom)
+    except ExtractionError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     except IaError as e:
         raise HTTPException(status_code=502, detail=str(e))
 
@@ -167,6 +173,7 @@ async def generer_business_plan(
     dossier: str = Form(...),
     redaction: Optional[str] = Form(None),
     fichiers_trends: List[UploadFile] = File(default=[]),
+    dossier_id: str = Form(""),
 ):
     """Genere le Business Plan BEFA. `dossier` et `redaction` (facultative, issue de /redaction et
     eventuellement corrigee) sont des chaines JSON ; les CSV Google Trends sont facultatifs."""
@@ -196,7 +203,7 @@ async def generer_business_plan(
 
     job = _uuid.uuid4().hex
     prefixe = "Business_Plan" if d.variante == "nouveau_projet" else "Dossier_credit"
-    nom = f"{prefixe}_{_nom_fichier(d.entreprise.sigle or d.entreprise.raison_sociale)}"
+    nom = f"{prefixe}_{_nom_fichier(d.nom)}"
     try:
         res = generer(d, red, donnees_trends, _os.path.join(_SORTIES, job), nom)
     except FinanceInputError as e:
@@ -204,7 +211,12 @@ async def generer_business_plan(
     except PdfError as e:
         raise HTTPException(status_code=500, detail=str(e))
     _DOCUMENTS[job] = {"pdf": res.pdf, "docx": res.docx}
+    from befa import stockage
+
+    version = stockage.archiver_documents(dossier_id or None, "business_plan", [res.pdf, res.docx],
+                                          {"pages": res.pages, "redaction_ia": red is not None})
     return {
+        "version": version,
         "job_id": job,
         "pages": res.pages,
         "sommaire_complet": res.sommaire_complet,

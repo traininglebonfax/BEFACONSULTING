@@ -5,4 +5,9 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      - BEFA_DONNEES=/app/donnees
+    volumes:
+      # dossiers clients, documents sources, versions generees, referentiels modifies : a sauvegarder
+      - ./donnees:/app/donnees
     restart: unless-stopped

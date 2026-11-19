@@ -422,3 +422,66 @@ def convertir(l: LiasseLue) -> ImportLiasse:
         alertes.append(f"Exercice de {duree} mois : les comparaisons N / N-1 sont à interpréter avec prudence.")
 
     return ImportLiasse(l.entreprise, bilan_n, bilan_n1, cr_n, cr_n1, alertes, l.remarques, l.pages)
+
+
+# ----------------------------------------------------------------------
+# Formats Excel / image et fusion de plusieurs liasses (3 derniers exercices)
+# ----------------------------------------------------------------------
+NOTE_TABLEUR = """
+Le document peut être un export Excel (converti en texte, colonnes séparées par « | ») ou une image. Si les codes
+REF ne figurent pas, attribue à chaque ligne le code REF SYSCOHADA correspondant exactement à son libellé ; si une
+ligne ne correspond à aucun code, ignore-la. Les règles ci-dessus restent valables (aucun calcul, aucune invention).
+"""
+
+
+def lire_liasse_fichier(contenu: bytes, nom_fichier: str) -> LiasseLue:
+    """Liasse au format PDF (cas nominal), Excel (.xlsx), CSV ou image."""
+    from .extraction import blocs_document, est_pdf, reparer_pdf
+
+    if est_pdf(contenu):
+        return lire_liasse(reparer_pdf(contenu), nom_fichier)
+    data = appeler(blocs_document(nom_fichier, contenu, "Liasse / états financiers") +
+                   [{"type": "text", "text": CONSIGNE_LECTURE + NOTE_TABLEUR}], schema=SCHEMA_LIASSE, effort="medium")
+    liasse = LiasseLue.depuis_json(data, [])
+    if not (liasse.actif or liasse.passif or liasse.compte_resultat):
+        raise IaError(f"{nom_fichier} : aucune ligne de bilan ni de compte de résultat reconnue.")
+    return liasse
+
+
+def fusionner(imports: List[ImportLiasse], nb: int = 3) -> Dict[str, object]:
+    """Regroupe les exercices de plusieurs liasses ; la colonne N d'une liasse prime sur la colonne N-1 d'une autre.
+
+    Retourne {"exercices": [annees, du plus recent au plus ancien], "bilans": [...], "crs": [...], "alertes": [...]}."""
+    par_ex: Dict[str, Tuple[int, BilanCondense, CompteResultatCondense]] = {}
+    alertes: List[str] = []
+
+    def cle(e, k):
+        return re.sub(r"[^A-Z0-9]", "", str((e or {}).get(k) or "").upper())
+
+    for k, quoi in (("ncc", "numéros de compte contribuable"), ("raison_sociale", "raisons sociales")):
+        valeurs = {cle(i.entreprise, k) for i in imports} - {""}
+        if len(valeurs) > 1:
+            noms = ", ".join(sorted({str(i.entreprise.get("raison_sociale") or "?") for i in imports}))
+            alertes.append(f"Les liasses importées portent des {quoi} différents ({noms}) : elles semblent concerner "
+                           "des entreprises différentes. Vérifiez les fichiers avant de valider.")
+            break
+    for imp in imports:
+        for rang, b, c in ((0, imp.bilan_n, imp.cr_n), (1, imp.bilan_n1, imp.cr_n1)):
+            if b is None:
+                continue
+            actuel = par_ex.get(b.exercice)
+            if actuel is None or rang < actuel[0]:
+                par_ex[b.exercice] = (rang, b, c)
+            elif rang == actuel[0] == 0:
+                alertes.append(f"Exercice {b.exercice} importé deux fois : la première liasse est conservée.")
+    ordre = sorted(par_ex, key=lambda e: (_annee(e) or 0), reverse=True)
+    if len(ordre) > nb:
+        alertes.append(f"{len(ordre)} exercices disponibles : seuls les {nb} plus récents sont retenus "
+                       f"({', '.join(ordre[:nb])}).")
+    ordre = ordre[:nb]
+    annees = [_annee(e) for e in ordre]
+    for a, b in zip(annees, annees[1:]):
+        if a and b and a - b > 1:
+            alertes.append(f"Exercices non consécutifs ({b} puis {a}) : un bilan intermédiaire manque.")
+    return {"exercices": ordre, "bilans": [par_ex[e][1] for e in ordre], "crs": [par_ex[e][2] for e in ordre],
+            "alertes": alertes}
